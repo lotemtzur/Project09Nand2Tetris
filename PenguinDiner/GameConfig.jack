@@ -128,6 +128,43 @@ class GameConfig {
         return 230;  // Bottom of screen
     }
     
+    // ===== SCREEN BOUNDS =====
+    
+    /** Screen width in pixels */
+    function int getScreenWidth() {
+        return 512;  // Hack screen is 512 pixels wide (0-511)
+    }
+    
+    /** Screen height in pixels */
+    function int getScreenHeight() {
+        return 256;  // Hack screen is 256 pixels tall (0-255)
+    }
+    
+    /** UI header height (rows of text at top) */
+    function int getUIHeaderHeight() {
+        return 32;  // 2 rows of text = 32 pixels
+    }
+    
+    /** Penguin top boundary (below UI) */
+    function int getPenguinMinY() {
+        return 40;  // Stay below UI text
+    }
+    
+    /** Penguin bottom boundary (above kitchen) */
+    function int getPenguinMaxY() {
+        return 235;  // Stay above kitchen counter
+    }
+    
+    /** Penguin left boundary */
+    function int getPenguinMinX() {
+        return 25;  // Account for food in left hand
+    }
+    
+    /** Penguin right boundary */
+    function int getPenguinMaxX() {
+        return 490;  // Account for food in right hand
+    }
+    
     // ===== NOTES ON TUNING =====
     // 
     // To make game FASTER:

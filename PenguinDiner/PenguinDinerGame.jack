@@ -64,9 +64,9 @@ class PenguinDinerGame {
         }
         
         // Create customers array
-        let customers = Array.new(6);  // Max 6 customers
+        let customers = Array.new(maxCustomers);
         let i = 0;
-        while (i < 6) {
+        while (i < maxCustomers) {
             let customers[i] = null;
             let i = i + 1;
         }
@@ -132,13 +132,13 @@ class PenguinDinerGame {
         do Output.printString("Served: ");
         do Output.printInt(totalCustomersServed);
         do Output.moveCursor(1, 0);
-        do Output.printString("Controls: Arrows=Move, S=Seat, O=Order, P=Pickup, F=Serve, C=Collect, Q=Quit");
+        do Output.printString("Controls: Arrows=Move, SPACE=Auto Action, Q=Quit");
         
         // Show ready message
         do Output.moveCursor(10, 20);
         do Output.printString("*** READY TO PLAY! ***");
         do Output.moveCursor(11, 15);
-        do Output.printString("Use ARROW KEYS to move penguin!");
+        do Output.printString("Use ARROW KEYS to move, SPACE to interact!");
         
         return;
     }
@@ -442,6 +442,101 @@ class PenguinDinerGame {
         return;
     }
     
+    /** Smart action - detects context and performs appropriate action */
+    method void handleSmartAction() {
+        var int i, slot, slotX, maxSlots;
+        var Customer customer;
+        var boolean actionTaken;
+        
+        let actionTaken = false;
+        
+        // Priority 1: Check if near customer ready to pay (state 4)
+        let i = 0;
+        while ((i < maxCustomers) & (~actionTaken)) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                if (customer.isReadyToLeave()) {
+                    if (isNear(customer.getX(), customer.getY())) {
+                        do handleCollect();
+                        let actionTaken = true;
+                    }
+                }
+            }
+            let i = i + 1;
+        }
+        
+        // Priority 2: Check if near customer waiting for food (state 2) and has food
+        if (~actionTaken) {
+            if (penguin.getHasOrder()) {
+                let i = 0;
+                while ((i < maxCustomers) & (~actionTaken)) {
+                    let customer = customers[i];
+                    if (~(customer = null)) {
+                        if (customer.getState() = 2) {
+                            if (isNear(customer.getX(), customer.getY())) {
+                                do handleServe();
+                                let actionTaken = true;
+                            }
+                        }
+                    }
+                    let i = i + 1;
+                }
+            }
+        }
+        
+        // Priority 3: Check if near kitchen with ready food (and hands not full)
+        if (~actionTaken) {
+            if (~(penguin.bothHandsFull())) {
+                let maxSlots = kitchen.getMaxSlots();
+                let slot = 0;
+                while ((slot < maxSlots) & (~actionTaken)) {
+                    let slotX = kitchen.getSlotX(slot);
+                    if (isNear(slotX, kitchen.getY() - 15)) {
+                        do handlePickupFood();
+                        let actionTaken = true;
+                    }
+                    let slot = slot + 1;
+                }
+            }
+        }
+        
+        // Priority 4: Check if near seated customer (state 1) - take order
+        if (~actionTaken) {
+            let i = 0;
+            while ((i < maxCustomers) & (~actionTaken)) {
+                let customer = customers[i];
+                if (~(customer = null)) {
+                    if (customer.getState() = 1) {
+                        if (isNear(customer.getX(), customer.getY())) {
+                            do handleTakeOrder();
+                            let actionTaken = true;
+                        }
+                    }
+                }
+                let i = i + 1;
+            }
+        }
+        
+        // Priority 5: Check if near waiting customer (state 0) - seat them
+        if (~actionTaken) {
+            let i = 0;
+            while ((i < maxCustomers) & (~actionTaken)) {
+                let customer = customers[i];
+                if (~(customer = null)) {
+                    if (customer.getState() = 0) {
+                        if (isNear(customer.getX(), customer.getY())) {
+                            do handleSeat();
+                            let actionTaken = true;
+                        }
+                    }
+                }
+                let i = i + 1;
+            }
+        }
+        
+        return;
+    }
+    
     /** Redraws all game elements - proper layering: kitchen, tables, customers, penguin */
     method void redrawAll() {
         var int i;
@@ -484,11 +579,14 @@ class PenguinDinerGame {
         // Update kitchen (food cooking)
         do kitchen.update();
         
-        // Update customer timer
-        let customerTimer = customerTimer + 1;
-        if (customerTimer > GameConfig.getCustomerSpawnInterval()) {
-            do spawnCustomer();
-            let customerTimer = 0;
+        // Only spawn customers after player has moved
+        if (firstMove) {
+            // Update customer timer
+            let customerTimer = customerTimer + 1;
+            if (customerTimer > GameConfig.getCustomerSpawnInterval()) {
+                do spawnCustomer();
+                let customerTimer = 0;
+            }
         }
         
         // Update all customers
@@ -585,7 +683,19 @@ class PenguinDinerGame {
                 do penguin.moveRight(tables, numTables, customers, maxCustomers);
             }
             
-            // Action keys (press once)
+            // SPACE key (32) - smart action detection
+            if (key = 32) {
+                do handleSmartAction();
+                
+                // Wait for key release
+                while (~(key = 0)) {
+                    let key = Keyboard.keyPressed();
+                    do update();
+                    do Sys.wait(5);
+                }
+            }
+            
+            // Optional: Keep individual action keys for manual control
             if ((key = 83) | (key = 79) | (key = 80) | (key = 70) | (key = 67)) {
                 if (key = 83) { do handleSeat(); }        // S key - seat
                 if (key = 79) { do handleTakeOrder(); }   // O key - order

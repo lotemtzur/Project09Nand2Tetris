@@ -109,7 +109,7 @@ class Penguin {
         var int step, i, oldY;
         var Table table;
         let step = GameConfig.getPenguinMoveStep();
-        if (y > 40) {  // Keep below 2 rows of text (32px) + margin
+        if (y > GameConfig.getPenguinMinY()) {
             let oldY = y;
             do erase();
             let y = y - step;
@@ -125,7 +125,7 @@ class Penguin {
         var int step, i, oldY;
         var Table table;
         let step = GameConfig.getPenguinMoveStep();
-        if (y < 235) {  // Reduced from 240 for safety
+        if (y < GameConfig.getPenguinMaxY()) {
             let oldY = y;
             do erase();
             let y = y + step;
@@ -141,7 +141,7 @@ class Penguin {
         var int step, i, oldX;
         var Table table;
         let step = GameConfig.getPenguinMoveStep();
-        if (x > 25) {  // Increased from 15 - with food in left hand (x-20), need more space
+        if (x > GameConfig.getPenguinMinX()) {
             let oldX = x;
             do erase();
             let x = x - step;
@@ -157,7 +157,7 @@ class Penguin {
         var int step, i, oldX;
         var Table table;
         let step = GameConfig.getPenguinMoveStep();
-        if (x < 490) {  // Reduced from 495 - with food in right hand (x+20), need more space
+        if (x < GameConfig.getPenguinMaxX()) {
             let oldX = x;
             do erase();
             let x = x + step;

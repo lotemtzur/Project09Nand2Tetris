@@ -379,7 +379,7 @@ pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 1
-push constant 40
+call GameConfig.getPenguinMinY 0
 gt
 if-goto IF_TRUE0
 goto IF_FALSE0
@@ -414,7 +414,7 @@ pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 1
-push constant 235
+call GameConfig.getPenguinMaxY 0
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
@@ -449,7 +449,7 @@ pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 0
-push constant 25
+call GameConfig.getPenguinMinX 0
 gt
 if-goto IF_TRUE0
 goto IF_FALSE0
@@ -484,7 +484,7 @@ pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 0
-push constant 490
+call GameConfig.getPenguinMaxX 0
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
