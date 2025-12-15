@@ -403,16 +403,18 @@ class PenguinDinerGame {
                 if (~(table.isOccupied())) {
                     do table.seatCustomer(nearestCustomer);
                     
-                    // If this is a pair, always seat them on both sides
+                    // If this is a pair, check partner exists BEFORE seating
                     if (nearestCustomer.isPair()) {
-                        // Leader on left
-                        do nearestCustomer.moveTo(table.getX() - 23, table.getY());
-                        do nearestCustomer.setSeatedOnLeft(true);
-                        do nearestCustomer.seat();
-                        
-                        // Partner on right
                         let partner = nearestCustomer.getPair();
+                        
+                        // Only seat if partner still exists
                         if (~(partner = null)) {
+                            // Leader on left
+                            do nearestCustomer.moveTo(table.getX() - 23, table.getY());
+                            do nearestCustomer.setSeatedOnLeft(true);
+                            do nearestCustomer.seat();
+                            
+                            // Partner on right
                             do partner.moveTo(table.getX() + 23, table.getY());
                             do partner.setSeatedOnLeft(false);
                             do partner.seat();
@@ -573,6 +575,7 @@ class PenguinDinerGame {
         var Table table;
         var int payment;
         var int tableId;
+        var boolean canCollect;
         
         let i = 0;
         while (i < maxCustomers) {
@@ -580,16 +583,32 @@ class PenguinDinerGame {
             if (~(customer = null)) {
                 if (customer.isReadyToLeave()) {
                     if (isNear(customer.getX(), customer.getY())) {
-                        // Collect from this customer
-                        let payment = customer.collectPayment();
-                        let score = score + payment;
-                        let totalCustomersServed = totalCustomersServed + 1;
+                        // Check if we can collect (solo OR both in pair are ready)
+                        let canCollect = false;
                         
-                        // If part of pair, collect from partner too BEFORE disposing
-                        if (customer.isPair()) {
+                        if (~customer.isPair()) {
+                            let canCollect = true;  // Solo customer - always OK
+                        } else {
+                            // Pair - check if BOTH are ready
                             let partner = customer.getPair();
                             if (~(partner = null)) {
                                 if (partner.isReadyToLeave()) {
+                                    let canCollect = true;  // Both ready - OK to collect
+                                }
+                            }
+                        }
+                        
+                        // Only collect if allowed
+                        if (canCollect) {
+                            // Collect from this customer
+                            let payment = customer.collectPayment();
+                            let score = score + payment;
+                            let totalCustomersServed = totalCustomersServed + 1;
+                            
+                            // If part of pair, collect from partner too BEFORE disposing
+                            if (customer.isPair()) {
+                                let partner = customer.getPair();
+                                if (~(partner = null)) {
                                     let payment = partner.collectPayment();
                                     let score = score + payment;
                                     let totalCustomersServed = totalCustomersServed + 1;
@@ -612,27 +631,27 @@ class PenguinDinerGame {
                                     }
                                 }
                             }
-                        }
-                        
-                        // Find and clear table (erase $ sign first)
-                        let tableId = 0;
-                        while (tableId < numTables) {
-                            let table = tables[tableId];
-                            if (table.getCustomer() = customer) {
-                                do table.erasePaymentIndicator();  // Erase $ before removing customer
-                                do table.removeCustomer();
-                                let tableId = numTables; // exit
+                            
+                            // Find and clear table (erase $ sign first)
+                            let tableId = 0;
+                            while (tableId < numTables) {
+                                let table = tables[tableId];
+                                if (table.getCustomer() = customer) {
+                                    do table.erasePaymentIndicator();  // Erase $ before removing customer
+                                    do table.removeCustomer();
+                                    let tableId = numTables; // exit
+                                }
+                                let tableId = tableId + 1;
                             }
-                            let tableId = tableId + 1;
+                            
+                            do customer.erase();
+                            do customer.dispose();
+                            let customers[i] = null;
+                            let numCustomers = numCustomers - 1;
+                            do updateDisplay();
+                            do redrawAll();
+                            let i = maxCustomers; // exit
                         }
-                        
-                        do customer.erase();
-                        do customer.dispose();
-                        let customers[i] = null;
-                        let numCustomers = numCustomers - 1;
-                        do updateDisplay();
-                        do redrawAll();
-                        let i = maxCustomers; // exit
                     }
                 }
             }
@@ -794,8 +813,8 @@ class PenguinDinerGame {
     
     /** Update game state */
     method void update() {
-        var int i, tableId;
-        var Customer customer;
+        var int i, j, tableId;
+        var Customer customer, partner;
         var Table table;
         
         // Don't update anything if paused
@@ -816,11 +835,6 @@ class PenguinDinerGame {
             // Countdown timer
             if (timeRemaining > 0) {
                 let timeRemaining = timeRemaining - 1;
-                
-                // Update time display every 25 cycles (~1 second)
-                if ((timeRemaining - ((timeRemaining / 25) * 25)) = 0) {
-                    do updateDisplay();
-                }
             } else {
                 // Time's up!
                 let gameOver = true;
@@ -848,23 +862,20 @@ class PenguinDinerGame {
                 if (~(customer = null)) {
                     do customer.update();
                 
-                // Check if customer left angry (patience < 1 and not eating/done)
+                // Check if customer left angry (patience < 1)
+                // IMPORTANT: State 3 (eating) is NEVER angry - eating always completes
+                // Only states 0,1,2 (player-dependent) and state 4 (waiting too long) can be angry
                 if (customer.leftAngry()) {
-                    // Only dispose if NOT in eating or done state
-                    if ((customer.getState() < 3) & (customer.getState() > -1)) {
-                        // Lose a heart!
+                    // State 3 is PROTECTED - never remove during eating
+                    if (customer.getState() = 3) {
+                        // Skip - customer is eating, will finish normally
+                    } else {
+                        // States 0,1,2,4 can leave when patience runs out
+                        if ((customer.getState() < 3) | (customer.getState() = 4)) {
+                        // Lose a heart FIRST (before any disposal)
                         let hearts = hearts - 1;
                         
-                        // If customer ordered food (state 2), cancel their order in kitchen
-                        if (customer.getState() = 2) {
-                            do kitchen.cancelOrder(customer.getFoodType());
-                        }
-                        
-                        do customer.erase();
-                        let customers[i] = null;
-                        let numCustomers = numCustomers - 1;
-                        
-                        // Clear table if customer was seated
+                        // Clear table FIRST (before any disposal or erase)
                         let tableId = 0;
                         while (tableId < numTables) {
                             let table = tables[tableId];
@@ -875,17 +886,61 @@ class PenguinDinerGame {
                             let tableId = tableId + 1;
                         }
                         
+                        // If customer ordered food (state 2), cancel their order in kitchen
+                        if (customer.getState() = 2) {
+                            do kitchen.cancelOrder(customer.getFoodType());
+                        }
+                        
+                        // If part of pair, remove BOTH together
+                        if (customer.isPair()) {
+                            let partner = customer.getPair();
+                            if (~(partner = null)) {
+                                // Cancel partner's order if they ordered
+                                if (partner.getState() = 2) {
+                                    do kitchen.cancelOrder(partner.getFoodType());
+                                }
+                                
+                                // Clear pair links FIRST
+                                do customer.setPair(null);
+                                do partner.setPair(null);
+                                
+                                // Find and remove partner from customers array
+                                let j = 0;
+                                while (j < maxCustomers) {
+                                    if (customers[j] = partner) {
+                                        // Clear partner from array BEFORE disposing
+                                        let customers[j] = null;
+                                        let numCustomers = numCustomers - 1;
+                                        let j = maxCustomers; // exit
+                                    }
+                                    let j = j + 1;
+                                }
+                                
+                                // Erase and dispose partner
+                                do partner.erase();
+                                do partner.dispose();
+                            }
+                        }
+                        
+                        // Remove current customer from array
+                        let customers[i] = null;
+                        let numCustomers = numCustomers - 1;
+                        
+                        // Erase and dispose current customer
+                        do customer.erase();
                         do customer.dispose();
+                        
                         do updateDisplay();
                         do redrawAll();
                         
-                        // Check if game over (out of hearts)
-                        if (hearts < 1) {
-                            let gameOver = true;
-                        }
+                            // Check if game over (out of hearts)
+                            if (hearts < 1) {
+                                let gameOver = true;
+                            }
                         }
                     }
                 }
+            }
                 let i = i + 1;
             }
         }

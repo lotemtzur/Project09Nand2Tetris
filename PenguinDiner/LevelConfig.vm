@@ -2,22 +2,22 @@ function LevelConfig.new 0
 push constant 6
 call Memory.alloc 1
 pop pointer 0
-push constant 6
+push constant 7
 call Array.new 1
 pop this 0
-push constant 6
+push constant 7
 call Array.new 1
 pop this 1
-push constant 6
+push constant 7
 call Array.new 1
 pop this 2
-push constant 6
+push constant 7
 call Array.new 1
 pop this 3
-push constant 6
+push constant 7
 call Array.new 1
 pop this 4
-push constant 6
+push constant 7
 call Array.new 1
 pop this 5
 push constant 0
@@ -71,7 +71,7 @@ pop that 0
 push constant 1
 push this 0
 add
-push constant 3000
+push constant 4500
 pop temp 0
 pop pointer 1
 push temp 0
@@ -119,7 +119,7 @@ pop that 0
 push constant 2
 push this 0
 add
-push constant 3000
+push constant 6000
 pop temp 0
 pop pointer 1
 push temp 0
@@ -167,7 +167,7 @@ pop that 0
 push constant 3
 push this 0
 add
-push constant 4500
+push constant 6000
 pop temp 0
 pop pointer 1
 push temp 0
@@ -215,7 +215,7 @@ pop that 0
 push constant 4
 push this 0
 add
-push constant 4500
+push constant 6000
 pop temp 0
 pop pointer 1
 push temp 0
@@ -263,7 +263,7 @@ pop that 0
 push constant 5
 push this 0
 add
-push constant 6000
+push constant 7500
 pop temp 0
 pop pointer 1
 push temp 0
@@ -304,6 +304,54 @@ push constant 5
 push this 5
 add
 push constant 14
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 0
+add
+push constant 9000
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 1
+add
+push constant 30
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 2
+add
+push constant 3
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 3
+add
+push constant 6
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 4
+add
+push constant 13
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 5
+add
+push constant 16
 pop temp 0
 pop pointer 1
 push temp 0

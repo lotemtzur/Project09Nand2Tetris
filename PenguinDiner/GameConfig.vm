@@ -17,10 +17,10 @@ function GameConfig.getPairThreshold 0
 push constant 10
 return
 function GameConfig.getWaitingPatience 0
-push constant 750
+push constant 1125
 return
 function GameConfig.getSeatedPatience 0
-push constant 375
+push constant 500
 return
 function GameConfig.getOrderedPatience 0
 push constant 2000
@@ -29,7 +29,7 @@ function GameConfig.getEatingPatience 0
 push constant 175
 return
 function GameConfig.getPaymentPatience 0
-push constant 250
+push constant 500
 return
 function GameConfig.getAngryCustomerPenalty 0
 push constant 5

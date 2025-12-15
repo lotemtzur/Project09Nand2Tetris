@@ -295,37 +295,28 @@ pop temp 0
 label IF_FALSE4
 push constant 0
 return
-function Customer.update 1
+function Customer.update 2
 push argument 0
 pop pointer 0
-push this 3
 push constant 0
-gt
+pop local 1
+push this 2
+push constant 3
+eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push this 3
-push constant 1
-sub
-pop this 3
-label IF_FALSE0
-push this 2
-push constant 3
-eq
+push constant 2
+lt
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push this 3
-push constant 1
-lt
+push pointer 0
+call Customer.isPair 1
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
-push pointer 0
-call Customer.isPair 1
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
 push pointer 0
 call Customer.getPair 1
 pop local 0
@@ -333,28 +324,131 @@ push local 0
 push constant 0
 eq
 not
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push local 0
 call Customer.getState 1
 push constant 3
 eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push local 0
 call Customer.getPatience 1
 push constant 1
 gt
-and
 if-goto IF_TRUE5
 goto IF_FALSE5
 label IF_TRUE5
-push constant 1
-pop this 3
 push constant 0
-return
+not
+pop local 1
 label IF_FALSE5
 label IF_FALSE4
 label IF_FALSE3
+label IF_FALSE2
+label IF_FALSE1
+label IF_FALSE0
+push this 2
+push constant 4
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+call Customer.isPair 1
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push pointer 0
+call Customer.getPair 1
+pop local 0
+push local 0
+push constant 0
+eq
+not
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push local 0
+call Customer.getState 1
+push constant 3
+eq
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push constant 0
+not
+pop local 1
+label IF_FALSE9
+label IF_FALSE8
+label IF_FALSE7
+label IF_FALSE6
+push local 1
+not
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push this 3
+push constant 1
+sub
+pop this 3
+label IF_FALSE11
+label IF_FALSE10
+push this 2
+push constant 3
+eq
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push this 3
+push constant 1
+lt
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push pointer 0
+call Customer.isPair 1
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push pointer 0
+call Customer.getPair 1
+pop local 0
+push local 0
+push constant 0
+eq
+not
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push local 0
+call Customer.getState 1
+push constant 3
+eq
+if-goto IF_TRUE16
+goto IF_FALSE16
+label IF_TRUE16
+push local 0
+call Customer.getPatience 1
+push constant 1
+gt
+if-goto IF_TRUE17
+goto IF_FALSE17
+label IF_TRUE17
+push constant 0
+return
+label IF_FALSE17
+label IF_FALSE16
+label IF_FALSE15
+label IF_FALSE14
 push constant 4
 pop this 2
 call GameConfig.getPaymentPatience 0
@@ -365,11 +459,11 @@ pop temp 0
 push pointer 0
 call Customer.draw 1
 pop temp 0
-label IF_FALSE2
-label IF_FALSE1
+label IF_FALSE13
+label IF_FALSE12
 push constant 0
 return
-function Customer.bothReadyToPay 1
+function Customer.bothReadyToPay 2
 push argument 0
 pop pointer 0
 push pointer 0
@@ -391,15 +485,16 @@ eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push pointer 0
-call Customer.isReadyToLeave 1
+push constant 0
 return
 label IF_FALSE1
+push local 0
+call Customer.getState 1
+pop local 1
 push this 2
 push constant 4
 eq
-push local 0
-call Customer.getState 1
+push local 1
 push constant 4
 eq
 and
@@ -784,7 +879,7 @@ function Customer.shouldShowClock 0
 push argument 0
 pop pointer 0
 push this 3
-push constant 126
+push constant 251
 lt
 return
 function Customer.drawClock 0

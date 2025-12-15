@@ -16,8 +16,8 @@ class Main {
         let totalMoney = 0;
         let gameComplete = false;
         
-        // Game loop: play through levels 1-6
-        while ((currentLevel < 7) & (~gameComplete)) {
+        // Game loop: play through levels 1-7
+        while ((currentLevel < 8) & (~gameComplete)) {
             // Show level start screen
             do Main.showLevelStart(currentLevel, levelConfig);
             
@@ -75,7 +75,7 @@ class Main {
                 // The newWithUpgrades creates a fresh shop with preserved upgrade values
                 
                 // Show shop (unless it's the last level)
-                if (currentLevel < 6) {
+                if (currentLevel < 7) {
                     do shop.run();
                     let totalMoney = shop.getMoney();
                 }
@@ -118,7 +118,7 @@ class Main {
         }
         
         // Show final screen
-        if (currentLevel > 6) {
+        if (currentLevel > 7) {
             // All levels completed!
             do Main.showGameComplete();
         } else {
@@ -183,14 +183,17 @@ class Main {
         if (level = 1) {
             do Output.printString("1 minute");
         }
-        if ((level = 2) | (level = 3)) {
-            do Output.printString("2 minutes");
-        }
-        if ((level = 4) | (level = 5)) {
+        if (level = 2) {
             do Output.printString("3 minutes");
         }
-        if (level = 6) {
+        if ((level = 3) | (level = 4) | (level = 5)) {
             do Output.printString("4 minutes");
+        }
+        if (level = 6) {
+            do Output.printString("5 minutes");
+        }
+        if (level = 7) {
+            do Output.printString("6 minutes");
         }
         
         // Display hearts
