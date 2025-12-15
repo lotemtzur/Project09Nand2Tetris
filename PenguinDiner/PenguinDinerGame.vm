@@ -1,5 +1,5 @@
 function PenguinDinerGame.new 2
-push constant 13
+push constant 14
 call Memory.alloc 1
 pop pointer 0
 push constant 250
@@ -24,6 +24,8 @@ push constant 0
 pop this 11
 push constant 0
 pop this 12
+push constant 0
+pop this 13
 push constant 6
 call Array.new 1
 pop this 1
@@ -36,7 +38,7 @@ label IF_TRUE0
 push constant 0
 push this 1
 add
-push constant 180
+push constant 200
 push constant 120
 push constant 0
 call Table.new 3
@@ -47,7 +49,7 @@ pop that 0
 push constant 1
 push this 1
 add
-push constant 330
+push constant 310
 push constant 120
 push constant 1
 call Table.new 3
@@ -65,7 +67,7 @@ label IF_TRUE1
 push constant 0
 push this 1
 add
-push constant 120
+push constant 160
 push constant 120
 push constant 0
 call Table.new 3
@@ -87,7 +89,7 @@ pop that 0
 push constant 2
 push this 1
 add
-push constant 392
+push constant 352
 push constant 120
 push constant 2
 call Table.new 3
@@ -105,8 +107,8 @@ label IF_TRUE2
 push constant 0
 push this 1
 add
-push constant 150
-push constant 90
+push constant 180
+push constant 100
 push constant 0
 call Table.new 3
 pop temp 0
@@ -116,8 +118,8 @@ pop that 0
 push constant 1
 push this 1
 add
-push constant 360
-push constant 90
+push constant 330
+push constant 100
 push constant 1
 call Table.new 3
 pop temp 0
@@ -127,8 +129,8 @@ pop that 0
 push constant 2
 push this 1
 add
-push constant 150
-push constant 150
+push constant 180
+push constant 140
 push constant 2
 call Table.new 3
 pop temp 0
@@ -138,8 +140,8 @@ pop that 0
 push constant 3
 push this 1
 add
-push constant 360
-push constant 150
+push constant 330
+push constant 140
 push constant 3
 call Table.new 3
 pop temp 0
@@ -156,8 +158,8 @@ label IF_TRUE3
 push constant 0
 push this 1
 add
-push constant 100
-push constant 80
+push constant 140
+push constant 90
 push constant 0
 call Table.new 3
 pop temp 0
@@ -167,8 +169,8 @@ pop that 0
 push constant 1
 push this 1
 add
-push constant 280
-push constant 80
+push constant 256
+push constant 90
 push constant 1
 call Table.new 3
 pop temp 0
@@ -178,8 +180,8 @@ pop that 0
 push constant 2
 push this 1
 add
-push constant 100
-push constant 160
+push constant 372
+push constant 90
 push constant 2
 call Table.new 3
 pop temp 0
@@ -189,8 +191,8 @@ pop that 0
 push constant 3
 push this 1
 add
-push constant 280
-push constant 160
+push constant 198
+push constant 150
 push constant 3
 call Table.new 3
 pop temp 0
@@ -200,8 +202,8 @@ pop that 0
 push constant 4
 push this 1
 add
-push constant 420
-push constant 120
+push constant 314
+push constant 150
 push constant 4
 call Table.new 3
 pop temp 0
@@ -218,8 +220,8 @@ label IF_TRUE4
 push constant 0
 push this 1
 add
-push constant 100
-push constant 70
+push constant 140
+push constant 80
 push constant 0
 call Table.new 3
 pop temp 0
@@ -230,7 +232,7 @@ push constant 1
 push this 1
 add
 push constant 256
-push constant 70
+push constant 80
 push constant 1
 call Table.new 3
 pop temp 0
@@ -240,8 +242,8 @@ pop that 0
 push constant 2
 push this 1
 add
-push constant 412
-push constant 70
+push constant 372
+push constant 80
 push constant 2
 call Table.new 3
 pop temp 0
@@ -251,8 +253,8 @@ pop that 0
 push constant 3
 push this 1
 add
-push constant 100
-push constant 180
+push constant 140
+push constant 160
 push constant 3
 call Table.new 3
 pop temp 0
@@ -263,7 +265,7 @@ push constant 4
 push this 1
 add
 push constant 256
-push constant 180
+push constant 160
 push constant 4
 call Table.new 3
 pop temp 0
@@ -273,8 +275,8 @@ pop that 0
 push constant 5
 push this 1
 add
-push constant 412
-push constant 180
+push constant 372
+push constant 160
 push constant 5
 call Table.new 3
 pop temp 0
@@ -1212,7 +1214,7 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function PenguinDinerGame.handlePickupFood 5
+function PenguinDinerGame.handlePickupFood 9
 push argument 0
 pop pointer 0
 push this 0
@@ -1226,6 +1228,13 @@ label IF_FALSE0
 push this 3
 call Kitchen.getMaxSlots 1
 pop local 3
+push constant 10000
+pop local 5
+push constant 1
+neg
+pop local 4
+push constant 0
+pop local 8
 push constant 0
 pop local 0
 label WHILE_EXP0
@@ -1238,6 +1247,27 @@ push this 3
 push local 0
 call Kitchen.getSlotX 2
 pop local 2
+push this 3
+push local 0
+call Kitchen.isSlotReady 2
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+call Penguin.getX 1
+push local 2
+sub
+pop local 6
+push local 6
+push constant 0
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 6
+neg
+pop local 6
+label IF_FALSE2
 push pointer 0
 push local 2
 push this 3
@@ -1245,33 +1275,24 @@ call Kitchen.getY 1
 push constant 15
 sub
 call PenguinDinerGame.isNear 3
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push this 3
-push local 0
-call Kitchen.pickupFood 2
-pop local 1
-push local 1
-push constant 1
-neg
-eq
-not
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-push this 0
-push local 1
-call Penguin.pickupOrder 2
-pop local 4
-push local 4
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
-push local 3
-pop local 0
+push local 6
+push local 5
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 6
+pop local 5
+push local 0
+pop local 4
+push constant 0
+not
+pop local 8
+label IF_FALSE4
 label IF_FALSE3
-label IF_FALSE2
 label IF_FALSE1
 push local 0
 push constant 1
@@ -1279,6 +1300,28 @@ add
 pop local 0
 goto WHILE_EXP0
 label WHILE_END0
+push local 8
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push this 3
+push local 4
+call Kitchen.pickupFood 2
+pop local 1
+push local 1
+push constant 1
+neg
+eq
+not
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push this 0
+push local 1
+call Penguin.pickupOrder 2
+pop local 7
+label IF_FALSE6
+label IF_FALSE5
 push constant 0
 return
 function PenguinDinerGame.handleServe 2
@@ -1839,10 +1882,21 @@ pop pointer 0
 push this 3
 call Kitchen.update 1
 pop temp 0
-push this 12
+push this 13
+push constant 0
+gt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
+push this 13
+push constant 1
+sub
+pop this 13
+label IF_FALSE0
+push this 12
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
 push this 10
 push constant 1
 add
@@ -1850,19 +1904,28 @@ pop this 10
 push this 10
 call GameConfig.getCustomerSpawnInterval 0
 gt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
 push pointer 0
 call PenguinDinerGame.spawnCustomer 1
 pop temp 0
 push constant 0
 pop this 10
-label IF_FALSE1
+label IF_FALSE2
+push this 13
+push constant 0
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push pointer 0
 call PenguinDinerGame.handleSmartAction 1
 pop temp 0
-label IF_FALSE0
+push constant 5
+pop this 13
+label IF_FALSE3
+label IF_FALSE1
 push constant 0
 pop local 0
 label WHILE_EXP0
@@ -1881,17 +1944,17 @@ push local 2
 push constant 0
 eq
 not
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push local 2
 call Customer.update 1
 pop temp 0
 push local 2
 call Customer.leftAngry 1
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push local 2
 call Customer.getState 1
 push constant 3
@@ -1902,9 +1965,9 @@ push constant 1
 neg
 gt
 and
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
 push local 2
 call Customer.erase 1
 pop temp 0
@@ -1942,15 +2005,15 @@ push local 3
 call Table.getCustomer 1
 push local 2
 eq
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
 push local 3
 call Table.removeCustomer 1
 pop temp 0
 push this 4
 pop local 1
-label IF_FALSE5
+label IF_FALSE7
 push local 1
 push constant 1
 add
@@ -1966,9 +2029,9 @@ pop temp 0
 push pointer 0
 call PenguinDinerGame.redrawAll 1
 pop temp 0
+label IF_FALSE6
+label IF_FALSE5
 label IF_FALSE4
-label IF_FALSE3
-label IF_FALSE2
 push local 0
 push constant 1
 add

@@ -38,10 +38,10 @@ function GameConfig.getMaxTip 0
 push constant 10
 return
 function GameConfig.getMaxCustomers 0
-push constant 6
+push constant 8
 return
 function GameConfig.getNumTables 0
-push constant 4
+push constant 6
 return
 function GameConfig.getNearDistance 0
 push constant 40

@@ -13,6 +13,7 @@ class PenguinDinerGame {
     field int customerTimer;     // timer for spawning customers
     field boolean gameOver;      // game over flag
     field boolean firstMove;     // tracks if player made first move
+    field int actionCooldown;    // cooldown timer to prevent action spam
     
     /** Constructs a new Penguin Diner Game */
     constructor PenguinDinerGame new() {
@@ -29,38 +30,39 @@ class PenguinDinerGame {
         let customerTimer = GameConfig.getInitialCustomerTimer();
         let gameOver = false;
         let firstMove = false;  // Player hasn't moved yet
+        let actionCooldown = 0;  // Initialize cooldown
         
-        // Create tables array (flexible configuration)
+        // Create tables array (flexible configuration) - tables closer together
         let tables = Array.new(6);  // Max 6 tables
         if (numTables = 2) {
-            let tables[0] = Table.new(180, 120, 0);
-            let tables[1] = Table.new(330, 120, 1);
+            let tables[0] = Table.new(200, 120, 0);
+            let tables[1] = Table.new(310, 120, 1);
         }
         if (numTables = 3) {
-            let tables[0] = Table.new(120, 120, 0);
+            let tables[0] = Table.new(160, 120, 0);
             let tables[1] = Table.new(256, 120, 1);
-            let tables[2] = Table.new(392, 120, 2);
+            let tables[2] = Table.new(352, 120, 2);
         }
         if (numTables = 4) {
-            let tables[0] = Table.new(150, 90, 0);
-            let tables[1] = Table.new(360, 90, 1);
-            let tables[2] = Table.new(150, 150, 2);
-            let tables[3] = Table.new(360, 150, 3);
+            let tables[0] = Table.new(180, 100, 0);
+            let tables[1] = Table.new(330, 100, 1);
+            let tables[2] = Table.new(180, 140, 2);
+            let tables[3] = Table.new(330, 140, 3);
         }
         if (numTables = 5) {
-            let tables[0] = Table.new(100, 80, 0);
-            let tables[1] = Table.new(280, 80, 1);
-            let tables[2] = Table.new(100, 160, 2);
-            let tables[3] = Table.new(280, 160, 3);
-            let tables[4] = Table.new(420, 120, 4);
+            let tables[0] = Table.new(140, 90, 0);
+            let tables[1] = Table.new(256, 90, 1);
+            let tables[2] = Table.new(372, 90, 2);
+            let tables[3] = Table.new(198, 150, 3);
+            let tables[4] = Table.new(314, 150, 4);
         }
         if (numTables = 6) {
-            let tables[0] = Table.new(100, 70, 0);
-            let tables[1] = Table.new(256, 70, 1);
-            let tables[2] = Table.new(412, 70, 2);
-            let tables[3] = Table.new(100, 180, 3);
-            let tables[4] = Table.new(256, 180, 4);
-            let tables[5] = Table.new(412, 180, 5);
+            let tables[0] = Table.new(140, 80, 0);
+            let tables[1] = Table.new(256, 80, 1);
+            let tables[2] = Table.new(372, 80, 2);
+            let tables[3] = Table.new(140, 160, 3);
+            let tables[4] = Table.new(256, 160, 4);
+            let tables[5] = Table.new(372, 160, 5);
         }
         
         // Create customers array
@@ -341,8 +343,8 @@ class PenguinDinerGame {
     
     /** Handle pickup food from kitchen (NEW!) */
     method void handlePickupFood() {
-        var int slot, foodType, slotX, maxSlots;
-        var boolean pickedUp;
+        var int slot, foodType, slotX, maxSlots, nearestSlot, minDist, dist;
+        var boolean pickedUp, foundSlot;
         
         // Check if both hands are already full
         if (penguin.bothHandsFull()) {
@@ -350,27 +352,42 @@ class PenguinDinerGame {
         }
         
         let maxSlots = kitchen.getMaxSlots();
+        let minDist = 10000;  // Large number
+        let nearestSlot = -1;
+        let foundSlot = false;
         
-        // Check each food slot individually
+        // Find the NEAREST slot with ready food
         let slot = 0;
         while (slot < maxSlots) {
-            // Get slot position dynamically from kitchen
             let slotX = kitchen.getSlotX(slot);
             
-            // Check if penguin is near this slot
-            if (isNear(slotX, kitchen.getY() - 15)) {
-                // Try to pickup from this slot
-                let foodType = kitchen.pickupFood(slot);
-                if (~(foodType = -1)) {
-                    let pickedUp = penguin.pickupOrder(foodType);
-                    if (pickedUp) {
-                        let slot = maxSlots; // exit loop
+            // Check if this slot has food ready
+            if (kitchen.isSlotReady(slot)) {
+                // Calculate distance to this slot
+                let dist = penguin.getX() - slotX;
+                if (dist < 0) { let dist = -dist; }
+                
+                // Check if penguin is near AND this is the nearest slot
+                if (isNear(slotX, kitchen.getY() - 15)) {
+                    if (dist < minDist) {
+                        let minDist = dist;
+                        let nearestSlot = slot;
+                        let foundSlot = true;
                     }
                 }
             }
             
             let slot = slot + 1;
         }
+        
+        // Only pickup from the NEAREST slot with ready food
+        if (foundSlot) {
+            let foodType = kitchen.pickupFood(nearestSlot);
+            if (~(foodType = -1)) {
+                let pickedUp = penguin.pickupOrder(foodType);
+            }
+        }
+        
         return;
     }
     
@@ -579,6 +596,11 @@ class PenguinDinerGame {
         // Update kitchen (food cooking)
         do kitchen.update();
         
+        // Decrement action cooldown
+        if (actionCooldown > 0) {
+            let actionCooldown = actionCooldown - 1;
+        }
+        
         // Only spawn customers after player has moved
         if (firstMove) {
             // Update customer timer
@@ -588,8 +610,11 @@ class PenguinDinerGame {
                 let customerTimer = 0;
             }
             
-            // AUTO-ACTION: Check proximity and perform actions automatically
-            do handleSmartAction();
+            // AUTO-ACTION: Check proximity and perform actions automatically (with cooldown)
+            if (actionCooldown = 0) {
+                do handleSmartAction();
+                let actionCooldown = 5;  // 5 frame cooldown (~0.1 seconds)
+            }
         }
         
         // Update all customers

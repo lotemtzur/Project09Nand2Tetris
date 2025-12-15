@@ -157,6 +157,22 @@ class Kitchen {
         return -1;
     }
     
+    /** Checks if a specific slot has ready food */
+    method boolean isSlotReady(int slot) {
+        var FoodItem food;
+        
+        if ((slot < 0) | (slot > (maxFoodSlots - 1))) {
+            return false;
+        }
+        
+        let food = foodItems[slot];
+        if (food = null) {
+            return false;
+        }
+        
+        return food.isReady();
+    }
+    
     /** Picks up food from specified slot (returns food type) */
     method int pickupFood(int slot) {
         var FoodItem food;

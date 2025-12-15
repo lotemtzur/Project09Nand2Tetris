@@ -81,12 +81,12 @@ class GameConfig {
     
     /** Maximum number of customers at once */
     function int getMaxCustomers() {
-        return 6;  // Can be more than tables to create a queue! (Max 6)
+        return 8;  // Can be more than tables to create a queue! (Max 6)
     }
     
     /** Number of tables in restaurant (supports 2-5 tables) */
     function int getNumTables() {
-        return 4;  // 4 tables (NOTE: 6 tables may cause coordinate issues, stick to 2-5)
+        return 6;  // 4 tables (NOTE: 6 tables may cause coordinate issues, stick to 2-5)
     }
     
     /** Distance for "near" detection in pixels */
