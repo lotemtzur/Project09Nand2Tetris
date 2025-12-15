@@ -840,12 +840,13 @@ class PenguinDinerGame {
             }
         }
         
-        // Update all customers
-        let i = 0;
-        while (i < maxCustomers) {
-            let customer = customers[i];
-            if (~(customer = null)) {
-                do customer.update();
+        // Update all customers (only after game has started)
+        if (firstMove) {
+            let i = 0;
+            while (i < maxCustomers) {
+                let customer = customers[i];
+                if (~(customer = null)) {
+                    do customer.update();
                 
                 // Check if customer left angry (patience < 1 and not eating/done)
                 if (customer.leftAngry()) {
@@ -883,9 +884,10 @@ class PenguinDinerGame {
                             let gameOver = true;
                         }
                     }
+                    }
                 }
+                let i = i + 1;
             }
-            let i = i + 1;
         }
         
         // Check if level goal reached
