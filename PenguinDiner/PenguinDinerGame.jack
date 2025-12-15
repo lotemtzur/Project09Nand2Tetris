@@ -132,13 +132,13 @@ class PenguinDinerGame {
         do Output.printString("Served: ");
         do Output.printInt(totalCustomersServed);
         do Output.moveCursor(1, 0);
-        do Output.printString("Controls: Arrows=Move, SPACE=Auto Action, Q=Quit");
+        do Output.printString("Controls: Arrows=Move, Q=Quit");
         
         // Show ready message
         do Output.moveCursor(10, 20);
         do Output.printString("*** READY TO PLAY! ***");
-        do Output.moveCursor(11, 15);
-        do Output.printString("Use ARROW KEYS to move, SPACE to interact!");
+        do Output.moveCursor(11, 18);
+        do Output.printString("Move near to interact!");
         
         return;
     }
@@ -587,6 +587,9 @@ class PenguinDinerGame {
                 do spawnCustomer();
                 let customerTimer = 0;
             }
+            
+            // AUTO-ACTION: Check proximity and perform actions automatically
+            do handleSmartAction();
         }
         
         // Update all customers
@@ -660,6 +663,7 @@ class PenguinDinerGame {
                     let firstMove = true;
                 }
                 do penguin.moveUp(tables, numTables, customers, maxCustomers);
+                do kitchen.draw();  // Always redraw kitchen after penguin moves
             }
             if (key = 133) {                              // down arrow
                 if (~firstMove) {
@@ -667,6 +671,7 @@ class PenguinDinerGame {
                     let firstMove = true;
                 }
                 do penguin.moveDown(tables, numTables, customers, maxCustomers);
+                do kitchen.draw();  // Always redraw kitchen after penguin moves
             }
             if (key = 130) {                              // left arrow
                 if (~firstMove) {
@@ -674,6 +679,7 @@ class PenguinDinerGame {
                     let firstMove = true;
                 }
                 do penguin.moveLeft(tables, numTables, customers, maxCustomers);
+                do kitchen.draw();  // Always redraw kitchen after penguin moves
             }
             if (key = 132) {                              // right arrow
                 if (~firstMove) {
@@ -681,35 +687,9 @@ class PenguinDinerGame {
                     let firstMove = true;
                 }
                 do penguin.moveRight(tables, numTables, customers, maxCustomers);
+                do kitchen.draw();  // Always redraw kitchen after penguin moves
             }
             
-            // SPACE key (32) - smart action detection
-            if (key = 32) {
-                do handleSmartAction();
-                
-                // Wait for key release
-                while (~(key = 0)) {
-                    let key = Keyboard.keyPressed();
-                    do update();
-                    do Sys.wait(5);
-                }
-            }
-            
-            // Optional: Keep individual action keys for manual control
-            if ((key = 83) | (key = 79) | (key = 80) | (key = 70) | (key = 67)) {
-                if (key = 83) { do handleSeat(); }        // S key - seat
-                if (key = 79) { do handleTakeOrder(); }   // O key - order
-                if (key = 80) { do handlePickupFood(); }  // P key - pickup
-                if (key = 70) { do handleServe(); }       // F key - serve
-                if (key = 67) { do handleCollect(); }     // C key - collect
-                
-                // Wait for key release for action keys
-                while (~(key = 0)) {
-                    let key = Keyboard.keyPressed();
-                    do update();
-                    do Sys.wait(5);
-                }
-            }
             
             // Update game state
             do update();
