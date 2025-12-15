@@ -13,7 +13,7 @@ class GameConfig {
     
     /** Penguin movement step size in pixels */
     function int getPenguinMoveStep() {
-        return 8;  // 2 pixels per step
+        return 6;  // 2 pixels per step
     }
     
     // ===== CUSTOMER SPAWN SETTINGS =====
@@ -65,7 +65,7 @@ class GameConfig {
     
     /** Time customer spends eating (state 3) - FULL DURATION */
     function int getEatingTime() {
-        return 600;  // ~60 seconds at 40ms loop - Customer eats for this ENTIRE time
+        return 125;  // ~5 seconds at 40ms loop - Customer eats for this ENTIRE time
     }
     
     /** Patience after finishing eating (state 4 - ready to pay) */

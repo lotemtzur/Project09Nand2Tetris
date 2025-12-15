@@ -2,7 +2,7 @@ function GameConfig.getGameLoopDelay 0
 push constant 40
 return
 function GameConfig.getPenguinMoveStep 0
-push constant 8
+push constant 6
 return
 function GameConfig.getCustomerSpawnInterval 0
 push constant 100
@@ -26,7 +26,7 @@ function GameConfig.getOrderedPatience 0
 push constant 2000
 return
 function GameConfig.getEatingTime 0
-push constant 600
+push constant 125
 return
 function GameConfig.getEatingDoneThreshold 0
 push constant 1500
