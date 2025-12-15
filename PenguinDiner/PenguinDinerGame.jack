@@ -522,7 +522,7 @@ class PenguinDinerGame {
                         let score = score + payment;
                         let totalCustomersServed = totalCustomersServed + 1;
                         
-                        // If part of pair, collect from partner too
+                        // If part of pair, collect from partner too BEFORE disposing
                         if (customer.isPair()) {
                             let partner = customer.getPair();
                             if (~(partner = null)) {
@@ -530,6 +530,10 @@ class PenguinDinerGame {
                                     let payment = partner.collectPayment();
                                     let score = score + payment;
                                     let totalCustomersServed = totalCustomersServed + 1;
+                                    
+                                    // Clear pair links BEFORE disposing
+                                    do customer.setPair(null);
+                                    do partner.setPair(null);
                                     
                                     // Remove partner from customers array
                                     let j = 0;
@@ -547,11 +551,12 @@ class PenguinDinerGame {
                             }
                         }
                         
-                        // Find and clear table
+                        // Find and clear table (erase $ sign first)
                         let tableId = 0;
                         while (tableId < numTables) {
                             let table = tables[tableId];
                             if (table.getCustomer() = customer) {
+                                do table.erasePaymentIndicator();  // Erase $ before removing customer
                                 do table.removeCustomer();
                                 let tableId = numTables; // exit
                             }
@@ -705,6 +710,19 @@ class PenguinDinerGame {
             let i = i + 1;
         }
         
+        // Layer 2.75: Draw payment indicators for pairs ($ above tables)
+        let i = 0;
+        while (i < numTables) {
+            let table = tables[i];
+            let customer = table.getCustomer();
+            if (~(customer = null)) {
+                if (customer.bothReadyToPay()) {
+                    do table.drawPaymentIndicator();
+                }
+            }
+            let i = i + 1;
+        }
+        
         // Layer 3: Redraw penguin (foreground - on top of everything)
         do penguin.draw();
         
@@ -752,6 +770,11 @@ class PenguinDinerGame {
                 if (customer.leftAngry()) {
                     // Only dispose if NOT in eating or done state
                     if ((customer.getState() < 3) & (customer.getState() > -1)) {
+                        // If customer ordered food (state 2), cancel their order in kitchen
+                        if (customer.getState() = 2) {
+                            do kitchen.cancelOrder(customer.getFoodType());
+                        }
+                        
                         do customer.erase();
                         let customers[i] = null;
                         let numCustomers = numCustomers - 1;

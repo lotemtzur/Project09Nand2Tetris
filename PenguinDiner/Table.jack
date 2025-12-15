@@ -70,6 +70,40 @@ class Table {
         return;
     }
     
+    /** Draws dollar sign above table center (for customers ready to pay) */
+    method void drawPaymentIndicator() {
+        var int dollarX, dollarY;
+        let dollarX = x;
+        let dollarY = y - 25;  // Above table
+        
+        do Screen.setColor(true);
+        // Vertical line through S
+        do Screen.drawRectangle(dollarX - 1, dollarY - 8, dollarX + 1, dollarY);
+        // Top of S
+        do Screen.drawRectangle(dollarX - 5, dollarY - 7, dollarX + 5, dollarY - 6);
+        do Screen.drawRectangle(dollarX - 5, dollarY - 7, dollarX - 3, dollarY - 5);
+        // Middle of S
+        do Screen.drawRectangle(dollarX - 5, dollarY - 4, dollarX + 5, dollarY - 3);
+        // Bottom of S
+        do Screen.drawRectangle(dollarX + 3, dollarY - 3, dollarX + 5, dollarY - 1);
+        do Screen.drawRectangle(dollarX - 5, dollarY - 1, dollarX + 5, dollarY);
+        
+        return;
+    }
+    
+    /** Erases payment indicator above table */
+    method void erasePaymentIndicator() {
+        var int dollarX, dollarY;
+        let dollarX = x;
+        let dollarY = y - 25;
+        
+        do Screen.setColor(false);
+        // Erase area containing the dollar sign
+        do Screen.drawRectangle(dollarX - 6, dollarY - 9, dollarX + 6, dollarY + 1);
+        
+        return;
+    }
+    
     /** Seat a customer at this table */
     method void seatCustomer(Customer c) {
         let customer = c;

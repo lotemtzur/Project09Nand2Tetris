@@ -285,4 +285,43 @@ class Kitchen {
     method int getY() {
         return y;
     }
+    
+    /** Cancels an order for a specific food type (when customer leaves angry) */
+    method void cancelOrder(int foodType) {
+        var int i;
+        var FoodItem food;
+        
+        // Find the FIRST slot cooking this food type and remove it
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (~(food = null)) {
+                if (food.getFoodType() = foodType) {
+                    // Found it - dispose and clear slot
+                    do food.dispose();
+                    let foodItems[i] = null;
+                    do draw();  // Redraw to clear the food
+                    return;  // Only cancel one order
+                }
+            }
+            let i = i + 1;
+        }
+        
+        // If not found in active slots, check queue
+        let i = 0;
+        while (i < queueSize) {
+            if (orderQueue[i] = foodType) {
+                // Found in queue - remove it by shifting remaining items
+                while (i < (queueSize - 1)) {
+                    let orderQueue[i] = orderQueue[i + 1];
+                    let i = i + 1;
+                }
+                let queueSize = queueSize - 1;
+                return;  // Only cancel one order
+            }
+            let i = i + 1;
+        }
+        
+        return;
+    }
 }

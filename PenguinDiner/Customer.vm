@@ -249,101 +249,6 @@ push constant 3
 call Screen.drawCircle 3
 pop temp 0
 label IF_FALSE2
-push this 2
-push constant 4
-eq
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 0
-push constant 8
-add
-push this 1
-push constant 10
-sub
-push this 0
-push constant 9
-add
-push this 1
-push constant 2
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 6
-add
-push this 1
-push constant 9
-sub
-push this 0
-push constant 11
-add
-push this 1
-push constant 8
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 6
-add
-push this 1
-push constant 9
-sub
-push this 0
-push constant 7
-add
-push this 1
-push constant 7
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 6
-add
-push this 1
-push constant 6
-sub
-push this 0
-push constant 11
-add
-push this 1
-push constant 5
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 10
-add
-push this 1
-push constant 5
-sub
-push this 0
-push constant 11
-add
-push this 1
-push constant 3
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 6
-add
-push this 1
-push constant 3
-sub
-push this 0
-push constant 11
-add
-push this 1
-push constant 2
-sub
-call Screen.drawRectangle 4
-pop temp 0
-label IF_FALSE3
 push constant 0
 return
 function Customer.erase 4
@@ -423,7 +328,7 @@ pop temp 0
 label IF_FALSE4
 push constant 0
 return
-function Customer.update 0
+function Customer.update 1
 push argument 0
 pop pointer 0
 push this 3
@@ -449,6 +354,40 @@ lt
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
+push pointer 0
+call Customer.isPair 1
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+call Customer.getPair 1
+pop local 0
+push local 0
+push constant 0
+eq
+not
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 0
+call Customer.getState 1
+push constant 3
+eq
+push local 0
+call Customer.getPatience 1
+push constant 1
+gt
+and
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 1
+pop this 3
+push constant 0
+return
+label IF_FALSE5
+label IF_FALSE4
+label IF_FALSE3
 push constant 4
 pop this 2
 call GameConfig.getEatingDoneThreshold 0
@@ -462,6 +401,43 @@ pop temp 0
 label IF_FALSE2
 label IF_FALSE1
 push constant 0
+return
+function Customer.bothReadyToPay 2
+push argument 0
+pop pointer 0
+push pointer 0
+call Customer.isPair 1
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Customer.isReadyToLeave 1
+return
+label IF_FALSE0
+push pointer 0
+call Customer.getPair 1
+pop local 0
+push local 0
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+call Customer.isReadyToLeave 1
+return
+label IF_FALSE1
+push local 0
+call Customer.getState 1
+pop local 1
+push this 2
+push constant 4
+eq
+push local 1
+push constant 4
+eq
+and
 return
 function Customer.seat 0
 push argument 0

@@ -219,6 +219,129 @@ call Screen.drawRectangle 4
 pop temp 0
 push constant 0
 return
+function Table.drawPaymentIndicator 2
+push argument 0
+pop pointer 0
+push this 0
+pop local 0
+push this 1
+push constant 25
+sub
+pop local 1
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push local 0
+push constant 1
+sub
+push local 1
+push constant 8
+sub
+push local 0
+push constant 1
+add
+push local 1
+call Screen.drawRectangle 4
+pop temp 0
+push local 0
+push constant 5
+sub
+push local 1
+push constant 7
+sub
+push local 0
+push constant 5
+add
+push local 1
+push constant 6
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push local 0
+push constant 5
+sub
+push local 1
+push constant 7
+sub
+push local 0
+push constant 3
+sub
+push local 1
+push constant 5
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push local 0
+push constant 5
+sub
+push local 1
+push constant 4
+sub
+push local 0
+push constant 5
+add
+push local 1
+push constant 3
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push local 0
+push constant 3
+add
+push local 1
+push constant 3
+sub
+push local 0
+push constant 5
+add
+push local 1
+push constant 1
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push local 0
+push constant 5
+sub
+push local 1
+push constant 1
+sub
+push local 0
+push constant 5
+add
+push local 1
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Table.erasePaymentIndicator 2
+push argument 0
+pop pointer 0
+push this 0
+pop local 0
+push this 1
+push constant 25
+sub
+pop local 1
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push local 0
+push constant 6
+sub
+push local 1
+push constant 9
+sub
+push local 0
+push constant 6
+add
+push local 1
+push constant 1
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
 function Table.seatCustomer 0
 push argument 0
 pop pointer 0

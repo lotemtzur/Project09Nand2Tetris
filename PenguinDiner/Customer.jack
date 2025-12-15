@@ -80,20 +80,7 @@ class Customer {
             do Screen.drawCircle(x, y - 12, 3);
         }
         // State 3 (eating) - food is drawn separately by drawFood() method, NOT here!
-        if (state = 4) {
-            // Done - draw dollar sign $
-            do Screen.setColor(true);
-            // Vertical line through S
-            do Screen.drawRectangle(x + 8, y - 10, x + 9, y - 2);
-            // Top of S
-            do Screen.drawRectangle(x + 6, y - 9, x + 11, y - 8);
-            do Screen.drawRectangle(x + 6, y - 9, x + 7, y - 7);
-            // Middle of S
-            do Screen.drawRectangle(x + 6, y - 6, x + 11, y - 5);
-            // Bottom of S  
-            do Screen.drawRectangle(x + 10, y - 5, x + 11, y - 3);
-            do Screen.drawRectangle(x + 6, y - 3, x + 11, y - 2);
-        }
+        // State 4 (done) - $ is drawn above table by Table class, NOT here!
         return;
     }
     /** Erases the customer from screen */
@@ -124,6 +111,8 @@ class Customer {
     
     /** Updates customer state */
     method void update() {
+        var Customer partner;
+        
         if (patience > 0) {
             let patience = patience - 1;
         }
@@ -131,13 +120,47 @@ class Customer {
         // Eating customers automatically finish when patience runs out
         if (state = 3) {
             if (patience < 1) {
-                let state = 4; // done eating
-                let patience = GameConfig.getEatingDoneThreshold(); // Reset patience for payment collection
+                // If part of pair, check if partner is still eating (has patience > 1)
+                // Use > 1 to avoid mutual waiting when both reach 0
+                if (isPair()) {
+                    let partner = getPair();
+                    if (~(partner = null)) {
+                        // Only wait if partner still actively eating (patience > 1, not just waiting)
+                        if ((partner.getState() = 3) & (partner.getPatience() > 1)) {
+                            let patience = 1;  // Keep at 1 to avoid going negative
+                            return;  // Stay in eating state, don't transition yet
+                        }
+                    }
+                }
+                
+                // Solo OR both in pair are done eating - transition to payment state
+                let state = 4;
+                let patience = GameConfig.getEatingDoneThreshold();
                 do erase();
                 do draw();
             }
         }
         return;
+    }
+    /** Check if both customers in pair are ready to pay */
+    method boolean bothReadyToPay() {
+        var Customer partner;
+        var int partnerState;
+        
+        if (~isPair()) {
+            return isReadyToLeave();  // Solo customer
+        }
+        
+        // Check if both in pair are in state 4
+        let partner = getPair();
+        if (partner = null) {
+            return isReadyToLeave();  // Partner was removed, treat as solo
+        }
+        
+        // Safely get partner state
+        let partnerState = partner.getState();
+        
+        return (state = 4) & (partnerState = 4);
     }
     
     /** Seat the customer */
