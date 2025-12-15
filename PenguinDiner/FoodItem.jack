@@ -75,11 +75,7 @@ class FoodItem {
         
         // Draw timer indicator if not ready
         if (~ready) {
-            do Screen.setColor(true);
-            do Screen.drawRectangle(x - 7, y - 5, x + 7, y - 3);
-            // Progress bar
-            do Screen.setColor(false);
-            do Screen.drawRectangle(x - 6, y - 4, x + 6, y - 4);
+            do drawProgressBar();
         }
         
         return;
@@ -92,15 +88,44 @@ class FoodItem {
         return;
     }
     
+    /** Draws the progress bar showing cooking progress */
+    method void drawProgressBar() {
+        var int progress, barWidth, totalPrepTime;
+        
+        // Get total prep time for calculation
+        let totalPrepTime = GameConfig.getFoodPrepTime();
+        
+        // Draw border (outer rectangle)
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x - 7, y - 5, x + 7, y - 3);
+        
+        // Clear inside (background)
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x - 6, y - 4, x + 6, y - 4);
+        
+        // Calculate progress bar width (0 to 12 pixels)
+        // progress = (totalTime - remaining) / totalTime * 12
+        let progress = totalPrepTime - prepTime;
+        let barWidth = (progress * 12) / totalPrepTime;
+        
+        // Draw filled portion (left to right as it cooks)
+        if (barWidth > 0) {
+            do Screen.setColor(true);
+            do Screen.drawLine(x - 6, y - 4, x - 6 + barWidth, y - 4);
+        }
+        
+        return;
+    }
+    
     /** Updates food preparation */
     method void update() {
         if (~ready) {
             if (prepTime > 0) {
                 let prepTime = prepTime - 1;
                 
-                // Redraw to update progress bar every 20 cycles
-                if ((prepTime / 20 * 20) = prepTime) {
-                    do draw();
+                // Redraw progress bar every 5 cycles for smooth animation
+                if ((prepTime - ((prepTime / 5) * 5)) = 0) {
+                    do drawProgressBar();
                 }
             }
             

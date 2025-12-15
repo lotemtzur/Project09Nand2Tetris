@@ -260,6 +260,39 @@ not
 if-goto IF_TRUE4
 goto IF_FALSE4
 label IF_TRUE4
+push pointer 0
+call FoodItem.drawProgressBar 1
+pop temp 0
+label IF_FALSE4
+push constant 0
+return
+function FoodItem.erase 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push constant 8
+sub
+push this 1
+push constant 6
+sub
+push this 0
+push constant 8
+add
+push this 1
+push constant 9
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function FoodItem.drawProgressBar 3
+push argument 0
+pop pointer 0
+call GameConfig.getFoodPrepTime 0
+pop local 2
 push constant 0
 not
 call Screen.setColor 1
@@ -295,29 +328,43 @@ push constant 4
 sub
 call Screen.drawRectangle 4
 pop temp 0
-label IF_FALSE4
+push local 2
+push this 3
+sub
+pop local 0
+push local 0
+push constant 12
+call Math.multiply 2
+push local 2
+call Math.divide 2
+pop local 1
+push local 1
 push constant 0
-return
-function FoodItem.erase 0
-push argument 0
-pop pointer 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push constant 0
+not
 call Screen.setColor 1
 pop temp 0
 push this 0
-push constant 8
-sub
-push this 1
 push constant 6
 sub
+push this 1
+push constant 4
+sub
 push this 0
-push constant 8
+push constant 6
+sub
+push local 1
 add
 push this 1
-push constant 9
-add
-call Screen.drawRectangle 4
+push constant 4
+sub
+call Screen.drawLine 4
 pop temp 0
+label IF_FALSE0
 push constant 0
 return
 function FoodItem.update 0
@@ -339,17 +386,19 @@ push constant 1
 sub
 pop this 3
 push this 3
-push constant 20
-call Math.divide 2
-push constant 20
-call Math.multiply 2
 push this 3
+push constant 5
+call Math.divide 2
+push constant 5
+call Math.multiply 2
+sub
+push constant 0
 eq
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
 push pointer 0
-call FoodItem.draw 1
+call FoodItem.drawProgressBar 1
 pop temp 0
 label IF_FALSE2
 label IF_FALSE1

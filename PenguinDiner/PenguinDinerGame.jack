@@ -21,6 +21,7 @@ class PenguinDinerGame {
     field int timeRemaining;     // time remaining (in cycles)
     field int pairThreshold;     // pair spawn threshold for this level
     field boolean levelWon;      // level completed successfully
+    field boolean paused;        // game is paused
     
     /** Constructs a new Penguin Diner Game */
     constructor PenguinDinerGame new(int currentLevel, LevelConfig config, Shop playerShop) {
@@ -59,6 +60,7 @@ class PenguinDinerGame {
         let firstMove = false;
         let actionCooldown = 0;
         let levelWon = false;
+        let paused = false;
         
         // Create tables array (flexible configuration) - tables closer together
         let tables = Array.new(6);  // Max 6 tables
@@ -172,7 +174,7 @@ class PenguinDinerGame {
         do Output.printString("Time:");
         do drawTime();
         do Output.moveCursor(1, 0);
-        do Output.printString("Controls: Arrows=Move, Q=Quit");
+        do Output.printString("Controls: Arrows=Move, P=Pause, Q=Quit");
         
         // Show ready message
         do Output.moveCursor(10, 20);
@@ -796,6 +798,11 @@ class PenguinDinerGame {
         var Customer customer;
         var Table table;
         
+        // Don't update anything if paused
+        if (paused) {
+            return;
+        }
+        
         // Update kitchen (food cooking)
         do kitchen.update();
         
@@ -916,6 +923,13 @@ class PenguinDinerGame {
             // Handle keys and enable continuous movement
             if (key = 81) { let exit = true; }           // Q key - quit
             
+            if (key = 80) {                              // P key - pause
+                do showPauseScreen();
+                while (~(Keyboard.keyPressed() = 0)) {
+                    do Sys.wait(10);
+                }
+            }
+            
             // Arrow keys - clear message on first use and move continuously
             if (key = 131) {                              // up arrow
                 if (~firstMove) {
@@ -961,5 +975,40 @@ class PenguinDinerGame {
         }
         
         return levelWon;  // Return true if level won, false otherwise
+    }
+    
+    /** Shows pause screen and waits for ENTER to resume */
+    method void showPauseScreen() {
+        var char key;
+        
+        // Set paused flag to stop all updates
+        let paused = true;
+        
+        // Draw pause overlay
+        do Output.moveCursor(10, 24);
+        do Output.printString("*** PAUSED ***");
+        do Output.moveCursor(11, 17);
+        do Output.printString("Press ENTER to resume");
+        
+        // Wait for ENTER key to resume
+        let key = 0;
+        while (~(key = 128)) {  // 128 = ENTER key
+            let key = Keyboard.keyPressed();
+            do Sys.wait(50);
+        }
+        
+        // Clear paused flag to resume updates
+        let paused = false;
+        
+        // Clear pause message
+        do Output.moveCursor(10, 0);
+        do Output.printString("                                                            ");
+        do Output.moveCursor(11, 0);
+        do Output.printString("                                                            ");
+        
+        // Redraw everything to restore game state
+        do redrawAll();
+        
+        return;
     }
 }
