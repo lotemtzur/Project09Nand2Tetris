@@ -3,6 +3,8 @@ class Kitchen {
     field int x, y;              // position on screen
     field Array foodItems;       // array of preparing food items
     field int maxFoodSlots;      // maximum food items being prepared
+    field Array orderQueue;      // queue of pending orders when kitchen is full
+    field int queueSize;         // current size of order queue
     
     /** Constructs a new Kitchen */
     constructor Kitchen new(int Ax, int Ay, int numSlots) {
@@ -15,6 +17,15 @@ class Kitchen {
         let i = 0;
         while (i < 6) {
             let foodItems[i] = null;
+            let i = i + 1;
+        }
+        
+        // Initialize order queue (max 10 pending orders)
+        let orderQueue = Array.new(10);
+        let queueSize = 0;
+        let i = 0;
+        while (i < 10) {
+            let orderQueue[i] = -1;
             let i = i + 1;
         }
         
@@ -36,6 +47,7 @@ class Kitchen {
             let i = i + 1;
         }
         do foodItems.dispose();
+        do orderQueue.dispose();
         do Memory.deAlloc(this);
         return;
     }
@@ -100,7 +112,7 @@ class Kitchen {
         return;
     }
     
-    /** Adds a food order to kitchen (returns slot index or -1 if full) */
+    /** Adds a food order to kitchen (returns slot index, -1 if full, -2 if queued) */
     method int addOrder(int foodType) {
         var int i, slotX, slotSpacing;
         var FoodItem food;
@@ -120,7 +132,59 @@ class Kitchen {
             let i = i + 1;
         }
         
-        return -1;  // Kitchen full
+        // Kitchen full - add to queue if space available
+        if (queueSize < 10) {
+            let orderQueue[queueSize] = foodType;
+            let queueSize = queueSize + 1;
+            return -2;  // Queued
+        }
+        
+        return -1;  // Kitchen and queue full
+    }
+    
+    /** Process queue - try to add queued orders to empty slots */
+    method void processQueue() {
+        var int i, result;
+        
+        // Try to process queued orders
+        while (queueSize > 0) {
+            let result = addOrderDirect(orderQueue[0]);
+            if (result = -1) {
+                return;  // Still no space, stop processing
+            }
+            
+            // Order was added, remove from queue
+            let i = 0;
+            while (i < (queueSize - 1)) {
+                let orderQueue[i] = orderQueue[i + 1];
+                let i = i + 1;
+            }
+            let queueSize = queueSize - 1;
+        }
+        return;
+    }
+    
+    /** Add order directly without queuing (internal use) */
+    method int addOrderDirect(int foodType) {
+        var int i, slotX, slotSpacing;
+        var FoodItem food;
+        
+        // Find empty slot
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (food = null) {
+                // Calculate position for this slot dynamically
+                let slotSpacing = 180 / (maxFoodSlots + 1);
+                let slotX = (x - 90) + ((i + 1) * slotSpacing);
+                
+                let foodItems[i] = FoodItem.new(slotX, y - 15, foodType);
+                return i;
+            }
+            let i = i + 1;
+        }
+        
+        return -1;  // No space
     }
     
     /** Updates all food items being prepared */
@@ -136,6 +200,9 @@ class Kitchen {
             }
             let i = i + 1;
         }
+        
+        // Process any queued orders
+        do processQueue();
         return;
     }
     

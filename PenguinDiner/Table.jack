@@ -25,10 +25,29 @@ class Table {
         return;
     }
     
-    /** Draws the table on screen */
+    /** Draws the table on screen with two chairs */
     method void draw() {
-        // Draw table top (large circle)
         do Screen.setColor(true);
+        
+        // LEFT CHAIR
+        // Left back post (tall vertical)
+        do Screen.drawRectangle(x - 28, y - 12, x - 26, y + 8);
+        // Left seat horizontal
+        do Screen.drawRectangle(x - 26, y + 2, x - 20, y + 4);
+        // Left front legs (2 vertical legs)
+        do Screen.drawRectangle(x - 26, y + 4, x - 24, y + 10);
+        do Screen.drawRectangle(x - 22, y + 4, x - 20, y + 10);
+        
+        // RIGHT CHAIR
+        // Right back post (tall vertical)
+        do Screen.drawRectangle(x + 26, y - 12, x + 28, y + 8);
+        // Right seat horizontal
+        do Screen.drawRectangle(x + 20, y + 2, x + 26, y + 4);
+        // Right front legs (2 vertical legs)
+        do Screen.drawRectangle(x + 20, y + 4, x + 22, y + 10);
+        do Screen.drawRectangle(x + 24, y + 4, x + 26, y + 10);
+        
+        // Draw table top (large circle)
         do Screen.drawCircle(x, y, 18);
         
         // Draw white table surface

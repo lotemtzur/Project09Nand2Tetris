@@ -13,7 +13,7 @@ class GameConfig {
     
     /** Penguin movement step size in pixels */
     function int getPenguinMoveStep() {
-        return 4;  // 2 pixels per step
+        return 8;  // 2 pixels per step
     }
     
     // ===== CUSTOMER SPAWN SETTINGS =====
@@ -27,6 +27,24 @@ class GameConfig {
     function int getInitialCustomerTimer() {
         return 95;  // First customer spawns after 5 cycles
     }
+    
+    // ===== PAIR SPAWN SETTINGS =====
+    
+    /** Prime modulo for pair randomness (use odd primes: 23, 29, 31, 37, 41, etc.) */
+    function int getPairRandomPrime() {
+        return 23;  // Larger prime = better randomness distribution
+    }
+    
+    /** Threshold for pair spawn (values 0 to threshold-1 spawn pairs) */
+    function int getPairThreshold() {
+        return 10;  // With prime 23: 3/23 = ~13% pairs, 20/23 = ~87% solo
+    }
+    // HOW TO ADJUST PAIR RATE:
+    // 10% pairs: threshold=2 with prime=23 (2/23), or threshold=3 with prime=29 (3/29)
+    // 15% pairs: threshold=3 with prime=23 (3/23≈13%), or threshold=4 with prime=29 (4/29≈14%)
+    // 20% pairs: threshold=5 with prime=23 (5/23≈22%), or threshold=6 with prime=29 (6/29≈21%)
+    // 25% pairs: threshold=6 with prime=23 (6/23≈26%), or threshold=7 with prime=29 (7/29≈24%)
+    // 30% pairs: threshold=7 with prime=23 (7/23≈30%), or threshold=9 with prime=29 (9/29≈31%)
     
     // ===== CUSTOMER PATIENCE SETTINGS =====
     
@@ -47,7 +65,7 @@ class GameConfig {
     
     /** Time customer spends eating (state 3) - FULL DURATION */
     function int getEatingTime() {
-        return 200;  // ~60 seconds at 40ms loop - Customer eats for this ENTIRE time
+        return 600;  // ~60 seconds at 40ms loop - Customer eats for this ENTIRE time
     }
     
     /** Patience after finishing eating (state 4 - ready to pay) */

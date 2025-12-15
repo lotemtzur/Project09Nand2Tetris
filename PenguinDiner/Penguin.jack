@@ -104,68 +104,56 @@ class Penguin {
         return;
     }
     
-    /** Moves penguin up */
-    method void moveUp(Array tables, int numTables, Array customers, int maxCustomers) {
-        var int step, i, oldY;
-        var Table table;
+    /** Moves penguin up - returns true if moved */
+    method boolean moveUp(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, newY;
         let step = GameConfig.getPenguinMoveStep();
-        if (y > GameConfig.getPenguinMinY()) {
-            let oldY = y;
+        let newY = y - step;
+        if (newY > GameConfig.getPenguinMinY()) {
             do erase();
-            let y = y - step;
-            do draw();
-            // Redraw any tables and customers that might have been erased
-            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, x, oldY);
+            let y = newY;
+            return true;  // Signal that redrawAll is needed
         }
-        return;
+        return false;
     }
     
-    /** Moves penguin down */
-    method void moveDown(Array tables, int numTables, Array customers, int maxCustomers) {
-        var int step, i, oldY;
-        var Table table;
+    /** Moves penguin down - returns true if moved */
+    method boolean moveDown(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, newY;
         let step = GameConfig.getPenguinMoveStep();
-        if (y < GameConfig.getPenguinMaxY()) {
-            let oldY = y;
+        let newY = y + step;
+        if (newY < GameConfig.getPenguinMaxY()) {
             do erase();
-            let y = y + step;
-            do draw();
-            // Redraw any tables and customers that might have been erased
-            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, x, oldY);
+            let y = newY;
+            return true;  // Signal that redrawAll is needed
         }
-        return;
+        return false;
     }
     
-    /** Moves penguin left */
-    method void moveLeft(Array tables, int numTables, Array customers, int maxCustomers) {
-        var int step, i, oldX;
-        var Table table;
+    /** Moves penguin left - returns true if moved */
+    method boolean moveLeft(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, newX;
         let step = GameConfig.getPenguinMoveStep();
-        if (x > GameConfig.getPenguinMinX()) {
-            let oldX = x;
+        let newX = x - step;
+        if (newX > GameConfig.getPenguinMinX()) {
             do erase();
-            let x = x - step;
-            do draw();
-            // Redraw any tables and customers that might have been erased
-            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, oldX, y);
+            let x = newX;
+            return true;  // Signal that redrawAll is needed
         }
-        return;
+        return false;
     }
     
-    /** Moves penguin right */
-    method void moveRight(Array tables, int numTables, Array customers, int maxCustomers) {
-        var int step, i, oldX;
-        var Table table;
+    /** Moves penguin right - returns true if moved */
+    method boolean moveRight(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, newX;
         let step = GameConfig.getPenguinMoveStep();
-        if (x < GameConfig.getPenguinMaxX()) {
-            let oldX = x;
+        let newX = x + step;
+        if (newX < GameConfig.getPenguinMaxX()) {
             do erase();
-            let x = x + step;
-            do draw();
-            // Redraw any tables and customers that might have been erased
-            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, oldX, y);
+            let x = newX;
+            return true;  // Signal that redrawAll is needed
         }
-        return;
+        return false;
     }
     
     /** Redraws tables and customers that are near the penguin's old position */
@@ -200,7 +188,7 @@ class Penguin {
             let i = i + 1;
         }
         
-        // Then draw customers AFTER (foreground layer) so they appear on top
+        // Then draw customers (foreground layer)
         let i = 0;
         while (i < maxCustomers) {
             let customer = customers[i];
@@ -214,6 +202,26 @@ class Penguin {
                 // If customer is within 50 pixels of where penguin was, redraw it
                 if ((dx < 50) & (dy < 50)) {
                     do customer.draw();
+                }
+            }
+            
+            let i = i + 1;
+        }
+        
+        // CRITICAL: Draw food AFTER tables (separate pass to ensure visibility)
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                let dx = customer.getX() - checkX;
+                let dy = customer.getY() - checkY;
+                
+                if (dx < 0) { let dx = -dx; }
+                if (dy < 0) { let dy = -dy; }
+                
+                // If customer is within 50 pixels, draw their food
+                if ((dx < 50) & (dy < 50)) {
+                    do customer.drawFood();
                 }
             }
             

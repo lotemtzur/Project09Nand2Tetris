@@ -44,6 +44,118 @@ not
 call Screen.setColor 1
 pop temp 0
 push this 0
+push constant 28
+sub
+push this 1
+push constant 12
+sub
+push this 0
+push constant 26
+sub
+push this 1
+push constant 8
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 26
+sub
+push this 1
+push constant 2
+add
+push this 0
+push constant 20
+sub
+push this 1
+push constant 4
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 26
+sub
+push this 1
+push constant 4
+add
+push this 0
+push constant 24
+sub
+push this 1
+push constant 10
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 22
+sub
+push this 1
+push constant 4
+add
+push this 0
+push constant 20
+sub
+push this 1
+push constant 10
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 26
+add
+push this 1
+push constant 12
+sub
+push this 0
+push constant 28
+add
+push this 1
+push constant 8
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 20
+add
+push this 1
+push constant 2
+add
+push this 0
+push constant 26
+add
+push this 1
+push constant 4
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 20
+add
+push this 1
+push constant 4
+add
+push this 0
+push constant 22
+add
+push this 1
+push constant 10
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 24
+add
+push this 1
+push constant 4
+add
+push this 0
+push constant 26
+add
+push this 1
+push constant 10
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
 push this 1
 push constant 18
 call Screen.drawCircle 3

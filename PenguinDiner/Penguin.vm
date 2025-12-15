@@ -373,143 +373,107 @@ call Screen.drawRectangle 4
 pop temp 0
 push constant 0
 return
-function Penguin.moveUp 4
+function Penguin.moveUp 2
 push argument 0
 pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 1
+push local 0
+sub
+pop local 1
+push local 1
 call GameConfig.getPenguinMinY 0
 gt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push this 1
-pop local 2
 push pointer 0
 call Penguin.erase 1
 pop temp 0
-push this 1
-push local 0
-sub
+push local 1
 pop this 1
-push pointer 0
-call Penguin.draw 1
-pop temp 0
-push pointer 0
-push argument 1
-push argument 2
-push argument 3
-push argument 4
-push this 0
-push local 2
-call Penguin.redrawNearbyObjects 7
-pop temp 0
+push constant 0
+not
+return
 label IF_FALSE0
 push constant 0
 return
-function Penguin.moveDown 4
+function Penguin.moveDown 2
 push argument 0
 pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 1
+push local 0
+add
+pop local 1
+push local 1
 call GameConfig.getPenguinMaxY 0
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push this 1
-pop local 2
 push pointer 0
 call Penguin.erase 1
 pop temp 0
-push this 1
-push local 0
-add
+push local 1
 pop this 1
-push pointer 0
-call Penguin.draw 1
-pop temp 0
-push pointer 0
-push argument 1
-push argument 2
-push argument 3
-push argument 4
-push this 0
-push local 2
-call Penguin.redrawNearbyObjects 7
-pop temp 0
+push constant 0
+not
+return
 label IF_FALSE0
 push constant 0
 return
-function Penguin.moveLeft 4
+function Penguin.moveLeft 2
 push argument 0
 pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 0
+push local 0
+sub
+pop local 1
+push local 1
 call GameConfig.getPenguinMinX 0
 gt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push this 0
-pop local 2
 push pointer 0
 call Penguin.erase 1
 pop temp 0
-push this 0
-push local 0
-sub
+push local 1
 pop this 0
-push pointer 0
-call Penguin.draw 1
-pop temp 0
-push pointer 0
-push argument 1
-push argument 2
-push argument 3
-push argument 4
-push local 2
-push this 1
-call Penguin.redrawNearbyObjects 7
-pop temp 0
+push constant 0
+not
+return
 label IF_FALSE0
 push constant 0
 return
-function Penguin.moveRight 4
+function Penguin.moveRight 2
 push argument 0
 pop pointer 0
 call GameConfig.getPenguinMoveStep 0
 pop local 0
 push this 0
+push local 0
+add
+pop local 1
+push local 1
 call GameConfig.getPenguinMaxX 0
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push this 0
-pop local 2
 push pointer 0
 call Penguin.erase 1
 pop temp 0
-push this 0
-push local 0
-add
+push local 1
 pop this 0
-push pointer 0
-call Penguin.draw 1
-pop temp 0
-push pointer 0
-push argument 1
-push argument 2
-push argument 3
-push argument 4
-push local 2
-push this 1
-call Penguin.redrawNearbyObjects 7
-pop temp 0
+push constant 0
+not
+return
 label IF_FALSE0
 push constant 0
 return
@@ -659,6 +623,78 @@ add
 pop local 0
 goto WHILE_EXP1
 label WHILE_END1
+push constant 0
+pop local 0
+label WHILE_EXP2
+push local 0
+push argument 4
+lt
+not
+if-goto WHILE_END2
+push local 0
+push argument 3
+add
+pop pointer 1
+push that 0
+pop local 4
+push local 4
+push constant 0
+eq
+not
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push local 4
+call Customer.getX 1
+push argument 5
+sub
+pop local 1
+push local 4
+call Customer.getY 1
+push argument 6
+sub
+pop local 2
+push local 1
+push constant 0
+lt
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push local 1
+neg
+pop local 1
+label IF_FALSE9
+push local 2
+push constant 0
+lt
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push local 2
+neg
+pop local 2
+label IF_FALSE10
+push local 1
+push constant 50
+lt
+push local 2
+push constant 50
+lt
+and
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push local 4
+call Customer.drawFood 1
+pop temp 0
+label IF_FALSE11
+label IF_FALSE8
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP2
+label WHILE_END2
 push constant 0
 return
 function Penguin.getX 0

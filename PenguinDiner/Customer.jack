@@ -6,6 +6,9 @@ class Customer {
     field int tableId;           // which table customer is at
     field int foodType;          // 0=burger, 1=pizza, 2=fish
     field int queuePosition;     // position in queue (0, 1, 2...)
+    field Customer pair;         // partner customer if part of a pair (null if solo)
+    field boolean isPairLeader;  // true if this is the main customer in a pair
+    field boolean seatedOnLeft;  // true if seated on left side of table, false if right
     
     /** Constructs a new Customer at given position */
     constructor Customer new(int Ax, int Ay, int Atable) {
@@ -14,6 +17,8 @@ class Customer {
         let state = 0;
         let patience = GameConfig.getWaitingPatience();
         let tableId = Atable;
+        let pair = null;  // Initialize as solo customer
+        let isPairLeader = false;
         do draw();
         return this;
     }
@@ -74,23 +79,7 @@ class Customer {
             do Screen.drawRectangle(x - 2, y - 10, x + 2, y - 8);
             do Screen.drawCircle(x, y - 12, 3);
         }
-        if (state = 3) {
-            // Eating - draw plate with food and utensils ON THE TABLE (to the side)
-            do Screen.setColor(true);
-            // Plate on table (to the left of customer)
-            do Screen.drawCircle(x - 15, y, 6);
-            do Screen.setColor(false);
-            do Screen.drawCircle(x - 15, y, 5);
-            // Food on plate
-            do Screen.setColor(true);
-            do Screen.drawCircle(x - 17, y - 1, 2);
-            do Screen.drawCircle(x - 13, y, 2);
-            // Fork (left of plate)
-            do Screen.drawRectangle(x - 23, y - 2, x - 22, y + 2);
-            do Screen.drawRectangle(x - 25, y - 2, x - 21, y - 1);
-            // Knife (right of plate)
-            do Screen.drawRectangle(x - 8, y - 2, x - 7, y + 2);
-        }
+        // State 3 (eating) - food is drawn separately by drawFood() method, NOT here!
         if (state = 4) {
             // Done - draw dollar sign $
             do Screen.setColor(true);
@@ -113,11 +102,11 @@ class Customer {
         
         do Screen.setColor(false);
         
-        // Calculate erase bounds
+        // Calculate erase bounds (extended to include food below table)
         let x1 = x - 26;
-        let x2 = x + 12;
+        let x2 = x + 26;
         let y1 = y - 15;
-        let y2 = y + 15;
+        let y2 = y + 18;
         
         // Clamp to screen bounds (0-511, 0-255)
         if (x1 < 0) { let x1 = 0; }
@@ -176,8 +165,7 @@ class Customer {
         if (state = 2) {
             let state = 3;
             let patience = GameConfig.getEatingTime();
-            do erase();
-            do draw();
+            // Don't call erase/draw here - let redrawAll() handle it
         }
         return;
     }
@@ -253,5 +241,70 @@ class Customer {
     /** Gets queue position */
     method int getQueuePosition() {
         return queuePosition;
+    }
+    
+    /** Sets this customer's pair partner */
+    method void setPair(Customer partner) {
+        let pair = partner;
+        return;
+    }
+    
+    /** Gets pair partner */
+    method Customer getPair() {
+        return pair;
+    }
+    
+    /** Check if customer is part of a pair */
+    method boolean isPair() {
+        return ~(pair = null);
+    }
+    
+    /** Sets if this customer is the pair leader */
+    method void setIsPairLeader(boolean leader) {
+        let isPairLeader = leader;
+        return;
+    }
+    
+    /** Check if this is the pair leader */
+    method boolean getIsPairLeader() {
+        return isPairLeader;
+    }
+    
+    /** Sets which side of table customer is seated on */
+    method void setSeatedOnLeft(boolean onLeft) {
+        let seatedOnLeft = onLeft;
+        return;
+    }
+    
+    /** Draws only the food (for eating state) - called after tables are drawn */
+    method void drawFood() {
+        if (state = 3) {
+            do Screen.setColor(true);
+            
+            if (seatedOnLeft) {
+                // Seated on LEFT - food on RIGHT
+                do Screen.drawCircle(x + 15, y, 6);
+                do Screen.setColor(false);
+                do Screen.drawCircle(x + 15, y, 5);
+                do Screen.setColor(true);
+                do Screen.drawCircle(x + 13, y - 1, 2);
+                do Screen.drawCircle(x + 17, y, 2);
+                do Screen.drawRectangle(x + 7, y - 2, x + 8, y + 2);
+                do Screen.drawRectangle(x + 22, y - 2, x + 23, y + 2);
+                do Screen.drawRectangle(x + 21, y - 2, x + 25, y - 1);
+            } else {
+                // Seated on RIGHT - food on LEFT
+                do Screen.drawCircle(x - 15, y, 6);
+                do Screen.setColor(false);
+                do Screen.drawCircle(x - 15, y, 5);
+                do Screen.setColor(true);
+                do Screen.drawCircle(x - 17, y - 1, 2);
+                do Screen.drawCircle(x - 13, y, 2);
+                do Screen.drawRectangle(x - 23, y - 2, x - 22, y + 2);
+                do Screen.drawRectangle(x - 25, y - 2, x - 21, y - 1);
+                do Screen.drawRectangle(x - 8, y - 2, x - 7, y + 2);
+            }
+        }
+        return;
     }
 }
