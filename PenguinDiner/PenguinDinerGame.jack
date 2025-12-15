@@ -1,0 +1,611 @@
+/** Implements the Penguin Diner game logic */
+class PenguinDinerGame {
+    field Penguin penguin;       // the player penguin
+    field Array tables;          // array of tables
+    field Array customers;       // array of customers
+    field Kitchen kitchen;       // the kitchen counter
+    field int numTables;         // number of tables
+    field int numCustomers;      // current number of ACTIVE customers
+    field int maxCustomers;      // maximum customers at once
+    field int totalCustomersServed; // total customers served (lifetime)
+    field int score;             // player's score
+    field int level;             // current level
+    field int customerTimer;     // timer for spawning customers
+    field boolean gameOver;      // game over flag
+    field boolean firstMove;     // tracks if player made first move
+    
+    /** Constructs a new Penguin Diner Game */
+    constructor PenguinDinerGame new() {
+        var int i;
+        var Table table;
+        
+        let penguin = Penguin.new(250, 200);
+        let numTables = GameConfig.getNumTables();
+        let numCustomers = 0;
+        let maxCustomers = GameConfig.getMaxCustomers();
+        let totalCustomersServed = 0;
+        let score = 0;
+        let level = 1;
+        let customerTimer = GameConfig.getInitialCustomerTimer();
+        let gameOver = false;
+        let firstMove = false;  // Player hasn't moved yet
+        
+        // Create tables array (flexible configuration)
+        let tables = Array.new(6);  // Max 6 tables
+        if (numTables = 2) {
+            let tables[0] = Table.new(180, 120, 0);
+            let tables[1] = Table.new(330, 120, 1);
+        }
+        if (numTables = 3) {
+            let tables[0] = Table.new(120, 120, 0);
+            let tables[1] = Table.new(256, 120, 1);
+            let tables[2] = Table.new(392, 120, 2);
+        }
+        if (numTables = 4) {
+            let tables[0] = Table.new(150, 90, 0);
+            let tables[1] = Table.new(360, 90, 1);
+            let tables[2] = Table.new(150, 150, 2);
+            let tables[3] = Table.new(360, 150, 3);
+        }
+        if (numTables = 5) {
+            let tables[0] = Table.new(100, 80, 0);
+            let tables[1] = Table.new(280, 80, 1);
+            let tables[2] = Table.new(100, 160, 2);
+            let tables[3] = Table.new(280, 160, 3);
+            let tables[4] = Table.new(420, 120, 4);
+        }
+        if (numTables = 6) {
+            let tables[0] = Table.new(100, 70, 0);
+            let tables[1] = Table.new(256, 70, 1);
+            let tables[2] = Table.new(412, 70, 2);
+            let tables[3] = Table.new(100, 180, 3);
+            let tables[4] = Table.new(256, 180, 4);
+            let tables[5] = Table.new(412, 180, 5);
+        }
+        
+        // Create customers array
+        let customers = Array.new(6);  // Max 6 customers
+        let i = 0;
+        while (i < 6) {
+            let customers[i] = null;
+            let i = i + 1;
+        }
+        
+        // Create kitchen with slots matching number of tables
+        let kitchen = Kitchen.new(GameConfig.getKitchenX(), GameConfig.getKitchenY(), numTables);
+        
+        // Draw kitchen after creation
+        do kitchen.draw();
+        
+        // Draw UI
+        do drawUI();
+        
+        return this;
+    }
+    
+    /** Disposes this game */
+    method void dispose() {
+        var int i;
+        var Table table;
+        var Customer customer;
+        
+        do penguin.dispose();
+        
+        // Dispose tables
+        let i = 0;
+        while (i < numTables) {
+            let table = tables[i];
+            do table.dispose();
+            let i = i + 1;
+        }
+        do tables.dispose();
+        
+        // Dispose customers
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                do customer.dispose();
+            }
+            let i = i + 1;
+        }
+        do customers.dispose();
+        
+        // Dispose kitchen
+        do kitchen.dispose();
+        
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Draws the UI elements */
+    method void drawUI() {
+        do Output.moveCursor(0, 0);
+        do Output.printString("PENGUIN DINER");
+        do Output.moveCursor(0, 25);
+        do Output.printString("Score: ");
+        do Output.printInt(score);
+        do Output.moveCursor(0, 40);
+        do Output.printString("Active: ");
+        do Output.printInt(numCustomers);
+        do Output.moveCursor(0, 52);
+        do Output.printString("Served: ");
+        do Output.printInt(totalCustomersServed);
+        do Output.moveCursor(1, 0);
+        do Output.printString("Controls: Arrows=Move, S=Seat, O=Order, P=Pickup, F=Serve, C=Collect, Q=Quit");
+        
+        // Show ready message
+        do Output.moveCursor(10, 20);
+        do Output.printString("*** READY TO PLAY! ***");
+        do Output.moveCursor(11, 15);
+        do Output.printString("Use ARROW KEYS to move penguin!");
+        
+        return;
+    }
+    
+    /** Updates the score display */
+    method void updateScore() {
+        do Output.moveCursor(0, 32);
+        do Output.printInt(score);
+        do Output.printString("  ");
+        do Output.moveCursor(0, 48);
+        do Output.printInt(numCustomers);
+        do Output.printString(" ");
+        do Output.moveCursor(0, 60);
+        do Output.printInt(totalCustomersServed);
+        do Output.printString("  ");
+        return;
+    }
+    
+    /** Spawns a new customer in queue (vertical column) */
+    method void spawnCustomer() {
+        var int i, queuePos, queueY, checkPos;
+        var Customer customer;
+        var boolean positionTaken;
+        var Array queuePositions;
+        
+        // Only spawn if there's space for more customers
+        if (numCustomers < maxCustomers) {
+            // Create array to track which queue positions are taken
+            let queuePositions = Array.new(maxCustomers);
+            let i = 0;
+            while (i < maxCustomers) {
+                let queuePositions[i] = 0;  // 0 = free, 1 = taken
+                let i = i + 1;
+            }
+            
+            // Mark taken queue positions
+            let i = 0;
+            while (i < maxCustomers) {
+                let customer = customers[i];
+                if (~(customer = null)) {
+                    if (customer.getState() = 0) {  // waiting in queue
+                        let checkPos = customer.getQueuePosition();
+                        if ((checkPos > -1) & (checkPos < maxCustomers)) {
+                            let queuePositions[checkPos] = 1;  // mark as taken
+                        }
+                    }
+                }
+                let i = i + 1;
+            }
+            
+            // Find first free queue position
+            let queuePos = 0;
+            while (queuePos < maxCustomers) {
+                if (queuePositions[queuePos] = 0) {
+                    // Found free position!
+                    let queueY = GameConfig.getQueueStartY() + (queuePos * GameConfig.getQueueSpacing());
+                    
+                    // Find empty customer slot
+                    let i = 0;
+                    while (i < maxCustomers) {
+                        let customer = customers[i];
+                        if (customer = null) {
+                            // Create customer at this queue position
+                            let customer = Customer.new(GameConfig.getQueueX(), queueY, 0);
+                            do customer.setQueuePosition(queuePos);
+                            let customers[i] = customer;
+                            let numCustomers = numCustomers + 1;
+                            do updateScore();
+                            let i = maxCustomers;  // exit
+                        }
+                        let i = i + 1;
+                    }
+                    
+                    let queuePos = maxCustomers;  // exit outer loop
+                }
+                let queuePos = queuePos + 1;
+            }
+            
+            do queuePositions.dispose();
+        }
+        return;
+    }
+    
+    /** Check if penguin is near a position */
+    method boolean isNear(int targetX, int targetY) {
+        var int dx, dy, nearDist;
+        let nearDist = GameConfig.getNearDistance();
+        let dx = penguin.getX() - targetX;
+        let dy = penguin.getY() - targetY;
+        
+        if (dx < 0) {
+            let dx = -dx;
+        }
+        if (dy < 0) {
+            let dy = -dy;
+        }
+        
+        return (dx < nearDist) & (dy < nearDist);
+    }
+    
+    /** REMOVED - customers no longer move when someone is seated */
+    method void updateQueue() {
+        // Do nothing - customers stay in their positions
+        return;
+    }
+    
+    /** Handle seating action - finds NEAREST waiting customer */
+    method void handleSeat() {
+        var int i, dx, dy, dist, minDist, nearestCustomerIndex;
+        var Customer customer, nearestCustomer;
+        var Table table;
+        var int tableId, nearDist;
+        var boolean foundCustomer;
+        
+        let minDist = 10000;  // Large number
+        let nearestCustomerIndex = -1;
+        let foundCustomer = false;
+        let nearDist = GameConfig.getNearDistance();
+        
+        // Find the NEAREST waiting customer within range
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                if (customer.getState() = 0) {
+                    // Calculate distance to this customer (same as isNear logic)
+                    let dx = penguin.getX() - customer.getX();
+                    let dy = penguin.getY() - customer.getY();
+                    if (dx < 0) { let dx = -dx; }
+                    if (dy < 0) { let dy = -dy; }
+                    
+                    // Check if customer is within range (both dx AND dy must be < nearDist)
+                    if ((dx < nearDist) & (dy < nearDist)) {
+                        let dist = dx + dy;  // Manhattan distance for comparison
+                        
+                        // If this is the nearest customer we've seen
+                        if (dist < minDist) {
+                            let minDist = dist;
+                            let nearestCustomerIndex = i;
+                            let foundCustomer = true;
+                        }
+                    }
+                }
+            }
+            let i = i + 1;
+        }
+        
+        // If we found a nearby customer, seat them
+        if (foundCustomer) {
+            let nearestCustomer = customers[nearestCustomerIndex];
+            
+            // Find first empty table
+            let tableId = 0;
+            while (tableId < numTables) {
+                let table = tables[tableId];
+                if (~(table.isOccupied())) {
+                    do table.seatCustomer(nearestCustomer);
+                    do nearestCustomer.moveTo(table.getX() + 20, table.getY());
+                    do nearestCustomer.seat();
+                    do updateQueue();  // Update remaining queue positions
+                    do redrawAll();  // Redraw all elements after moving customer
+                    let tableId = numTables; // exit
+                }
+                let tableId = tableId + 1;
+            }
+        }
+        
+        return;
+    }
+    
+    /** Handle take order action - sends order to kitchen (NEW workflow!) */
+    method void handleTakeOrder() {
+        var int i, foodType;
+        var Customer customer;
+        
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                if (customer.getState() = 1) {
+                    if (isNear(customer.getX(), customer.getY())) {
+                        // Pseudo-random food selection (0, 1, or 2)
+                        let foodType = (totalCustomersServed + i) - ((totalCustomersServed + i) / 3 * 3);
+                        
+                        // Assign food type and change state
+                        do customer.setFoodType(foodType);
+                        do customer.takeOrder();
+                        
+                        // Send order to kitchen (NOT to penguin!)
+                        do kitchen.addOrder(foodType);
+                        
+                        let i = maxCustomers; // exit
+                    }
+                }
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+    
+    /** Handle pickup food from kitchen (NEW!) */
+    method void handlePickupFood() {
+        var int slot, foodType, slotX, maxSlots;
+        var boolean pickedUp;
+        
+        // Check if both hands are already full
+        if (penguin.bothHandsFull()) {
+            return;  // Can't pick up more!
+        }
+        
+        let maxSlots = kitchen.getMaxSlots();
+        
+        // Check each food slot individually
+        let slot = 0;
+        while (slot < maxSlots) {
+            // Get slot position dynamically from kitchen
+            let slotX = kitchen.getSlotX(slot);
+            
+            // Check if penguin is near this slot
+            if (isNear(slotX, kitchen.getY() - 15)) {
+                // Try to pickup from this slot
+                let foodType = kitchen.pickupFood(slot);
+                if (~(foodType = -1)) {
+                    let pickedUp = penguin.pickupOrder(foodType);
+                    if (pickedUp) {
+                        let slot = maxSlots; // exit loop
+                    }
+                }
+            }
+            
+            let slot = slot + 1;
+        }
+        return;
+    }
+    
+    /** Handle serve food action - serve to ANY customer waiting for food */
+    method void handleServe() {
+        var int i;
+        var Customer customer;
+        
+        if (penguin.getHasOrder()) {
+            let i = 0;
+            while (i < maxCustomers) {
+                let customer = customers[i];
+                if (~(customer = null)) {
+                    if (customer.getState() = 2) {
+                        if (isNear(customer.getX(), customer.getY())) {
+                            do customer.serveFood();
+                            do penguin.deliverOrder();
+                            let i = maxCustomers; // exit
+                        }
+                    }
+                }
+                let i = i + 1;
+            }
+        }
+        return;
+    }
+    
+    /** Handle collect payment action */
+    method void handleCollect() {
+        var int i;
+        var Customer customer;
+        var Table table;
+        var int payment;
+        var int tableId;
+        
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                if (customer.isReadyToLeave()) {
+                    if (isNear(customer.getX(), customer.getY())) {
+                        let payment = customer.collectPayment();
+                        let score = score + payment;
+                        let totalCustomersServed = totalCustomersServed + 1;
+                        
+                        // Find and clear table
+                        let tableId = 0;
+                        while (tableId < numTables) {
+                            let table = tables[tableId];
+                            if (table.getCustomer() = customer) {
+                                do table.removeCustomer();
+                                let tableId = numTables; // exit
+                            }
+                            let tableId = tableId + 1;
+                        }
+                        
+                        do customer.erase();
+                        do customer.dispose();
+                        let customers[i] = null;
+                        let numCustomers = numCustomers - 1;
+                        do updateScore();  // Update display AFTER decrementing counter
+                        do redrawAll();  // Redraw all elements after customer leaves
+                        let i = maxCustomers; // exit
+                    }
+                }
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+    
+    /** Redraws all game elements - proper layering: kitchen, tables, customers, penguin */
+    method void redrawAll() {
+        var int i;
+        var Table table;
+        var Customer customer;
+        
+        // Layer 0: Redraw kitchen (bottom/background)
+        do kitchen.draw();
+        
+        // Layer 1: Redraw all tables
+        let i = 0;
+        while (i < numTables) {
+            let table = tables[i];
+            do table.draw();
+            let i = i + 1;
+        }
+        
+        // Layer 2: Redraw all customers (on top of tables)
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                do customer.draw();
+            }
+            let i = i + 1;
+        }
+        
+        // Layer 3: Redraw penguin (foreground - on top of everything)
+        do penguin.draw();
+        
+        return;
+    }
+    
+    /** Update game state */
+    method void update() {
+        var int i, tableId;
+        var Customer customer;
+        var Table table;
+        
+        // Update kitchen (food cooking)
+        do kitchen.update();
+        
+        // Update customer timer
+        let customerTimer = customerTimer + 1;
+        if (customerTimer > GameConfig.getCustomerSpawnInterval()) {
+            do spawnCustomer();
+            let customerTimer = 0;
+        }
+        
+        // Update all customers
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                do customer.update();
+                
+                // Check if customer left angry (patience < 1 and not eating/done)
+                if (customer.leftAngry()) {
+                    // Only dispose if NOT in eating or done state
+                    if ((customer.getState() < 3) & (customer.getState() > -1)) {
+                        do customer.erase();
+                        let customers[i] = null;
+                        let numCustomers = numCustomers - 1;
+                        let score = score - GameConfig.getAngryCustomerPenalty();
+                        
+                        // Clear table if customer was seated
+                        let tableId = 0;
+                        while (tableId < numTables) {
+                            let table = tables[tableId];
+                            if (table.getCustomer() = customer) {
+                                do table.removeCustomer();
+                                let tableId = numTables;
+                            }
+                            let tableId = tableId + 1;
+                        }
+                        
+                        do customer.dispose();
+                        do updateScore();
+                        do redrawAll();
+                    }
+                }
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+    
+    /** Clears the ready message */
+    method void clearReadyMessage() {
+        // Clear the ready message lines
+        do Output.moveCursor(10, 0);
+        do Output.printString("                                                            ");
+        do Output.moveCursor(11, 0);
+        do Output.printString("                                                            ");
+        // Redraw all game elements to restore anything the message might have covered
+        do redrawAll();
+        return;
+    }
+    
+    /** Runs the game */
+    method void run() {
+        var char key;
+        var boolean exit;
+        
+        let exit = false;
+        
+        while (~exit) {
+            // Check for key press
+            let key = Keyboard.keyPressed();
+            
+            // Handle keys and enable continuous movement
+            if (key = 81) { let exit = true; }           // Q key - quit
+            
+            // Arrow keys - clear message on first use and move continuously
+            if (key = 131) {                              // up arrow
+                if (~firstMove) {
+                    do clearReadyMessage();
+                    let firstMove = true;
+                }
+                do penguin.moveUp(tables, numTables, customers, maxCustomers);
+            }
+            if (key = 133) {                              // down arrow
+                if (~firstMove) {
+                    do clearReadyMessage();
+                    let firstMove = true;
+                }
+                do penguin.moveDown(tables, numTables, customers, maxCustomers);
+            }
+            if (key = 130) {                              // left arrow
+                if (~firstMove) {
+                    do clearReadyMessage();
+                    let firstMove = true;
+                }
+                do penguin.moveLeft(tables, numTables, customers, maxCustomers);
+            }
+            if (key = 132) {                              // right arrow
+                if (~firstMove) {
+                    do clearReadyMessage();
+                    let firstMove = true;
+                }
+                do penguin.moveRight(tables, numTables, customers, maxCustomers);
+            }
+            
+            // Action keys (press once)
+            if ((key = 83) | (key = 79) | (key = 80) | (key = 70) | (key = 67)) {
+                if (key = 83) { do handleSeat(); }        // S key - seat
+                if (key = 79) { do handleTakeOrder(); }   // O key - order
+                if (key = 80) { do handlePickupFood(); }  // P key - pickup
+                if (key = 70) { do handleServe(); }       // F key - serve
+                if (key = 67) { do handleCollect(); }     // C key - collect
+                
+                // Wait for key release for action keys
+                while (~(key = 0)) {
+                    let key = Keyboard.keyPressed();
+                    do update();
+                    do Sys.wait(5);
+                }
+            }
+            
+            // Update game state
+            do update();
+            do Sys.wait(GameConfig.getGameLoopDelay());
+        }
+        
+        return;
+    }
+}

@@ -1,0 +1,205 @@
+/** Implements the kitchen counter where food is prepared */
+class Kitchen {
+    field int x, y;              // position on screen
+    field Array foodItems;       // array of preparing food items
+    field int maxFoodSlots;      // maximum food items being prepared
+    
+    /** Constructs a new Kitchen */
+    constructor Kitchen new(int Ax, int Ay, int numSlots) {
+        var int i;
+        let x = Ax;
+        let y = Ay;
+        let maxFoodSlots = numSlots;  // Match number of tables
+        
+        let foodItems = Array.new(6);  // Max 6 slots
+        let i = 0;
+        while (i < 6) {
+            let foodItems[i] = null;
+            let i = i + 1;
+        }
+        
+        // Don't draw in constructor - let game draw after init
+        return this;
+    }
+    
+    /** Disposes this kitchen */
+    method void dispose() {
+        var int i;
+        var FoodItem food;
+        
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (~(food = null)) {
+                do food.dispose();
+            }
+            let i = i + 1;
+        }
+        do foodItems.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Draws the kitchen counter */
+    method void draw() {
+        var int i, slotX, slotSpacing, x1, x2, y1, y2;
+        var FoodItem food;
+        
+        // Safety check coordinates
+        if ((x < 110) | (x > 400) | (y < 15) | (y > 240)) {
+            return;  // Invalid kitchen position
+        }
+        
+        // Draw wide counter (desk) with bounds checking
+        do Screen.setColor(true);
+        let x1 = x - 100;
+        let x2 = x + 100;
+        let y1 = y - 5;
+        let y2 = y + 5;
+        
+        // Clamp to screen bounds
+        if (x1 < 0) { let x1 = 0; }
+        if (x2 > 511) { let x2 = 511; }
+        if (y1 < 0) { let y1 = 0; }
+        if (y2 > 255) { let y2 = 255; }
+        
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        
+        // Draw counter top edge
+        do Screen.setColor(false);
+        do Screen.drawLine(x1, y1, x2, y1);
+        
+        // Draw food slots markers dynamically based on maxFoodSlots
+        do Screen.setColor(true);
+        if (maxFoodSlots < 7) {
+            let slotSpacing = 180 / (maxFoodSlots + 1);
+        } else {
+            let slotSpacing = 25;
+        }
+        
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let slotX = (x - 90) + ((i + 1) * slotSpacing);
+            // Make sure slot marker is within screen bounds
+            if ((slotX > 10) & (slotX < 501) & (y > 8) & (y < 250)) {
+                do Screen.drawRectangle(slotX - 5, y - 3, slotX + 5, y + 3);
+            }
+            let i = i + 1;
+        }
+        
+        // Draw any food items
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (~(food = null)) {
+                do food.draw();
+            }
+            let i = i + 1;
+        }
+        
+        return;
+    }
+    
+    /** Adds a food order to kitchen (returns slot index or -1 if full) */
+    method int addOrder(int foodType) {
+        var int i, slotX, slotSpacing;
+        var FoodItem food;
+        
+        // Find empty slot
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (food = null) {
+                // Calculate position for this slot dynamically
+                let slotSpacing = 180 / (maxFoodSlots + 1);
+                let slotX = (x - 90) + ((i + 1) * slotSpacing);
+                
+                let foodItems[i] = FoodItem.new(slotX, y - 15, foodType);
+                return i;
+            }
+            let i = i + 1;
+        }
+        
+        return -1;  // Kitchen full
+    }
+    
+    /** Updates all food items being prepared */
+    method void update() {
+        var int i;
+        var FoodItem food;
+        
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (~(food = null)) {
+                do food.update();
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+    
+    /** Checks if any food is ready and returns its slot (-1 if none ready) */
+    method int getReadyFoodSlot() {
+        var int i;
+        var FoodItem food;
+        
+        let i = 0;
+        while (i < maxFoodSlots) {
+            let food = foodItems[i];
+            if (~(food = null)) {
+                if (food.isReady()) {
+                    return i;
+                }
+            }
+            let i = i + 1;
+        }
+        return -1;
+    }
+    
+    /** Picks up food from specified slot (returns food type) */
+    method int pickupFood(int slot) {
+        var FoodItem food;
+        var int type;
+        
+        if ((slot < 0) | (slot > (maxFoodSlots - 1))) {
+            return -1;
+        }
+        
+        let food = foodItems[slot];
+        if (food = null) {
+            return -1;
+        }
+        
+        let type = food.getFoodType();
+        do food.dispose();
+        let foodItems[slot] = null;
+        do draw();  // Redraw to clear the food
+        return type;
+    }
+    
+    /** Gets slot X position for a given slot index */
+    method int getSlotX(int slot) {
+        var int slotSpacing;
+        if ((slot < 0) | (slot > (maxFoodSlots - 1))) {
+            return x;
+        }
+        let slotSpacing = 180 / (maxFoodSlots + 1);
+        return (x - 90) + ((slot + 1) * slotSpacing);
+    }
+    
+    /** Gets number of slots */
+    method int getMaxSlots() {
+        return maxFoodSlots;
+    }
+    
+    /** Gets X position */
+    method int getX() {
+        return x;
+    }
+    
+    /** Gets Y position */
+    method int getY() {
+        return y;
+    }
+}

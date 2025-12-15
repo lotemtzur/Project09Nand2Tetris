@@ -1,0 +1,96 @@
+/** Implements a restaurant table */
+class Table {
+    field int x, y;              // position on screen
+    field boolean occupied;      // is table occupied?
+    field Customer customer;     // customer at this table (null if empty)
+    field int id;                // table identifier
+    
+    /** Constructs a new Table at given position */
+    constructor Table new(int Ax, int Ay, int Aid) {
+        let x = Ax;
+        let y = Ay;
+        let occupied = false;
+        let customer = null;
+        let id = Aid;
+        do draw();
+        return this;
+    }
+    
+    /** Disposes this table */
+    method void dispose() {
+        if (~(customer = null)) {
+            do customer.dispose();
+        }
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Draws the table on screen */
+    method void draw() {
+        // Draw table top (large circle)
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y, 18);
+        
+        // Draw white table surface
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, 16);
+        
+        // Draw table edge (ring)
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y, 18);
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, 15);
+        
+        // Draw table leg (center)
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x - 2, y + 15, x + 2, y + 22);
+        
+        // Draw table base
+        do Screen.drawRectangle(x - 5, y + 22, x + 5, y + 24);
+        
+        return;
+    }
+    
+    /** Seat a customer at this table */
+    method void seatCustomer(Customer c) {
+        let customer = c;
+        let occupied = true;
+        return;
+    }
+    
+    /** Remove customer from table */
+    method void removeCustomer() {
+        if (~(customer = null)) {
+            do customer.erase();
+            do customer.dispose();
+            let customer = null;
+        }
+        let occupied = false;
+        return;
+    }
+    
+    /** Gets X position */
+    method int getX() {
+        return x;
+    }
+    
+    /** Gets Y position */
+    method int getY() {
+        return y;
+    }
+    
+    /** Check if table is occupied */
+    method boolean isOccupied() {
+        return occupied;
+    }
+    
+    /** Get customer at table */
+    method Customer getCustomer() {
+        return customer;
+    }
+    
+    /** Get table ID */
+    method int getId() {
+        return id;
+    }
+}

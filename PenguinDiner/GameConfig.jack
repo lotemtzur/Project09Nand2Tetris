@@ -1,0 +1,154 @@
+/** 
+ * GameConfig - Centralized configuration for Penguin Diner
+ * Modify these values to adjust game balance and speed
+ */
+class GameConfig {
+    
+    // ===== GAME SPEED SETTINGS =====
+    
+    /** Game loop delay in milliseconds (lower = faster) */
+    function int getGameLoopDelay() {
+        return 40;  // 40ms = 25 updates/second
+    }
+    
+    /** Penguin movement step size in pixels */
+    function int getPenguinMoveStep() {
+        return 4;  // 2 pixels per step
+    }
+    
+    // ===== CUSTOMER SPAWN SETTINGS =====
+    
+    /** Cycles between customer spawns (higher = longer wait) */
+    function int getCustomerSpawnInterval() {
+        return 100;  // ~8 seconds between customers at 40ms loop
+    }
+    
+    /** Initial timer value (set high to spawn first customer quickly) */
+    function int getInitialCustomerTimer() {
+        return 95;  // First customer spawns after 5 cycles
+    }
+    
+    // ===== CUSTOMER PATIENCE SETTINGS =====
+    
+    /** Patience when customer is waiting at entrance (state 0) */
+    function int getWaitingPatience() {
+        return 2000;  // ~80 seconds at 40ms loop
+    }
+    
+    /** Patience after being seated, waiting for order (state 1) */
+    function int getSeatedPatience() {
+        return 1500;  // ~60 seconds at 40ms loop
+    }
+    
+    /** Patience after ordering, waiting for food (state 2) */
+    function int getOrderedPatience() {
+        return 2000;  // ~80 seconds at 40ms loop
+    }
+    
+    /** Time customer spends eating (state 3) - FULL DURATION */
+    function int getEatingTime() {
+        return 200;  // ~60 seconds at 40ms loop - Customer eats for this ENTIRE time
+    }
+    
+    /** Patience after finishing eating (state 4 - ready to pay) */
+    function int getEatingDoneThreshold() {
+        return 1500;  // ~20 seconds to collect payment after eating is done
+    }
+    
+    // ===== SCORING SETTINGS =====
+    
+    /** Penalty for angry customer leaving */
+    function int getAngryCustomerPenalty() {
+        return 5;  // -5 points
+    }
+    
+    /** Divider for calculating tip from patience */
+    function int getTipDivider() {
+        return 20;  // tip = patience / 20
+    }
+    
+    /** Minimum tip amount */
+    function int getMinTip() {
+        return 1;  // At least 1 point
+    }
+    
+    /** Maximum tip amount */
+    function int getMaxTip() {
+        return 10;  // At most 10 points
+    }
+    
+    // ===== GAMEPLAY SETTINGS =====
+    
+    /** Maximum number of customers at once */
+    function int getMaxCustomers() {
+        return 6;  // Can be more than tables to create a queue! (Max 6)
+    }
+    
+    /** Number of tables in restaurant (supports 2-5 tables) */
+    function int getNumTables() {
+        return 4;  // 4 tables (NOTE: 6 tables may cause coordinate issues, stick to 2-5)
+    }
+    
+    /** Distance for "near" detection in pixels */
+    function int getNearDistance() {
+        return 40;  // Must be within 40 pixels to interact
+    }
+    
+    // ===== QUEUE SETTINGS =====
+    
+    /** X position for queue (vertical column) */
+    function int getQueueX() {
+        return 30;  // X position for queue column
+    }
+    
+    /** Y position for queue start */
+    function int getQueueStartY() {
+        return 60;  // Starting Y position for queue
+    }
+    
+    /** Spacing between customers in queue (vertical) */
+    function int getQueueSpacing() {
+        return 30;  // 30 pixels between each customer vertically
+    }
+    
+    // ===== FOOD PREPARATION SETTINGS =====
+    
+    /** Time for food preparation */
+    function int getFoodPrepTime() {
+        return 300;  // ~12 seconds to prepare food
+    }
+    
+    /** Kitchen counter X position */
+    function int getKitchenX() {
+        return 256;  // Center of screen
+    }
+    
+    /** Kitchen counter Y position */
+    function int getKitchenY() {
+        return 230;  // Bottom of screen
+    }
+    
+    // ===== NOTES ON TUNING =====
+    // 
+    // To make game FASTER:
+    // - Decrease getGameLoopDelay() (e.g., 30ms)
+    // - Increase getPenguinMoveStep() (e.g., 3 or 4)
+    // - Decrease getCustomerSpawnInterval() (e.g., 150)
+    // - Decrease all patience values
+    //
+    // To make game SLOWER/EASIER:
+    // - Increase getGameLoopDelay() (e.g., 50ms)
+    // - Decrease getPenguinMoveStep() (e.g., 1)
+    // - Increase getCustomerSpawnInterval() (e.g., 300)
+    // - Increase all patience values
+    //
+    // To make game HARDER:
+    // - Decrease all patience values
+    // - Increase getCustomerSpawnInterval() less
+    // - Increase getAngryCustomerPenalty()
+    //
+    // To make game EASIER:
+    // - Increase all patience values
+    // - Increase getCustomerSpawnInterval() more
+    // - Decrease getAngryCustomerPenalty()
+}

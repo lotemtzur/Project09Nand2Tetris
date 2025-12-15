@@ -1,0 +1,13 @@
+/** Initializes and starts the Penguin Diner game */
+class Main {
+    function void main() {
+        var PenguinDinerGame game;
+        
+        // Create and run the game
+        let game = PenguinDinerGame.new();
+        do game.run();
+        do game.dispose();
+        
+        return;
+    }
+}

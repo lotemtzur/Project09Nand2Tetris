@@ -1,0 +1,289 @@
+/** Implements the player-controlled penguin waitress */
+class Penguin {
+    field int x, y;           // position on screen
+    field int size;           // size of the penguin sprite
+    field int leftHandFood;   // food in left hand (-1=empty, 0=burger, 1=pizza, 2=fish)
+    field int rightHandFood;  // food in right hand (-1=empty, 0=burger, 1=pizza, 2=fish)
+    
+    /** Constructs a new Penguin at given position */
+    constructor Penguin new(int Ax, int Ay) {
+        let x = Ax;
+        let y = Ay;
+        let size = 12;
+        let leftHandFood = -1;   // -1 means empty
+        let rightHandFood = -1;  // -1 means empty
+        do draw();
+        return this;
+    }
+    
+    /** Disposes this penguin */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Draws the penguin on screen */
+    method void draw() {
+        // Draw penguin body (black oval)
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y, 8);
+        
+        // Draw white belly
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y + 1, 5);
+        
+        // Draw black head
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y - 6, 5);
+        
+        // Draw white face
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y - 5, 3);
+        
+        // Draw eyes (black dots)
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x - 2, y - 6, x - 1, y - 5);
+        do Screen.drawRectangle(x + 1, y - 6, x + 2, y - 5);
+        
+        // Draw beak (orange-ish - small rectangle)
+        do Screen.drawRectangle(x - 1, y - 4, x + 1, y - 3);
+        
+        // Draw feet (orange-ish - small rectangles)
+        do Screen.drawRectangle(x - 5, y + 8, x - 3, y + 9);
+        do Screen.drawRectangle(x + 3, y + 8, x + 5, y + 9);
+        
+        // Draw wings
+        do Screen.drawRectangle(x - 9, y - 1, x - 7, y + 3);
+        do Screen.drawRectangle(x + 7, y - 1, x + 9, y + 3);
+        
+        // Draw LEFT hand food
+        if (~(leftHandFood = -1)) {
+            do drawFoodInHand(x - 15, y - 2, leftHandFood);
+        }
+        
+        // Draw RIGHT hand food
+        if (~(rightHandFood = -1)) {
+            do drawFoodInHand(x + 15, y - 2, rightHandFood);
+        }
+        
+        return;
+    }
+    
+    /** Draws a food item at specified position */
+    method void drawFoodInHand(int foodX, int foodY, int foodType) {
+        do Screen.setColor(true);
+        
+        if (foodType = 0) {
+            // Burger - small version
+            do Screen.drawRectangle(foodX - 3, foodY, foodX + 3, foodY + 1);
+            do Screen.drawRectangle(foodX - 3, foodY + 2, foodX + 3, foodY + 3);
+            do Screen.drawRectangle(foodX - 3, foodY + 4, foodX + 3, foodY + 5);
+        }
+        
+        if (foodType = 1) {
+            // Pizza - small triangle
+            do Screen.drawLine(foodX, foodY, foodX - 3, foodY + 5);
+            do Screen.drawLine(foodX, foodY, foodX + 3, foodY + 5);
+            do Screen.drawLine(foodX - 3, foodY + 5, foodX + 3, foodY + 5);
+        }
+        
+        if (foodType = 2) {
+            // Fish - small version
+            do Screen.drawCircle(foodX, foodY + 2, 3);
+            do Screen.drawLine(foodX - 3, foodY + 2, foodX - 5, foodY + 1);
+            do Screen.drawLine(foodX - 3, foodY + 2, foodX - 5, foodY + 3);
+        }
+        
+        return;
+    }
+    /** Erases the penguin from screen */
+    method void erase() {
+        do Screen.setColor(false);
+        // Wider erase area to cover food in both hands
+        do Screen.drawRectangle(x - 20, y - 12, x + 20, y + 10);
+        return;
+    }
+    
+    /** Moves penguin up */
+    method void moveUp(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, i, oldY;
+        var Table table;
+        let step = GameConfig.getPenguinMoveStep();
+        if (y > 40) {  // Keep below 2 rows of text (32px) + margin
+            let oldY = y;
+            do erase();
+            let y = y - step;
+            do draw();
+            // Redraw any tables and customers that might have been erased
+            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, x, oldY);
+        }
+        return;
+    }
+    
+    /** Moves penguin down */
+    method void moveDown(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, i, oldY;
+        var Table table;
+        let step = GameConfig.getPenguinMoveStep();
+        if (y < 235) {  // Reduced from 240 for safety
+            let oldY = y;
+            do erase();
+            let y = y + step;
+            do draw();
+            // Redraw any tables and customers that might have been erased
+            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, x, oldY);
+        }
+        return;
+    }
+    
+    /** Moves penguin left */
+    method void moveLeft(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, i, oldX;
+        var Table table;
+        let step = GameConfig.getPenguinMoveStep();
+        if (x > 25) {  // Increased from 15 - with food in left hand (x-20), need more space
+            let oldX = x;
+            do erase();
+            let x = x - step;
+            do draw();
+            // Redraw any tables and customers that might have been erased
+            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, oldX, y);
+        }
+        return;
+    }
+    
+    /** Moves penguin right */
+    method void moveRight(Array tables, int numTables, Array customers, int maxCustomers) {
+        var int step, i, oldX;
+        var Table table;
+        let step = GameConfig.getPenguinMoveStep();
+        if (x < 490) {  // Reduced from 495 - with food in right hand (x+20), need more space
+            let oldX = x;
+            do erase();
+            let x = x + step;
+            do draw();
+            // Redraw any tables and customers that might have been erased
+            do redrawNearbyObjects(tables, numTables, customers, maxCustomers, oldX, y);
+        }
+        return;
+    }
+    
+    /** Redraws tables and customers that are near the penguin's old position */
+    method void redrawNearbyObjects(Array tables, int numTables, Array customers, int maxCustomers, int checkX, int checkY) {
+        var int i, dx, dy;
+        var Table table;
+        var Customer customer;
+        
+        // IMPORTANT: Draw tables FIRST (background layer)
+        let i = 0;
+        while (i < numTables) {
+            let table = tables[i];
+            let dx = table.getX() - checkX;
+            let dy = table.getY() - checkY;
+            
+            if (dx < 0) { let dx = -dx; }
+            if (dy < 0) { let dy = -dy; }
+            
+            // If table is within 50 pixels of where penguin was, redraw it
+            if ((dx < 50) & (dy < 50)) {
+                do table.draw();
+            }
+            
+            let i = i + 1;
+        }
+        
+        // Then draw customers AFTER (foreground layer) so they appear on top
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                let dx = customer.getX() - checkX;
+                let dy = customer.getY() - checkY;
+                
+                if (dx < 0) { let dx = -dx; }
+                if (dy < 0) { let dy = -dy; }
+                
+                // If customer is within 50 pixels of where penguin was, redraw it
+                if ((dx < 50) & (dy < 50)) {
+                    do customer.draw();
+                }
+            }
+            
+            let i = i + 1;
+        }
+        return;
+    }
+    
+    /** Gets X position */
+    method int getX() {
+        return x;
+    }
+    
+    /** Gets Y position */
+    method int getY() {
+        return y;
+    }
+    
+    /** Pick up order with food type (returns true if successful) */
+    method boolean pickupOrder(int foodType) {
+        // Try left hand first
+        if (leftHandFood = -1) {
+            let leftHandFood = foodType;
+            do erase();
+            do draw();
+            return true;
+        }
+        
+        // Then try right hand
+        if (rightHandFood = -1) {
+            let rightHandFood = foodType;
+            do erase();
+            do draw();
+            return true;
+        }
+        
+        // Both hands full!
+        return false;
+    }
+    
+    /** Deliver one order (delivers from right hand first, then left) */
+    method void deliverOrder() {
+        // Deliver from right hand first
+        if (~(rightHandFood = -1)) {
+            let rightHandFood = -1;
+            do erase();
+            do draw();
+            return;
+        }
+        
+        // Then left hand
+        if (~(leftHandFood = -1)) {
+            let leftHandFood = -1;
+            do erase();
+            do draw();
+            return;
+        }
+        
+        return;
+    }
+    
+    /** Check if has any order */
+    method boolean getHasOrder() {
+        return (~(leftHandFood = -1)) | (~(rightHandFood = -1));
+    }
+    
+    /** Check if both hands are full */
+    method boolean bothHandsFull() {
+        return (~(leftHandFood = -1)) & (~(rightHandFood = -1));
+    }
+    
+    /** Get left hand food type */
+    method int getLeftHandFood() {
+        return leftHandFood;
+    }
+    
+    /** Get right hand food type */
+    method int getRightHandFood() {
+        return rightHandFood;
+    }
+}

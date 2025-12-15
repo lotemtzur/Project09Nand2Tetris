@@ -1,0 +1,66 @@
+function GameConfig.getGameLoopDelay 0
+push constant 40
+return
+function GameConfig.getPenguinMoveStep 0
+push constant 4
+return
+function GameConfig.getCustomerSpawnInterval 0
+push constant 100
+return
+function GameConfig.getInitialCustomerTimer 0
+push constant 95
+return
+function GameConfig.getWaitingPatience 0
+push constant 2000
+return
+function GameConfig.getSeatedPatience 0
+push constant 1500
+return
+function GameConfig.getOrderedPatience 0
+push constant 2000
+return
+function GameConfig.getEatingTime 0
+push constant 200
+return
+function GameConfig.getEatingDoneThreshold 0
+push constant 1500
+return
+function GameConfig.getAngryCustomerPenalty 0
+push constant 5
+return
+function GameConfig.getTipDivider 0
+push constant 20
+return
+function GameConfig.getMinTip 0
+push constant 1
+return
+function GameConfig.getMaxTip 0
+push constant 10
+return
+function GameConfig.getMaxCustomers 0
+push constant 6
+return
+function GameConfig.getNumTables 0
+push constant 4
+return
+function GameConfig.getNearDistance 0
+push constant 40
+return
+function GameConfig.getQueueX 0
+push constant 30
+return
+function GameConfig.getQueueStartY 0
+push constant 60
+return
+function GameConfig.getQueueSpacing 0
+push constant 30
+return
+function GameConfig.getFoodPrepTime 0
+push constant 300
+return
+function GameConfig.getKitchenX 0
+push constant 256
+return
+function GameConfig.getKitchenY 0
+push constant 230
+return

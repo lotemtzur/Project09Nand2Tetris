@@ -1,0 +1,257 @@
+/** Implements a customer penguin */
+class Customer {
+    field int x, y;              // position on screen
+    field int state;             // 0=waiting, 1=seated, 2=ordered, 3=eating, 4=done
+    field int patience;          // patience counter
+    field int tableId;           // which table customer is at
+    field int foodType;          // 0=burger, 1=pizza, 2=fish
+    field int queuePosition;     // position in queue (0, 1, 2...)
+    
+    /** Constructs a new Customer at given position */
+    constructor Customer new(int Ax, int Ay, int Atable) {
+        let x = Ax;
+        let y = Ay;
+        let state = 0;
+        let patience = GameConfig.getWaitingPatience();
+        let tableId = Atable;
+        do draw();
+        return this;
+    }
+    
+    /** Disposes this customer */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Draws the customer on screen */
+    method void draw() {
+        // Draw customer penguin body (smaller than player)
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y, 6);
+        
+        // Draw white belly
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y + 1, 4);
+        
+        // Draw black head
+        do Screen.setColor(true);
+        do Screen.drawCircle(x, y - 5, 4);
+        
+        // Draw white face
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y - 4, 2);
+        
+        // Draw eyes
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x - 1, y - 5, x - 1, y - 4);
+        do Screen.drawRectangle(x + 1, y - 5, x + 1, y - 4);
+        
+        // Draw beak
+        do Screen.drawRectangle(x - 1, y - 3, x + 1, y - 2);
+        
+        // Draw feet
+        do Screen.drawRectangle(x - 4, y + 6, x - 2, y + 7);
+        do Screen.drawRectangle(x + 2, y + 6, x + 4, y + 7);
+        
+        // Draw indicator based on state
+        if (state = 0) {
+            // Waiting - draw exclamation mark
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x + 8, y - 8, x + 9, y - 4);
+            do Screen.drawRectangle(x + 8, y - 2, x + 9, y - 1);
+        }
+        if (state = 1) {
+            // Seated - draw thinking bubble
+            do Screen.setColor(true);
+            do Screen.drawCircle(x + 9, y - 7, 3);
+            do Screen.setColor(false);
+            do Screen.drawCircle(x + 9, y - 7, 2);
+        }
+        if (state = 2) {
+            // Ordered - draw food icon (burger)
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x - 2, y - 10, x + 2, y - 8);
+            do Screen.drawCircle(x, y - 12, 3);
+        }
+        if (state = 3) {
+            // Eating - draw plate with food and utensils ON THE TABLE (to the side)
+            do Screen.setColor(true);
+            // Plate on table (to the left of customer)
+            do Screen.drawCircle(x - 15, y, 6);
+            do Screen.setColor(false);
+            do Screen.drawCircle(x - 15, y, 5);
+            // Food on plate
+            do Screen.setColor(true);
+            do Screen.drawCircle(x - 17, y - 1, 2);
+            do Screen.drawCircle(x - 13, y, 2);
+            // Fork (left of plate)
+            do Screen.drawRectangle(x - 23, y - 2, x - 22, y + 2);
+            do Screen.drawRectangle(x - 25, y - 2, x - 21, y - 1);
+            // Knife (right of plate)
+            do Screen.drawRectangle(x - 8, y - 2, x - 7, y + 2);
+        }
+        if (state = 4) {
+            // Done - draw dollar sign $
+            do Screen.setColor(true);
+            // Vertical line through S
+            do Screen.drawRectangle(x + 8, y - 10, x + 9, y - 2);
+            // Top of S
+            do Screen.drawRectangle(x + 6, y - 9, x + 11, y - 8);
+            do Screen.drawRectangle(x + 6, y - 9, x + 7, y - 7);
+            // Middle of S
+            do Screen.drawRectangle(x + 6, y - 6, x + 11, y - 5);
+            // Bottom of S  
+            do Screen.drawRectangle(x + 10, y - 5, x + 11, y - 3);
+            do Screen.drawRectangle(x + 6, y - 3, x + 11, y - 2);
+        }
+        return;
+    }
+    /** Erases the customer from screen */
+    method void erase() {
+        var int x1, x2, y1, y2;
+        
+        do Screen.setColor(false);
+        
+        // Calculate erase bounds
+        let x1 = x - 26;
+        let x2 = x + 12;
+        let y1 = y - 15;
+        let y2 = y + 15;
+        
+        // Clamp to screen bounds (0-511, 0-255)
+        if (x1 < 0) { let x1 = 0; }
+        if (x2 > 511) { let x2 = 511; }
+        if (y1 < 0) { let y1 = 0; }
+        if (y2 > 255) { let y2 = 255; }
+        
+        // Only erase if we have valid coordinates
+        if ((x1 < x2) & (y1 < y2)) {
+            do Screen.drawRectangle(x1, y1, x2, y2);
+        }
+        
+        return;
+    }
+    
+    /** Updates customer state */
+    method void update() {
+        if (patience > 0) {
+            let patience = patience - 1;
+        }
+        
+        // Eating customers automatically finish when patience runs out
+        if (state = 3) {
+            if (patience < 1) {
+                let state = 4; // done eating
+                let patience = GameConfig.getEatingDoneThreshold(); // Reset patience for payment collection
+                do erase();
+                do draw();
+            }
+        }
+        return;
+    }
+    
+    /** Seat the customer */
+    method void seat() {
+        let state = 1;
+        let patience = GameConfig.getSeatedPatience();
+        do erase();
+        do draw();
+        return;
+    }
+    
+    /** Take order from customer */
+    method void takeOrder() {
+        if (state = 1) {
+            let state = 2;
+            let patience = GameConfig.getOrderedPatience();
+            do erase();
+            do draw();
+        }
+        return;
+    }
+    
+    /** Serve food to customer */
+    method void serveFood() {
+        if (state = 2) {
+            let state = 3;
+            let patience = GameConfig.getEatingTime();
+            do erase();
+            do draw();
+        }
+        return;
+    }
+    
+    /** Collect payment */
+    method int collectPayment() {
+        var int tip;
+        let tip = patience / GameConfig.getTipDivider();
+        if (tip < GameConfig.getMinTip()) {
+            let tip = GameConfig.getMinTip();
+        }
+        if (tip > GameConfig.getMaxTip()) {
+            let tip = GameConfig.getMaxTip();
+        }
+        return tip;
+    }
+    
+    /** Gets X position */
+    method int getX() {
+        return x;
+    }
+    
+    /** Gets Y position */
+    method int getY() {
+        return y;
+    }
+    
+    /** Gets state */
+    method int getState() {
+        return state;
+    }
+    
+    /** Gets patience */
+    method int getPatience() {
+        return patience;
+    }
+    
+    /** Moves customer to new position */
+    method void moveTo(int newX, int newY) {
+        do erase();
+        let x = newX;
+        let y = newY;
+        return;
+    }
+    
+    /** Check if customer is ready to leave */
+    method boolean isReadyToLeave() {
+        return state = 4;
+    }
+    
+    /** Check if customer left angry */
+    method boolean leftAngry() {
+        return patience < 1;
+    }
+    
+    /** Sets the food type customer ordered */
+    method void setFoodType(int type) {
+        let foodType = type;
+        return;
+    }
+    
+    /** Gets the food type */
+    method int getFoodType() {
+        return foodType;
+    }
+    
+    /** Sets queue position */
+    method void setQueuePosition(int pos) {
+        let queuePosition = pos;
+        return;
+    }
+    
+    /** Gets queue position */
+    method int getQueuePosition() {
+        return queuePosition;
+    }
+}

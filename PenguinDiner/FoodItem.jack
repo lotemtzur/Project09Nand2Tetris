@@ -1,0 +1,122 @@
+/** Represents a food item being prepared in the kitchen */
+class FoodItem {
+    field int x, y;              // position on screen
+    field int foodType;          // 0=burger, 1=pizza, 2=fish
+    field int prepTime;          // time remaining to prepare
+    field boolean ready;         // is food ready to serve?
+    
+    /** Constructs a new FoodItem */
+    constructor FoodItem new(int Ax, int Ay, int type) {
+        let x = Ax;
+        let y = Ay;
+        let foodType = type;
+        let prepTime = GameConfig.getFoodPrepTime();
+        let ready = false;
+        do draw();
+        return this;
+    }
+    
+    /** Disposes this food item */
+    method void dispose() {
+        do erase();
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Draws the food item (different visual for each type) */
+    method void draw() {
+        // Safety check - make sure position is valid
+        if ((x < 10) | (x > 500) | (y < 10) | (y > 240)) {
+            return;  // Don't draw if outside bounds
+        }
+        
+        do Screen.setColor(true);
+        
+        if (foodType = 0) {
+            // Burger - three layers
+            do Screen.drawRectangle(x - 5, y, x + 5, y + 2);      // bottom bun
+            do Screen.drawRectangle(x - 6, y + 3, x + 6, y + 5);  // patty
+            do Screen.drawRectangle(x - 5, y + 6, x + 5, y + 8);  // top bun
+        }
+        
+        if (foodType = 1) {
+            // Pizza - triangle slice
+            do Screen.drawLine(x, y, x - 6, y + 8);
+            do Screen.drawLine(x, y, x + 6, y + 8);
+            do Screen.drawLine(x - 6, y + 8, x + 6, y + 8);
+            // Pepperoni dots
+            do Screen.drawRectangle(x - 2, y + 4, x - 1, y + 5);
+            do Screen.drawRectangle(x + 1, y + 4, x + 2, y + 5);
+        }
+        
+        if (foodType = 2) {
+            // Fish - simple fish shape
+            do Screen.drawCircle(x, y + 4, 4);  // body
+            // Tail
+            do Screen.drawLine(x - 4, y + 4, x - 7, y + 2);
+            do Screen.drawLine(x - 4, y + 4, x - 7, y + 6);
+            // Eye
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x + 1, y + 3, x + 2, y + 4);
+        }
+        
+        // Draw timer indicator if not ready
+        if (~ready) {
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x - 7, y - 5, x + 7, y - 3);
+            // Progress bar
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x - 6, y - 4, x + 6, y - 4);
+        }
+        
+        return;
+    }
+    
+    /** Erases the food item */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x - 8, y - 6, x + 8, y + 9);
+        return;
+    }
+    
+    /** Updates food preparation */
+    method void update() {
+        if (~ready) {
+            if (prepTime > 0) {
+                let prepTime = prepTime - 1;
+                
+                // Redraw to update progress bar every 20 cycles
+                if ((prepTime / 20 * 20) = prepTime) {
+                    do draw();
+                }
+            }
+            
+            if (prepTime < 1) {
+                let ready = true;
+                do erase();
+                do draw();  // Redraw without timer (ready!)
+            }
+        }
+        return;
+    }
+    
+    /** Checks if food is ready */
+    method boolean isReady() {
+        return ready;
+    }
+    
+    /** Gets food type */
+    method int getFoodType() {
+        return foodType;
+    }
+    
+    /** Gets X position */
+    method int getX() {
+        return x;
+    }
+    
+    /** Gets Y position */
+    method int getY() {
+        return y;
+    }
+}

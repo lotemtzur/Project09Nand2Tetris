@@ -1,0 +1,167 @@
+function Table.new 0
+push constant 5
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push constant 0
+pop this 2
+push constant 0
+pop this 3
+push argument 2
+pop this 4
+push pointer 0
+call Table.draw 1
+pop temp 0
+push pointer 0
+return
+function Table.dispose 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 3
+call Customer.dispose 1
+pop temp 0
+label IF_FALSE0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Table.draw 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push constant 18
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push constant 16
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push constant 18
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push constant 15
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push this 0
+push constant 2
+sub
+push this 1
+push constant 15
+add
+push this 0
+push constant 2
+add
+push this 1
+push constant 22
+add
+call Screen.drawRectangle 4
+pop temp 0
+push this 0
+push constant 5
+sub
+push this 1
+push constant 22
+add
+push this 0
+push constant 5
+add
+push this 1
+push constant 24
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Table.seatCustomer 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 3
+push constant 0
+not
+pop this 2
+push constant 0
+return
+function Table.removeCustomer 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 3
+call Customer.erase 1
+pop temp 0
+push this 3
+call Customer.dispose 1
+pop temp 0
+push constant 0
+pop this 3
+label IF_FALSE0
+push constant 0
+pop this 2
+push constant 0
+return
+function Table.getX 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Table.getY 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Table.isOccupied 0
+push argument 0
+pop pointer 0
+push this 2
+return
+function Table.getCustomer 0
+push argument 0
+pop pointer 0
+push this 3
+return
+function Table.getId 0
+push argument 0
+pop pointer 0
+push this 4
+return
