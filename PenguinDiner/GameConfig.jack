@@ -13,7 +13,7 @@ class GameConfig {
     
     /** Base penguin movement speed (configurable) */
     function int getBasePenguinSpeed() {
-        return 8;  // Base speed in pixels per move
+        return 3;  // Base speed in pixels per move
     }
     
     // ===== CUSTOMER SPAWN SETTINGS =====
@@ -43,19 +43,19 @@ class GameConfig {
     // 10% pairs: threshold=2 with prime=23 (2/23), or threshold=3 with prime=29 (3/29)
     // 15% pairs: threshold=3 with prime=23 (3/23≈13%), or threshold=4 with prime=29 (4/29≈14%)
     // 20% pairs: threshold=5 with prime=23 (5/23≈22%), or threshold=6 with prime=29 (6/29≈21%)
-    // 25% pairs: threshold=6 with prime=23 (6/23≈26%), or threshold=7 with prime=29 (7/29≈24%)
+    // 25% pairs: threshold=6 with prime=23 (6/23≈26%) , or threshold=7 with prime=29 (7/29≈24%)
     // 30% pairs: threshold=7 with prime=23 (7/23≈30%), or threshold=9 with prime=29 (9/29≈31%)
     
     // ===== CUSTOMER PATIENCE SETTINGS =====
     
     /** Patience when customer is waiting at entrance (state 0) */
     function int getWaitingPatience() {
-        return 2000;  // ~80 seconds at 40ms loop
+        return 750;  // 30 seconds at 40ms loop (30000ms / 40ms)
     }
     
     /** Patience after being seated, waiting for order (state 1) */
     function int getSeatedPatience() {
-        return 1500;  // ~60 seconds at 40ms loop
+        return 375;  // 15 seconds at 40ms loop (15000ms / 40ms)
     }
     
     /** Patience after ordering, waiting for food (state 2) */
@@ -63,14 +63,14 @@ class GameConfig {
         return 2000;  // ~80 seconds at 40ms loop
     }
     
-    /** Time customer spends eating (state 3) - FULL DURATION */
-    function int getEatingTime() {
-        return 125;  // ~5 seconds at 40ms loop - Customer eats for this ENTIRE time
+    /** Patience while customer is eating (state 3) - FULL EATING DURATION */
+    function int getEatingPatience() {
+        return 175;  // 7 seconds at 40ms loop (7000ms / 40ms) - Customer eats for this ENTIRE time
     }
     
     /** Patience after finishing eating (state 4 - ready to pay) */
-    function int getEatingDoneThreshold() {
-        return 1500;  // ~20 seconds to collect payment after eating is done
+    function int getPaymentPatience() {
+        return 250;  // 10 seconds at 40ms loop (10000ms / 40ms)
     }
     
     // ===== SCORING SETTINGS =====
@@ -133,7 +133,7 @@ class GameConfig {
     
     /** Time for food preparation */
     function int getFoodPrepTime() {
-        return 100;  // ~12 seconds to prepare food
+        return 250;  // 10 seconds at 40ms loop (10000ms / 40ms)
     }
     
     /** Kitchen counter X position */

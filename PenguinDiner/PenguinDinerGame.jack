@@ -883,7 +883,7 @@ class PenguinDinerGame {
                         if (hearts < 1) {
                             let gameOver = true;
                         }
-                    }
+                        }
                     }
                 }
                 let i = i + 1;

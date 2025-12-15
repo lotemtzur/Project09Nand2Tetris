@@ -2,7 +2,7 @@ function GameConfig.getGameLoopDelay 0
 push constant 40
 return
 function GameConfig.getBasePenguinSpeed 0
-push constant 8
+push constant 3
 return
 function GameConfig.getCustomerSpawnInterval 0
 push constant 100
@@ -17,19 +17,19 @@ function GameConfig.getPairThreshold 0
 push constant 10
 return
 function GameConfig.getWaitingPatience 0
-push constant 2000
+push constant 750
 return
 function GameConfig.getSeatedPatience 0
-push constant 1500
+push constant 375
 return
 function GameConfig.getOrderedPatience 0
 push constant 2000
 return
-function GameConfig.getEatingTime 0
-push constant 125
+function GameConfig.getEatingPatience 0
+push constant 175
 return
-function GameConfig.getEatingDoneThreshold 0
-push constant 1500
+function GameConfig.getPaymentPatience 0
+push constant 250
 return
 function GameConfig.getAngryCustomerPenalty 0
 push constant 5
@@ -62,7 +62,7 @@ function GameConfig.getQueueSpacing 0
 push constant 30
 return
 function GameConfig.getFoodPrepTime 0
-push constant 100
+push constant 250
 return
 function GameConfig.getKitchenX 0
 push constant 256

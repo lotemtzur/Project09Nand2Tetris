@@ -152,38 +152,6 @@ eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 0
-push constant 8
-add
-push this 1
-push constant 8
-sub
-push this 0
-push constant 9
-add
-push this 1
-push constant 4
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 8
-add
-push this 1
-push constant 2
-sub
-push this 0
-push constant 9
-add
-push this 1
-push constant 1
-sub
-call Screen.drawRectangle 4
-pop temp 0
 label IF_FALSE0
 push this 2
 push constant 1
@@ -191,30 +159,14 @@ eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
+push pointer 0
 push this 0
-push constant 9
+push constant 10
 add
 push this 1
-push constant 7
+push constant 8
 sub
-push constant 3
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-call Screen.setColor 1
-pop temp 0
-push this 0
-push constant 9
-add
-push this 1
-push constant 7
-sub
-push constant 2
-call Screen.drawCircle 3
+call Customer.drawMenu 3
 pop temp 0
 label IF_FALSE1
 push this 2
@@ -223,32 +175,47 @@ eq
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
+push pointer 0
 push this 0
-push constant 2
-sub
-push this 1
 push constant 10
-sub
-push this 0
-push constant 2
 add
 push this 1
 push constant 8
 sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push this 1
-push constant 12
-sub
-push constant 3
-call Screen.drawCircle 3
+call Customer.drawFork 3
 pop temp 0
 label IF_FALSE2
+push this 2
+push constant 1
+neg
+gt
+push this 2
+push constant 3
+lt
+and
+push this 2
+push constant 4
+eq
+or
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+call Customer.shouldShowClock 1
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push this 0
+push constant 10
+sub
+push this 1
+push constant 8
+sub
+call Customer.drawClock 3
+pop temp 0
+label IF_FALSE4
+label IF_FALSE3
 push constant 0
 return
 function Customer.erase 4
@@ -390,7 +357,7 @@ label IF_FALSE4
 label IF_FALSE3
 push constant 4
 pop this 2
-call GameConfig.getEatingDoneThreshold 0
+call GameConfig.getPaymentPatience 0
 pop this 3
 push pointer 0
 call Customer.erase 1
@@ -402,7 +369,7 @@ label IF_FALSE2
 label IF_FALSE1
 push constant 0
 return
-function Customer.bothReadyToPay 2
+function Customer.bothReadyToPay 1
 push argument 0
 pop pointer 0
 push pointer 0
@@ -428,13 +395,11 @@ push pointer 0
 call Customer.isReadyToLeave 1
 return
 label IF_FALSE1
-push local 0
-call Customer.getState 1
-pop local 1
 push this 2
 push constant 4
 eq
-push local 1
+push local 0
+call Customer.getState 1
 push constant 4
 eq
 and
@@ -487,8 +452,14 @@ goto IF_FALSE0
 label IF_TRUE0
 push constant 3
 pop this 2
-call GameConfig.getEatingTime 0
+call GameConfig.getEatingPatience 0
 pop this 3
+push pointer 0
+call Customer.erase 1
+pop temp 0
+push pointer 0
+call Customer.draw 1
+pop temp 0
 label IF_FALSE0
 push constant 0
 return
@@ -807,5 +778,197 @@ call Screen.drawRectangle 4
 pop temp 0
 label IF_END1
 label IF_FALSE0
+push constant 0
+return
+function Customer.shouldShowClock 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 126
+lt
+return
+function Customer.drawClock 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 4
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push argument 1
+push argument 2
+push constant 2
+sub
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push argument 2
+push argument 1
+push constant 2
+add
+push argument 2
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+return
+function Customer.drawMenu 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push constant 3
+sub
+push argument 2
+push constant 4
+sub
+push argument 1
+push constant 3
+add
+push argument 2
+push constant 4
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push constant 2
+sub
+push argument 2
+push constant 3
+sub
+push argument 1
+push constant 2
+add
+push argument 2
+push constant 3
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push constant 2
+sub
+push argument 2
+push constant 2
+sub
+push argument 1
+push constant 2
+add
+push argument 2
+push constant 2
+sub
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push constant 2
+sub
+push argument 2
+push argument 1
+push constant 2
+add
+push argument 2
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push constant 2
+sub
+push argument 2
+push constant 2
+add
+push argument 1
+push constant 2
+add
+push argument 2
+push constant 2
+add
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+return
+function Customer.drawFork 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 1
+add
+push argument 1
+push argument 2
+push constant 6
+add
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push constant 2
+sub
+push argument 2
+push argument 1
+push constant 2
+add
+push argument 2
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push constant 2
+sub
+push argument 2
+push argument 1
+push constant 2
+sub
+push argument 2
+push constant 3
+sub
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push argument 2
+push argument 1
+push argument 2
+push constant 3
+sub
+call Screen.drawLine 4
+pop temp 0
+push argument 1
+push constant 2
+add
+push argument 2
+push argument 1
+push constant 2
+add
+push argument 2
+push constant 3
+sub
+call Screen.drawLine 4
+pop temp 0
 push constant 0
 return

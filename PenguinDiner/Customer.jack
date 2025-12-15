@@ -59,28 +59,27 @@ class Customer {
         do Screen.drawRectangle(x - 4, y + 6, x - 2, y + 7);
         do Screen.drawRectangle(x + 2, y + 6, x + 4, y + 7);
         
-        // Draw indicator based on state
+        // Draw state-specific icons
         if (state = 0) {
-            // Waiting - draw exclamation mark
-            do Screen.setColor(true);
-            do Screen.drawRectangle(x + 8, y - 8, x + 9, y - 4);
-            do Screen.drawRectangle(x + 8, y - 2, x + 9, y - 1);
+            // Waiting in queue - no state icon, just clock
         }
         if (state = 1) {
-            // Seated - draw thinking bubble
-            do Screen.setColor(true);
-            do Screen.drawCircle(x + 9, y - 7, 3);
-            do Screen.setColor(false);
-            do Screen.drawCircle(x + 9, y - 7, 2);
+            // Seated, waiting to order - draw MENU icon
+            do drawMenu(x + 10, y - 8);
         }
         if (state = 2) {
-            // Ordered - draw food icon (burger)
-            do Screen.setColor(true);
-            do Screen.drawRectangle(x - 2, y - 10, x + 2, y - 8);
-            do Screen.drawCircle(x, y - 12, 3);
+            // Ordered, waiting for food - draw FORK icon
+            do drawFork(x + 10, y - 8);
         }
-        // State 3 (eating) - food is drawn separately by drawFood() method, NOT here!
-        // State 4 (done) - $ is drawn above table by Table class, NOT here!
+        // State 3 (eating) - food is drawn separately by drawFood() method
+        // State 4 (done) - $ is drawn above table by Table class
+        
+        // Draw CLOCK icon only when patience is low (NOT for eating state 3)
+        if (((state > -1) & (state < 3)) | (state = 4)) {
+            if (shouldShowClock()) {
+                do drawClock(x - 10, y - 8);
+            }
+        }
         return;
     }
     /** Erases the customer from screen */
@@ -135,7 +134,7 @@ class Customer {
                 
                 // Solo OR both in pair are done eating - transition to payment state
                 let state = 4;
-                let patience = GameConfig.getEatingDoneThreshold();
+                let patience = GameConfig.getPaymentPatience();
                 do erase();
                 do draw();
             }
@@ -145,7 +144,6 @@ class Customer {
     /** Check if both customers in pair are ready to pay */
     method boolean bothReadyToPay() {
         var Customer partner;
-        var int partnerState;
         
         if (~isPair()) {
             return isReadyToLeave();  // Solo customer
@@ -157,10 +155,8 @@ class Customer {
             return isReadyToLeave();  // Partner was removed, treat as solo
         }
         
-        // Safely get partner state
-        let partnerState = partner.getState();
-        
-        return (state = 4) & (partnerState = 4);
+        // Check both states directly without storing
+        return (state = 4) & (partner.getState() = 4);
     }
     
     /** Seat the customer */
@@ -187,8 +183,9 @@ class Customer {
     method void serveFood() {
         if (state = 2) {
             let state = 3;
-            let patience = GameConfig.getEatingTime();
-            // Don't call erase/draw here - let redrawAll() handle it
+            let patience = GameConfig.getEatingPatience();
+            do erase();
+            do draw();  // Redraw to remove fork icon
         }
         return;
     }
@@ -328,6 +325,79 @@ class Customer {
                 do Screen.drawRectangle(x - 8, y - 2, x - 7, y + 2);
             }
         }
+        return;
+    }
+    
+    /** Checks if clock should be shown (last 5 seconds of patience) */
+    method boolean shouldShowClock() {
+        // Show clock when patience drops below 5 seconds (125 cycles at 40ms loop)
+        // 5 seconds = 5000ms / 40ms = 125 cycles
+        return patience < 126;  // Less than 126 means 125 or fewer cycles remaining
+    }
+    
+    /** Draws a CLOCK icon to represent patience */
+    method void drawClock(int clockX, int clockY) {
+        do Screen.setColor(true);
+        
+        // Draw clock circle (outline)
+        do Screen.drawCircle(clockX, clockY, 4);
+        
+        // Draw white interior
+        do Screen.setColor(false);
+        do Screen.drawCircle(clockX, clockY, 3);
+        
+        // Draw clock hands (black lines)
+        do Screen.setColor(true);
+        
+        // Hour hand - pointing up (12 o'clock position)
+        do Screen.drawLine(clockX, clockY, clockX, clockY - 2);
+        
+        // Minute hand - pointing right (3 o'clock position)
+        do Screen.drawLine(clockX, clockY, clockX + 2, clockY);
+        
+        return;
+    }
+    
+    /** Draws a MENU icon (waiting to order) */
+    method void drawMenu(int menuX, int menuY) {
+        do Screen.setColor(true);
+        
+        // Draw menu rectangle (paper outline)
+        do Screen.drawRectangle(menuX - 3, menuY - 4, menuX + 3, menuY + 4);
+        
+        // Draw white interior
+        do Screen.setColor(false);
+        do Screen.drawRectangle(menuX - 2, menuY - 3, menuX + 2, menuY + 3);
+        
+        // Draw text lines (black horizontal lines)
+        do Screen.setColor(true);
+        do Screen.drawLine(menuX - 2, menuY - 2, menuX + 2, menuY - 2);
+        do Screen.drawLine(menuX - 2, menuY, menuX + 2, menuY);
+        do Screen.drawLine(menuX - 2, menuY + 2, menuX + 2, menuY + 2);
+        
+        return;
+    }
+    
+    /** Draws a FORK icon (waiting for food) */
+    method void drawFork(int forkX, int forkY) {
+        do Screen.setColor(true);
+        
+        // Draw handle (vertical line down the center)
+        do Screen.drawLine(forkX, forkY + 1, forkX, forkY + 6);
+        
+        // Draw crossbar (horizontal line at top of handle)
+        do Screen.drawLine(forkX - 2, forkY, forkX + 2, forkY);
+        
+        // Draw tines (3 vertical lines extending up from crossbar)
+        // Left tine
+        do Screen.drawLine(forkX - 2, forkY, forkX - 2, forkY - 3);
+        
+        // Middle tine
+        do Screen.drawLine(forkX, forkY, forkX, forkY - 3);
+        
+        // Right tine
+        do Screen.drawLine(forkX + 2, forkY, forkX + 2, forkY - 3);
+        
         return;
     }
 }
