@@ -11,9 +11,9 @@ class GameConfig {
         return 40;  // 40ms = 25 updates/second
     }
     
-    /** Penguin movement step size in pixels */
-    function int getPenguinMoveStep() {
-        return 6;  // 2 pixels per step
+    /** Base penguin movement speed (configurable) */
+    function int getBasePenguinSpeed() {
+        return 8;  // Base speed in pixels per move
     }
     
     // ===== CUSTOMER SPAWN SETTINGS =====
@@ -133,7 +133,7 @@ class GameConfig {
     
     /** Time for food preparation */
     function int getFoodPrepTime() {
-        return 300;  // ~12 seconds to prepare food
+        return 100;  // ~12 seconds to prepare food
     }
     
     /** Kitchen counter X position */

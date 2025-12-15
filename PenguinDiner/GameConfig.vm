@@ -1,8 +1,8 @@
 function GameConfig.getGameLoopDelay 0
 push constant 40
 return
-function GameConfig.getPenguinMoveStep 0
-push constant 6
+function GameConfig.getBasePenguinSpeed 0
+push constant 8
 return
 function GameConfig.getCustomerSpawnInterval 0
 push constant 100
@@ -62,7 +62,7 @@ function GameConfig.getQueueSpacing 0
 push constant 30
 return
 function GameConfig.getFoodPrepTime 0
-push constant 300
+push constant 100
 return
 function GameConfig.getKitchenX 0
 push constant 256

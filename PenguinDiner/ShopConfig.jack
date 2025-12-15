@@ -1,0 +1,67 @@
+/**
+ * ShopConfig - Configuration for shop prices and upgrade progression
+ * Modify these values to adjust shop economics
+ */
+class ShopConfig {
+    
+    // ===== SPEED UPGRADE PRICES =====
+    
+    /** Speed upgrade price for 1st purchase */
+    function int getSpeedPrice1() {
+        return 10;
+    }
+    
+    /** Speed upgrade price for 2nd purchase */
+    function int getSpeedPrice2() {
+        return 20;
+    }
+    
+    /** Speed upgrade price for 3rd purchase */
+    function int getSpeedPrice3() {
+        return 40;
+    }
+    
+    /** Speed upgrade price for 4th purchase */
+    function int getSpeedPrice4() {
+        return 50;
+    }
+    
+    /** Speed upgrade price for 5th+ purchases */
+    function int getSpeedPriceMax() {
+        return 100;
+    }
+    
+    // ===== COOKING UPGRADE PRICES =====
+    
+    /** Cooking upgrade price for 1st purchase */
+    function int getCookingPrice1() {
+        return 15;
+    }
+    
+    /** Cooking upgrade price for 2nd purchase */
+    function int getCookingPrice2() {
+        return 30;
+    }
+    
+    /** Cooking upgrade price for 3rd purchase */
+    function int getCookingPrice3() {
+        return 60;
+    }
+    
+    /** Cooking upgrade price for 4th purchase */
+    function int getCookingPrice4() {
+        return 75;
+    }
+    
+    /** Cooking upgrade price for 5th+ purchases */
+    function int getCookingPriceMax() {
+        return 150;
+    }
+    
+    // ===== HEART UPGRADE PRICE =====
+    
+    /** Extra heart price (constant) */
+    function int getHeartPrice() {
+        return 20;
+    }
+}

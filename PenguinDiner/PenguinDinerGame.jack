@@ -8,7 +8,7 @@ class PenguinDinerGame {
     field int numCustomers;      // current number of ACTIVE customers
     field int maxCustomers;      // maximum customers at once
     field int totalCustomersServed; // total customers served (lifetime)
-    field int score;             // player's score
+    field int score;             // player's money earned this level
     field int level;             // current level
     field int customerTimer;     // timer for spawning customers
     field boolean gameOver;      // game over flag
@@ -23,7 +23,7 @@ class PenguinDinerGame {
     field boolean levelWon;      // level completed successfully
     
     /** Constructs a new Penguin Diner Game */
-    constructor PenguinDinerGame new(int currentLevel, LevelConfig config) {
+    constructor PenguinDinerGame new(int currentLevel, LevelConfig config, Shop playerShop) {
         var int i;
         var Table table;
         
@@ -32,6 +32,12 @@ class PenguinDinerGame {
         
         // Get level-specific configuration
         let hearts = config.getHearts(level);
+        
+        // Add extra heart if purchased
+        if (playerShop.getExtraHeartBought()) {
+            let hearts = hearts + 1;
+        }
+        
         let levelGoal = config.getGoal(level);
         let timeLimit = config.getTimeLimit(level);
         let timeRemaining = timeLimit;
@@ -41,9 +47,13 @@ class PenguinDinerGame {
         
         // Initialize game state
         let penguin = Penguin.new(250, 200);
+        
+        // Apply speed upgrades to penguin
+        do penguin.setSpeedUpgrades(playerShop.getSpeedUpgrades());
+        
         let numCustomers = 0;
         let totalCustomersServed = 0;
-        let score = 0;
+        let score = 0;  // Score is now money earned this level
         let customerTimer = GameConfig.getInitialCustomerTimer();
         let gameOver = false;
         let firstMove = false;
@@ -94,6 +104,9 @@ class PenguinDinerGame {
         // Create kitchen with slots matching number of tables
         let kitchen = Kitchen.new(GameConfig.getKitchenX(), GameConfig.getKitchenY(), numTables);
         
+        // Apply cooking upgrades
+        do kitchen.setCookingUpgrades(playerShop.getCookingUpgrades());
+        
         // Draw kitchen after creation
         do kitchen.draw();
         
@@ -141,19 +154,22 @@ class PenguinDinerGame {
     /** Draws the UI elements */
     method void drawUI() {
         do Output.moveCursor(0, 0);
-        do Output.printString("Level ");
+        do Output.printString("Lv");
         do Output.printInt(level);
-        do Output.moveCursor(0, 10);
-        do Output.printString("Goal: ");
+        do Output.moveCursor(0, 7);
+        do Output.printString("Goal:");
         do Output.printInt(levelGoal);
-        do Output.moveCursor(0, 20);
-        do Output.printString("Served: ");
+        do Output.moveCursor(0, 16);
+        do Output.printString("Served:");
         do Output.printInt(totalCustomersServed);
-        do Output.moveCursor(0, 32);
-        do Output.printString("Hearts: ");
+        do Output.moveCursor(0, 27);
+        do Output.printString("$");
+        do Output.printInt(score);
+        do Output.moveCursor(0, 36);
+        do Output.printString("Hearts:");
         do Output.printInt(hearts);
-        do Output.moveCursor(0, 43);
-        do Output.printString("Time: ");
+        do Output.moveCursor(0, 47);
+        do Output.printString("Time:");
         do drawTime();
         do Output.moveCursor(1, 0);
         do Output.printString("Controls: Arrows=Move, Q=Quit");
@@ -178,18 +194,30 @@ class PenguinDinerGame {
     
     /** Updates the display */
     method void updateDisplay() {
-        do Output.moveCursor(0, 16);
+        do Output.moveCursor(0, 12);
         do Output.printInt(levelGoal);
         do Output.printString(" ");
-        do Output.moveCursor(0, 28);
+        do Output.moveCursor(0, 23);
         do Output.printInt(totalCustomersServed);
         do Output.printString(" ");
-        do Output.moveCursor(0, 40);
+        do Output.moveCursor(0, 28);
+        do Output.printInt(score);
+        do Output.printString("  ");
+        do Output.moveCursor(0, 43);
         do Output.printInt(hearts);
         do Output.printString(" ");
-        do Output.moveCursor(0, 49);
+        do Output.moveCursor(0, 52);
         do drawTime();
         return;
+    }
+    
+    /** Gets money earned this level */
+    method int getMoney() {
+        // Ensure money never goes negative
+        if (score < 0) {
+            return 0;
+        }
+        return score;
     }
     
     /** Spawns new customer(s) - sometimes pairs */

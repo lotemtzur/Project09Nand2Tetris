@@ -16,6 +16,19 @@ class FoodItem {
         return this;
     }
     
+    /** Applies cooking upgrades to reduce prep time */
+    method void setCookingUpgrades(int upgrades) {
+        var int reduction;
+        // Each upgrade reduces prep time by ~2.5 cycles (0.1 seconds at 40ms)
+        let reduction = upgrades * 3;  // 3 cycles per upgrade ≈ 0.12 seconds
+        if (prepTime > reduction) {
+            let prepTime = prepTime - reduction;
+        } else {
+            let prepTime = 1;  // Minimum 1 cycle
+        }
+        return;
+    }
+    
     /** Disposes this food item */
     method void dispose() {
         do erase();

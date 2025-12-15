@@ -1,5 +1,5 @@
 function Kitchen.new 1
-push constant 6
+push constant 7
 call Memory.alloc 1
 pop pointer 0
 push argument 0
@@ -8,6 +8,8 @@ push argument 1
 pop this 1
 push argument 2
 pop this 3
+push constant 0
+pop this 6
 push constant 6
 call Array.new 1
 pop this 2
@@ -367,6 +369,16 @@ pop pointer 1
 push temp 0
 pop that 0
 push local 0
+push this 2
+add
+pop pointer 1
+push that 0
+pop local 3
+push local 3
+push this 6
+call FoodItem.setCookingUpgrades 2
+pop temp 0
+push local 0
 return
 label IF_FALSE0
 push local 0
@@ -518,6 +530,16 @@ pop pointer 1
 push temp 0
 pop that 0
 push local 0
+push this 2
+add
+pop pointer 1
+push that 0
+pop local 3
+push local 3
+push this 6
+call FoodItem.setCookingUpgrades 2
+pop temp 0
+push local 0
 return
 label IF_FALSE0
 push local 0
@@ -528,6 +550,13 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 1
 neg
+return
+function Kitchen.setCookingUpgrades 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 6
+push constant 0
 return
 function Kitchen.update 2
 push argument 0

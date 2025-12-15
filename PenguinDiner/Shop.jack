@@ -1,0 +1,272 @@
+/**
+ * Shop - Handles the store interface between levels
+ * Players can buy upgrades with money earned from serving customers
+ */
+class Shop {
+    field int totalMoney;          // Total money player has
+    field int selectedItem;        // Currently selected item (0-2)
+    field int speedUpgrades;       // Number of speed upgrades purchased
+    field int cookingUpgrades;     // Number of cooking time upgrades purchased
+    field boolean extraHeartBought; // Whether extra heart was bought this round
+    
+    /** Constructor */
+    constructor Shop new(int money) {
+        let totalMoney = money;
+        let selectedItem = 0;
+        let speedUpgrades = 0;
+        let cookingUpgrades = 0;
+        let extraHeartBought = false;
+        
+        return this;
+    }
+    
+    /** Constructor with preserved upgrades */
+    constructor Shop newWithUpgrades(int money, int speed, int cooking) {
+        let totalMoney = money;
+        let selectedItem = 0;
+        let speedUpgrades = speed;
+        let cookingUpgrades = cooking;
+        let extraHeartBought = false;
+        
+        return this;
+    }
+    
+    /** Calculates speed upgrade price based on how many purchased */
+    method int getSpeedPrice() {
+        if (speedUpgrades = 0) { return ShopConfig.getSpeedPrice1(); }
+        if (speedUpgrades = 1) { return ShopConfig.getSpeedPrice2(); }
+        if (speedUpgrades = 2) { return ShopConfig.getSpeedPrice3(); }
+        if (speedUpgrades = 3) { return ShopConfig.getSpeedPrice4(); }
+        return ShopConfig.getSpeedPriceMax();  // 4+ purchases
+    }
+    
+    /** Calculates cooking upgrade price based on how many purchased */
+    method int getCookingPrice() {
+        if (cookingUpgrades = 0) { return ShopConfig.getCookingPrice1(); }
+        if (cookingUpgrades = 1) { return ShopConfig.getCookingPrice2(); }
+        if (cookingUpgrades = 2) { return ShopConfig.getCookingPrice3(); }
+        if (cookingUpgrades = 3) { return ShopConfig.getCookingPrice4(); }
+        return ShopConfig.getCookingPriceMax();  // 4+ purchases
+    }
+    
+    /** Gets heart price (constant) */
+    method int getHeartPrice() {
+        return ShopConfig.getHeartPrice();
+    }
+    
+    /** Disposes this shop */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Resets extra heart flag for new level */
+    method void resetExtraHeart() {
+        let extraHeartBought = false;
+        return;
+    }
+    
+    /** Gets total money */
+    method int getMoney() {
+        return totalMoney;
+    }
+    
+    /** Gets speed upgrades count */
+    method int getSpeedUpgrades() {
+        return speedUpgrades;
+    }
+    
+    /** Gets cooking upgrades count */
+    method int getCookingUpgrades() {
+        return cookingUpgrades;
+    }
+    
+    /** Gets whether extra heart was bought */
+    method boolean getExtraHeartBought() {
+        return extraHeartBought;
+    }
+    
+    /** Draws the shop screen */
+    method void draw() {
+        do Screen.clearScreen();
+        
+        // Title
+        do Output.moveCursor(2, 26);
+        do Output.printString("SHOP");
+        
+        // Money display
+        do Output.moveCursor(4, 22);
+        do Output.printString("Money: $");
+        do Output.printInt(totalMoney);
+        
+        // Instructions
+        do Output.moveCursor(6, 15);
+        do Output.printString("Use arrows to select, ENTER to buy");
+        
+        // Items (with dynamic prices)
+        do drawItem(0, 8, "Speed Upgrade (+0.5 pixel)", getSpeedPrice());
+        do drawItem(1, 11, "Faster Cooking (-0.1 sec)", getCookingPrice());
+        do drawItem(2, 14, "Extra Heart (next level)", getHeartPrice());
+        
+        // Exit option
+        do Output.moveCursor(18, 18);
+        do Output.printString("Press SPACE to continue");
+        
+        // Draw selection highlight
+        do drawHighlight();
+        
+        return;
+    }
+    
+    /** Draws a shop item */
+    method void drawItem(int itemNum, int row, String name, int price) {
+        do Output.moveCursor(row, 10);
+        do Output.printString(name);
+        do Output.moveCursor(row, 45);
+        do Output.printString("$");
+        do Output.printInt(price);
+        return;
+    }
+    
+    /** Draws highlight around selected item */
+    method void drawHighlight() {
+        var int y;
+        
+        // Calculate Y position based on selected item
+        // Each character row is 11 pixels tall (8 pixels + 3 spacing)
+        if (selectedItem = 0) {
+            let y = 88;   // Row 8: 8 * 11 = 88 pixels
+        }
+        if (selectedItem = 1) {
+            let y = 121;  // Row 11: 11 * 11 = 121 pixels
+        }
+        if (selectedItem = 2) {
+            let y = 154;  // Row 14: 14 * 11 = 154 pixels
+        }
+        
+        // Draw border only (not filled) - 4 lines to create hollow rectangle
+        do Screen.setColor(true);
+        
+        // Top line
+        do Screen.drawLine(70, y - 1, 450, y - 1);
+        
+        // Bottom line
+        do Screen.drawLine(70, y + 10, 450, y + 10);
+        
+        // Left line
+        do Screen.drawLine(70, y - 1, 70, y + 10);
+        
+        // Right line
+        do Screen.drawLine(450, y - 1, 450, y + 10);
+        
+        return;
+    }
+    
+    /** Move selection up */
+    method void moveUp() {
+        if (selectedItem > 0) {
+            let selectedItem = selectedItem - 1;
+            do draw();
+        }
+        return;
+    }
+    
+    /** Move selection down */
+    method void moveDown() {
+        if (selectedItem < 2) {
+            let selectedItem = selectedItem + 1;
+            do draw();
+        }
+        return;
+    }
+    
+    /** Attempt to buy selected item */
+    method void buySelected() {
+        var int price;
+        
+        // Get current price of selected item
+        if (selectedItem = 0) {
+            let price = getSpeedPrice();
+        }
+        if (selectedItem = 1) {
+            let price = getCookingPrice();
+        }
+        if (selectedItem = 2) {
+            let price = getHeartPrice();
+        }
+        
+        // Check if player has enough money
+        if (totalMoney > (price - 1)) {
+            // Deduct money
+            let totalMoney = totalMoney - price;
+            
+            // Apply upgrade
+            if (selectedItem = 0) {
+                let speedUpgrades = speedUpgrades + 1;
+            }
+            if (selectedItem = 1) {
+                let cookingUpgrades = cookingUpgrades + 1;
+            }
+            if (selectedItem = 2) {
+                if (~extraHeartBought) {
+                    let extraHeartBought = true;
+                } else {
+                    // Already bought, refund
+                    let totalMoney = totalMoney + price;
+                }
+            }
+            
+            // Redraw to show updated money
+            do draw();
+        }
+        
+        return;
+    }
+    
+    /** Run the shop - returns when player presses SPACE */
+    method void run() {
+        var char key;
+        var boolean exit;
+        
+        let exit = false;
+        do draw();
+        
+        while (~exit) {
+            let key = Keyboard.keyPressed();
+            
+            if (key = 131) {  // Up arrow
+                do moveUp();
+                while (~(Keyboard.keyPressed() = 0)) {
+                    do Sys.wait(10);
+                }
+            }
+            
+            if (key = 133) {  // Down arrow
+                do moveDown();
+                while (~(Keyboard.keyPressed() = 0)) {
+                    do Sys.wait(10);
+                }
+            }
+            
+            if (key = 128) {  // Enter
+                do buySelected();
+                while (~(Keyboard.keyPressed() = 0)) {
+                    do Sys.wait(10);
+                }
+            }
+            
+            if (key = 32) {   // Space
+                let exit = true;
+            }
+            
+            do Sys.wait(50);
+        }
+        
+        // Wait for key release
+        while (~(Keyboard.keyPressed() = 0)) {
+            do Sys.wait(10);
+        }
+        
+        return;
+    }
+}

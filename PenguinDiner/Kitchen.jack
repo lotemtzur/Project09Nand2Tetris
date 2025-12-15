@@ -5,6 +5,7 @@ class Kitchen {
     field int maxFoodSlots;      // maximum food items being prepared
     field Array orderQueue;      // queue of pending orders when kitchen is full
     field int queueSize;         // current size of order queue
+    field int cookingUpgrades;   // number of cooking speed upgrades
     
     /** Constructs a new Kitchen */
     constructor Kitchen new(int Ax, int Ay, int numSlots) {
@@ -12,6 +13,7 @@ class Kitchen {
         let x = Ax;
         let y = Ay;
         let maxFoodSlots = numSlots;  // Match number of tables
+        let cookingUpgrades = 0;  // Initialize to no upgrades
         
         let foodItems = Array.new(6);  // Max 6 slots
         let i = 0;
@@ -127,6 +129,8 @@ class Kitchen {
                 let slotX = (x - 90) + ((i + 1) * slotSpacing);
                 
                 let foodItems[i] = FoodItem.new(slotX, y - 15, foodType);
+                let food = foodItems[i];
+                do food.setCookingUpgrades(cookingUpgrades);
                 return i;
             }
             let i = i + 1;
@@ -179,12 +183,20 @@ class Kitchen {
                 let slotX = (x - 90) + ((i + 1) * slotSpacing);
                 
                 let foodItems[i] = FoodItem.new(slotX, y - 15, foodType);
+                let food = foodItems[i];
+                do food.setCookingUpgrades(cookingUpgrades);
                 return i;
             }
             let i = i + 1;
         }
         
         return -1;  // No space
+    }
+    
+    /** Sets cooking upgrades from shop */
+    method void setCookingUpgrades(int upgrades) {
+        let cookingUpgrades = upgrades;
+        return;
     }
     
     /** Updates all food items being prepared */

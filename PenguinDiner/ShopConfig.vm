@@ -1,0 +1,33 @@
+function ShopConfig.getSpeedPrice1 0
+push constant 10
+return
+function ShopConfig.getSpeedPrice2 0
+push constant 20
+return
+function ShopConfig.getSpeedPrice3 0
+push constant 40
+return
+function ShopConfig.getSpeedPrice4 0
+push constant 50
+return
+function ShopConfig.getSpeedPriceMax 0
+push constant 100
+return
+function ShopConfig.getCookingPrice1 0
+push constant 15
+return
+function ShopConfig.getCookingPrice2 0
+push constant 30
+return
+function ShopConfig.getCookingPrice3 0
+push constant 60
+return
+function ShopConfig.getCookingPrice4 0
+push constant 75
+return
+function ShopConfig.getCookingPriceMax 0
+push constant 150
+return
+function ShopConfig.getHeartPrice 0
+push constant 20
+return

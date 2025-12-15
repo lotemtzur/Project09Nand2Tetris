@@ -4,6 +4,8 @@ class Penguin {
     field int size;           // size of the penguin sprite
     field int leftHandFood;   // food in left hand (-1=empty, 0=burger, 1=pizza, 2=fish)
     field int rightHandFood;  // food in right hand (-1=empty, 0=burger, 1=pizza, 2=fish)
+    field int speedUpgrades;  // number of speed upgrades from shop
+    field int moveCounter;    // counter for alternating speed bonus
     
     /** Constructs a new Penguin at given position */
     constructor Penguin new(int Ax, int Ay) {
@@ -12,8 +14,39 @@ class Penguin {
         let size = 12;
         let leftHandFood = -1;   // -1 means empty
         let rightHandFood = -1;  // -1 means empty
+        let speedUpgrades = 0;   // no upgrades initially
+        let moveCounter = 0;     // start counter at 0
         do draw();
         return this;
+    }
+    
+    /** Sets speed upgrades from shop */
+    method void setSpeedUpgrades(int upgrades) {
+        let speedUpgrades = upgrades;
+        let moveCounter = 0;  // Reset counter when upgrades change
+        return;
+    }
+    
+    /** Calculates current movement step with upgrades */
+    method int getMoveStep() {
+        var int baseSpeed, extraSpeed;
+        let baseSpeed = GameConfig.getBasePenguinSpeed();
+        
+        // Each upgrade adds 0.5 pixels on average by alternating between +0 and +1
+        // moveCounter alternates: even moves get no bonus, odd moves get +1
+        let extraSpeed = 0;
+        if (speedUpgrades > 0) {
+            // Increment counter
+            let moveCounter = moveCounter + 1;
+            
+            // For each upgrade, check if this is an "on" move
+            // If moveCounter is odd and we have upgrades, add the upgrades
+            if ((moveCounter - ((moveCounter / 2) * 2)) = 1) {
+                let extraSpeed = speedUpgrades;
+            }
+        }
+        
+        return baseSpeed + extraSpeed;
     }
     
     /** Disposes this penguin */
@@ -107,7 +140,7 @@ class Penguin {
     /** Moves penguin up - returns true if moved */
     method boolean moveUp(Array tables, int numTables, Array customers, int maxCustomers) {
         var int step, newY;
-        let step = GameConfig.getPenguinMoveStep();
+        let step = getMoveStep();
         let newY = y - step;
         if (newY > GameConfig.getPenguinMinY()) {
             do erase();
@@ -120,7 +153,7 @@ class Penguin {
     /** Moves penguin down - returns true if moved */
     method boolean moveDown(Array tables, int numTables, Array customers, int maxCustomers) {
         var int step, newY;
-        let step = GameConfig.getPenguinMoveStep();
+        let step = getMoveStep();
         let newY = y + step;
         if (newY < GameConfig.getPenguinMaxY()) {
             do erase();
@@ -133,7 +166,7 @@ class Penguin {
     /** Moves penguin left - returns true if moved */
     method boolean moveLeft(Array tables, int numTables, Array customers, int maxCustomers) {
         var int step, newX;
-        let step = GameConfig.getPenguinMoveStep();
+        let step = getMoveStep();
         let newX = x - step;
         if (newX > GameConfig.getPenguinMinX()) {
             do erase();
@@ -146,7 +179,7 @@ class Penguin {
     /** Moves penguin right - returns true if moved */
     method boolean moveRight(Array tables, int numTables, Array customers, int maxCustomers) {
         var int step, newX;
-        let step = GameConfig.getPenguinMoveStep();
+        let step = getMoveStep();
         let newX = x + step;
         if (newX < GameConfig.getPenguinMaxX()) {
             do erase();

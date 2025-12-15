@@ -17,6 +17,30 @@ call FoodItem.draw 1
 pop temp 0
 push pointer 0
 return
+function FoodItem.setCookingUpgrades 1
+push argument 0
+pop pointer 0
+push argument 1
+push constant 3
+call Math.multiply 2
+pop local 0
+push this 3
+push local 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 3
+push local 0
+sub
+pop this 3
+goto IF_END0
+label IF_FALSE0
+push constant 1
+pop this 3
+label IF_END0
+push constant 0
+return
 function FoodItem.dispose 0
 push argument 0
 pop pointer 0
