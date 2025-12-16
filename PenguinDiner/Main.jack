@@ -69,10 +69,8 @@ class Main {
                 }
                 
                 // Update shop with new total money (preserve upgrades)
+                do shop.dispose();  // Dispose old shop first
                 let shop = Shop.newWithUpgrades(totalMoney, shop.getSpeedUpgrades(), shop.getCookingUpgrades());
-                
-                // Note: Old shop is not disposed because we're keeping upgrades reference
-                // The newWithUpgrades creates a fresh shop with preserved upgrade values
                 
                 // Show shop (unless it's the last level)
                 if (currentLevel < 7) {
@@ -104,9 +102,8 @@ class Main {
                 // Show level failed screen and ask to retry
                 if (Main.showLevelFailed(currentLevel)) {
                     // User chose to retry - update shop and allow shopping (preserve upgrades)
+                    do shop.dispose();  // Dispose old shop first
                     let shop = Shop.newWithUpgrades(totalMoney, shop.getSpeedUpgrades(), shop.getCookingUpgrades());
-                    
-                    // Note: Old shop is not disposed because we're keeping upgrades reference
                     do shop.run();
                     let totalMoney = shop.getMoney();
                 } else {

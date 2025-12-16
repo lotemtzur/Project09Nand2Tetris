@@ -402,6 +402,10 @@ class Customer {
     
     /** Draws a CLOCK icon to represent patience */
     method void drawClock(int clockX, int clockY) {
+        // Validate coordinates are within screen bounds
+        if ((clockX < 4) | (clockX > 507)) { return; }
+        if ((clockY < 4) | (clockY > 251)) { return; }
+        
         do Screen.setColor(true);
         
         // Draw clock circle (outline)
@@ -425,6 +429,10 @@ class Customer {
     
     /** Draws a MENU icon (waiting to order) */
     method void drawMenu(int menuX, int menuY) {
+        // Validate coordinates are within screen bounds
+        if ((menuX < 3) | (menuX > 508)) { return; }
+        if ((menuY < 4) | (menuY > 251)) { return; }
+        
         do Screen.setColor(true);
         
         // Draw menu rectangle (paper outline)
@@ -445,6 +453,10 @@ class Customer {
     
     /** Draws a FORK icon (waiting for food) */
     method void drawFork(int forkX, int forkY) {
+        // Validate coordinates are within screen bounds
+        if ((forkX < 2) | (forkX > 509)) { return; }
+        if ((forkY < 3) | (forkY > 249)) { return; }
+        
         do Screen.setColor(true);
         
         // Draw handle (vertical line down the center)

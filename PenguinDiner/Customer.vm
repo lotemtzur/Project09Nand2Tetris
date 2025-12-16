@@ -873,6 +873,32 @@ return
 function Customer.drawClock 0
 push argument 0
 pop pointer 0
+push argument 1
+push constant 4
+lt
+push argument 1
+push constant 507
+gt
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push argument 2
+push constant 4
+lt
+push argument 2
+push constant 251
+gt
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+return
+label IF_FALSE1
 push constant 0
 not
 call Screen.setColor 1
@@ -915,6 +941,32 @@ return
 function Customer.drawMenu 0
 push argument 0
 pop pointer 0
+push argument 1
+push constant 3
+lt
+push argument 1
+push constant 508
+gt
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push argument 2
+push constant 4
+lt
+push argument 2
+push constant 251
+gt
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+return
+label IF_FALSE1
 push constant 0
 not
 call Screen.setColor 1
@@ -997,6 +1049,32 @@ return
 function Customer.drawFork 0
 push argument 0
 pop pointer 0
+push argument 1
+push constant 2
+lt
+push argument 1
+push constant 509
+gt
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push argument 2
+push constant 3
+lt
+push argument 2
+push constant 249
+gt
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+return
+label IF_FALSE1
 push constant 0
 not
 call Screen.setColor 1

@@ -210,8 +210,12 @@ not
 call Screen.setColor 1
 pop temp 0
 push this 3
+push constant 0
+gt
+push this 3
 push constant 7
 lt
+and
 if-goto IF_TRUE5
 goto IF_FALSE5
 label IF_TRUE5
@@ -339,12 +343,23 @@ eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
 push constant 180
 push this 3
 push constant 1
 add
 call Math.divide 2
 pop local 2
+goto IF_END1
+label IF_FALSE1
+push constant 30
+pop local 2
+label IF_END1
 push this 0
 push constant 90
 sub
@@ -390,9 +405,9 @@ label WHILE_END0
 push this 5
 push constant 10
 lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
 push this 5
 push this 4
 add
@@ -408,7 +423,7 @@ pop this 5
 push constant 2
 neg
 return
-label IF_FALSE1
+label IF_FALSE2
 push constant 1
 neg
 return
@@ -500,12 +515,23 @@ eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
 push constant 180
 push this 3
 push constant 1
 add
 call Math.divide 2
 pop local 2
+goto IF_END1
+label IF_FALSE1
+push constant 30
+pop local 2
+label IF_END1
 push this 0
 push constant 90
 sub

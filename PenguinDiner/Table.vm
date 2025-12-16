@@ -355,22 +355,8 @@ return
 function Table.removeCustomer 0
 push argument 0
 pop pointer 0
-push this 3
-push constant 0
-eq
-not
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push this 3
-call Customer.erase 1
-pop temp 0
-push this 3
-call Customer.dispose 1
-pop temp 0
 push constant 0
 pop this 3
-label IF_FALSE0
 push constant 0
 pop this 2
 push constant 0

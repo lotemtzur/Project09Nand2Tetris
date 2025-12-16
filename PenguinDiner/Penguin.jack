@@ -104,6 +104,10 @@ class Penguin {
     
     /** Draws a food item at specified position */
     method void drawFoodInHand(int foodX, int foodY, int foodType) {
+        // Validate coordinates are within screen bounds
+        if ((foodX < 5) | (foodX > 506)) { return; }
+        if ((foodY < 0) | (foodY > 248)) { return; }
+        
         do Screen.setColor(true);
         
         if (foodType = 0) {

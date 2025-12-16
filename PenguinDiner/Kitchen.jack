@@ -85,7 +85,7 @@ class Kitchen {
         
         // Draw food slots markers dynamically based on maxFoodSlots
         do Screen.setColor(true);
-        if (maxFoodSlots < 7) {
+        if ((maxFoodSlots > 0) & (maxFoodSlots < 7)) {
             let slotSpacing = 180 / (maxFoodSlots + 1);
         } else {
             let slotSpacing = 25;
@@ -124,8 +124,12 @@ class Kitchen {
         while (i < maxFoodSlots) {
             let food = foodItems[i];
             if (food = null) {
-                // Calculate position for this slot dynamically
-                let slotSpacing = 180 / (maxFoodSlots + 1);
+                // Calculate position for this slot dynamically (with safety check)
+                if (maxFoodSlots > 0) {
+                    let slotSpacing = 180 / (maxFoodSlots + 1);
+                } else {
+                    let slotSpacing = 30;  // Fallback
+                }
                 let slotX = (x - 90) + ((i + 1) * slotSpacing);
                 
                 let foodItems[i] = FoodItem.new(slotX, y - 15, foodType);
@@ -178,8 +182,12 @@ class Kitchen {
         while (i < maxFoodSlots) {
             let food = foodItems[i];
             if (food = null) {
-                // Calculate position for this slot dynamically
-                let slotSpacing = 180 / (maxFoodSlots + 1);
+                // Calculate position for this slot dynamically (with safety check)
+                if (maxFoodSlots > 0) {
+                    let slotSpacing = 180 / (maxFoodSlots + 1);
+                } else {
+                    let slotSpacing = 30;  // Fallback
+                }
                 let slotX = (x - 90) + ((i + 1) * slotSpacing);
                 
                 let foodItems[i] = FoodItem.new(slotX, y - 15, foodType);

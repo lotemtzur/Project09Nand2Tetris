@@ -265,6 +265,32 @@ return
 function Penguin.drawFoodInHand 0
 push argument 0
 pop pointer 0
+push argument 1
+push constant 5
+lt
+push argument 1
+push constant 506
+gt
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push argument 2
+push constant 0
+lt
+push argument 2
+push constant 248
+gt
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+return
+label IF_FALSE1
 push constant 0
 not
 call Screen.setColor 1
@@ -272,9 +298,9 @@ pop temp 0
 push argument 3
 push constant 0
 eq
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
 push argument 1
 push constant 3
 sub
@@ -315,13 +341,13 @@ push constant 5
 add
 call Screen.drawRectangle 4
 pop temp 0
-label IF_FALSE0
+label IF_FALSE2
 push argument 3
 push constant 1
 eq
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push argument 1
 push argument 2
 push argument 1
@@ -356,13 +382,13 @@ push constant 5
 add
 call Screen.drawLine 4
 pop temp 0
-label IF_FALSE1
+label IF_FALSE3
 push argument 3
 push constant 2
 eq
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push argument 1
 push argument 2
 push constant 2
@@ -398,7 +424,7 @@ push constant 3
 add
 call Screen.drawLine 4
 pop temp 0
-label IF_FALSE2
+label IF_FALSE4
 push constant 0
 return
 function Penguin.erase 0

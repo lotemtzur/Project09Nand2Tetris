@@ -111,13 +111,11 @@ class Table {
         return;
     }
     
-    /** Remove customer from table */
+    /** Remove customer from table (does NOT dispose - game handles that) */
     method void removeCustomer() {
-        if (~(customer = null)) {
-            do customer.erase();
-            do customer.dispose();
-            let customer = null;
-        }
+        // Just clear the reference - don't dispose!
+        // The game will handle disposal after removing from customers array
+        let customer = null;
         let occupied = false;
         return;
     }
