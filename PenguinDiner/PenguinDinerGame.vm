@@ -861,7 +861,7 @@ return
 label IF_FALSE0
 push this 8
 return
-function PenguinDinerGame.spawnCustomer 13
+function PenguinDinerGame.spawnCustomer 10
 push argument 0
 pop pointer 0
 push this 10
@@ -887,32 +887,16 @@ pop local 4
 push local 4
 push this 19
 lt
-pop local 10
-push local 10
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push this 5
-push this 6
-push constant 2
-sub
-gt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push constant 0
-pop local 10
-label IF_FALSE1
-label IF_FALSE0
+pop local 8
 push this 5
 push this 6
 lt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push this 6
 call Array.new 1
-pop local 9
+pop local 7
 push constant 0
 pop local 0
 label WHILE_EXP0
@@ -922,7 +906,7 @@ lt
 not
 if-goto WHILE_END0
 push local 0
-push local 9
+push local 7
 add
 push constant 0
 pop temp 0
@@ -948,22 +932,22 @@ push this 2
 add
 pop pointer 1
 push that 0
-pop local 7
-push local 7
+pop local 6
+push local 6
 push constant 0
 eq
 not
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push local 7
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 6
 call Customer.getState 1
 push constant 0
 eq
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
-push local 7
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 6
 call Customer.getQueuePosition 1
 pop local 3
 push local 3
@@ -974,20 +958,20 @@ push local 3
 push this 6
 lt
 and
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push local 3
-push local 9
+push local 7
 add
 push constant 1
 pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_FALSE5
-label IF_FALSE4
 label IF_FALSE3
+label IF_FALSE2
+label IF_FALSE1
 push local 0
 push constant 1
 add
@@ -997,9 +981,7 @@ label WHILE_END1
 push constant 0
 pop local 1
 push constant 0
-pop local 11
-push constant 0
-pop local 12
+pop local 9
 label WHILE_EXP2
 push local 1
 push this 6
@@ -1007,15 +989,15 @@ lt
 not
 if-goto WHILE_END2
 push local 1
-push local 9
+push local 7
 add
 pop pointer 1
 push that 0
 push constant 0
 eq
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 call GameConfig.getQueueStartY 0
 push local 1
 call GameConfig.getQueueSpacing 0
@@ -1028,7 +1010,7 @@ label WHILE_EXP3
 push local 0
 push this 6
 lt
-push local 11
+push local 9
 not
 and
 not
@@ -1040,102 +1022,39 @@ pop pointer 1
 push that 0
 push constant 0
 eq
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push local 0
 pop local 5
 push constant 0
 not
-pop local 11
-label IF_FALSE7
+pop local 9
+label IF_FALSE5
 push local 0
 push constant 1
 add
 pop local 0
 goto WHILE_EXP3
 label WHILE_END3
-push local 11
-if-goto IF_TRUE8
-goto IF_FALSE8
-label IF_TRUE8
+push local 9
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
 call GameConfig.getQueueX 0
 push local 2
 push constant 0
-call Customer.new 3
-pop local 7
-push local 7
+push local 8
+call Customer.new 4
+pop local 6
+push local 6
 push local 1
 call Customer.setQueuePosition 2
 pop temp 0
 push local 5
 push this 2
 add
-push local 7
-pop temp 0
-pop pointer 1
-push temp 0
-pop that 0
-push this 5
-push constant 1
-add
-pop this 5
-push local 10
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
-push constant 0
-pop local 0
-label WHILE_EXP4
-push local 0
-push this 6
-lt
-push local 12
-not
-and
-not
-if-goto WHILE_END4
-push local 0
-push this 2
-add
-pop pointer 1
-push that 0
-push constant 0
-eq
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
-push local 0
-pop local 6
-push constant 0
-not
-pop local 12
-label IF_FALSE10
-push local 0
-push constant 1
-add
-pop local 0
-goto WHILE_EXP4
-label WHILE_END4
-push local 12
-if-goto IF_TRUE11
-goto IF_FALSE11
-label IF_TRUE11
-call GameConfig.getQueueX 0
-push constant 15
-add
-push local 2
-push constant 0
-call Customer.new 3
-pop local 8
-push local 8
-push local 1
-call Customer.setQueuePosition 2
-pop temp 0
 push local 6
-push this 2
-add
-push local 8
 pop temp 0
 pop pointer 1
 push temp 0
@@ -1144,42 +1063,23 @@ push this 5
 push constant 1
 add
 pop this 5
-push local 7
-push local 8
-call Customer.setPair 2
-pop temp 0
-push local 7
-push constant 0
-not
-call Customer.setIsPairLeader 2
-pop temp 0
-push local 8
-push local 7
-call Customer.setPair 2
-pop temp 0
-push local 8
-push constant 0
-call Customer.setIsPairLeader 2
-pop temp 0
-label IF_FALSE11
-label IF_FALSE9
 push pointer 0
 call PenguinDinerGame.updateDisplay 1
 pop temp 0
 push this 6
 pop local 1
-label IF_FALSE8
 label IF_FALSE6
+label IF_FALSE4
 push local 1
 push constant 1
 add
 pop local 1
 goto WHILE_EXP2
 label WHILE_END2
-push local 9
+push local 7
 call Array.dispose 1
 pop temp 0
-label IF_FALSE2
+label IF_FALSE0
 push constant 0
 return
 function PenguinDinerGame.isNear 3
@@ -1230,7 +1130,7 @@ push argument 0
 pop pointer 0
 push constant 0
 return
-function PenguinDinerGame.handleSeat 15
+function PenguinDinerGame.handleSeat 12
 push argument 0
 pop pointer 0
 push constant 10000
@@ -1239,9 +1139,9 @@ push constant 1
 neg
 pop local 5
 push constant 0
-pop local 13
+pop local 11
 call GameConfig.getNearDistance 0
-pop local 12
+pop local 10
 push constant 0
 pop local 0
 label WHILE_EXP0
@@ -1255,72 +1155,63 @@ push this 2
 add
 pop pointer 1
 push that 0
-pop local 7
-push local 7
+pop local 6
+push local 6
 push constant 0
 eq
 not
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push local 7
+push local 6
 call Customer.getState 1
 push constant 0
 eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push local 7
-call Customer.isPair 1
-not
-push local 7
-call Customer.getIsPairLeader 1
-or
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
 push this 0
 call Penguin.getX 1
-push local 7
+push local 6
 call Customer.getX 1
 sub
 pop local 1
 push this 0
 call Penguin.getY 1
-push local 7
+push local 6
 call Customer.getY 1
 sub
 pop local 2
 push local 1
 push constant 0
 lt
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
 push local 1
 neg
 pop local 1
-label IF_FALSE3
+label IF_FALSE2
 push local 2
 push constant 0
 lt
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push local 2
 neg
 pop local 2
-label IF_FALSE4
+label IF_FALSE3
 push local 1
-push local 12
+push local 10
 lt
 push local 2
-push local 12
+push local 10
 lt
 and
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push local 1
 push local 2
 add
@@ -1328,19 +1219,18 @@ pop local 3
 push local 3
 push local 4
 lt
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push local 3
 pop local 4
 push local 0
 pop local 5
 push constant 0
 not
-pop local 13
-label IF_FALSE6
+pop local 11
 label IF_FALSE5
-label IF_FALSE2
+label IF_FALSE4
 label IF_FALSE1
 label IF_FALSE0
 push local 0
@@ -1349,91 +1239,54 @@ add
 pop local 0
 goto WHILE_EXP0
 label WHILE_END0
-push local 13
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
+push local 11
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
 push local 5
 push this 2
 add
 pop pointer 1
 push that 0
-pop local 8
+pop local 7
 push constant 0
-pop local 11
+pop local 9
 label WHILE_EXP1
-push local 11
+push local 9
 push this 4
 lt
 not
 if-goto WHILE_END1
-push local 11
+push local 9
 push this 1
 add
 pop pointer 1
 push that 0
-pop local 10
-push local 10
+pop local 8
+push local 8
 call Table.isOccupied 1
 not
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push local 8
+push local 7
+call Table.seatCustomer 2
+pop temp 0
+push local 7
+call Customer.getIsPair 1
 if-goto IF_TRUE8
 goto IF_FALSE8
 label IF_TRUE8
-push local 10
+push local 7
 push local 8
-call Table.seatCustomer 2
-pop temp 0
-push local 8
-call Customer.isPair 1
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
-push local 8
-call Customer.getPair 1
-pop local 9
-push local 9
-push constant 0
-eq
-not
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
-push local 8
-push local 10
 call Table.getX 1
-push constant 23
-sub
-push local 10
+push local 8
 call Table.getY 1
 call Customer.moveTo 3
 pop temp 0
-push local 8
-push constant 0
-not
-call Customer.setSeatedOnLeft 2
-pop temp 0
-push local 8
-call Customer.seat 1
-pop temp 0
-push local 9
-push local 10
-call Table.getX 1
-push constant 23
-add
-push local 10
-call Table.getY 1
-call Customer.moveTo 3
-pop temp 0
-push local 9
-push constant 0
-call Customer.setSeatedOnLeft 2
-pop temp 0
-push local 9
-call Customer.seat 1
-pop temp 0
-label IF_FALSE10
-goto IF_END9
-label IF_FALSE9
+goto IF_END8
+label IF_FALSE8
 push this 10
 push this 10
 push constant 2
@@ -1441,49 +1294,45 @@ call Math.divide 2
 push constant 2
 call Math.multiply 2
 sub
-pop local 6
-push local 6
 push constant 0
 eq
-pop local 14
-push local 14
-if-goto IF_TRUE11
-goto IF_FALSE11
-label IF_TRUE11
-push local 8
-push local 10
-call Table.getX 1
-push constant 23
-sub
-push local 10
-call Table.getY 1
-call Customer.moveTo 3
-pop temp 0
-push local 8
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push local 7
 push constant 0
 not
-call Customer.setSeatedOnLeft 2
+call Customer.setSitsOnLeft 2
 pop temp 0
-goto IF_END11
-label IF_FALSE11
+push local 7
 push local 8
-push local 10
 call Table.getX 1
-push constant 23
-add
-push local 10
+push constant 20
+sub
+push local 8
 call Table.getY 1
 call Customer.moveTo 3
 pop temp 0
-push local 8
+goto IF_END9
+label IF_FALSE9
+push local 7
 push constant 0
-call Customer.setSeatedOnLeft 2
+call Customer.setSitsOnLeft 2
 pop temp 0
-label IF_END11
+push local 7
 push local 8
-call Customer.seat 1
+call Table.getX 1
+push constant 20
+add
+push local 8
+call Table.getY 1
+call Customer.moveTo 3
 pop temp 0
 label IF_END9
+label IF_END8
+push local 7
+call Customer.seat 1
+pop temp 0
 push pointer 0
 call PenguinDinerGame.updateQueue 1
 pop temp 0
@@ -1491,18 +1340,18 @@ push pointer 0
 call PenguinDinerGame.redrawAll 1
 pop temp 0
 push this 4
-pop local 11
-label IF_FALSE8
-push local 11
+pop local 9
+label IF_FALSE7
+push local 9
 push constant 1
 add
-pop local 11
+pop local 9
 goto WHILE_EXP1
 label WHILE_END1
-label IF_FALSE7
+label IF_FALSE6
 push constant 0
 return
-function PenguinDinerGame.handleTakeOrder 5
+function PenguinDinerGame.handleTakeOrder 4
 push argument 0
 pop pointer 0
 push constant 0
@@ -1587,20 +1436,10 @@ push local 1
 call Kitchen.addOrder 2
 pop temp 0
 push local 3
-call Customer.isPair 1
+call Customer.getIsPair 1
 if-goto IF_TRUE4
 goto IF_FALSE4
 label IF_TRUE4
-push local 3
-call Customer.getPair 1
-pop local 4
-push local 4
-push constant 0
-eq
-not
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
 push this 10
 push this 0
 call Penguin.getY 1
@@ -1622,9 +1461,9 @@ pop local 2
 push local 2
 push constant 2
 gt
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push local 2
 push local 2
 push constant 3
@@ -1633,19 +1472,15 @@ push constant 3
 call Math.multiply 2
 sub
 pop local 2
-label IF_FALSE6
-push local 4
+label IF_FALSE5
+push local 3
 push local 2
-call Customer.setFoodType 2
-pop temp 0
-push local 4
-call Customer.takeOrder 1
+call Customer.setFoodType2 2
 pop temp 0
 push this 3
 push local 2
 call Kitchen.addOrder 2
 pop temp 0
-label IF_FALSE5
 label IF_FALSE4
 push this 6
 pop local 0
@@ -1770,7 +1605,7 @@ label IF_FALSE6
 label IF_FALSE5
 push constant 0
 return
-function PenguinDinerGame.handleServe 2
+function PenguinDinerGame.handleServe 3
 push argument 0
 pop pointer 0
 push this 0
@@ -1779,11 +1614,16 @@ if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push constant 0
+pop local 2
+push constant 0
 pop local 0
 label WHILE_EXP0
 push local 0
 push this 6
 lt
+push local 2
+not
+and
 not
 if-goto WHILE_END0
 push local 0
@@ -1816,7 +1656,19 @@ if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
 push local 1
-call Customer.serveFood 1
+call Customer.getIsPair 1
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 1
+call Customer.isMeal1Served 1
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 1
+push constant 1
+call Customer.serveFood 2
 pop temp 0
 push this 0
 call Penguin.deliverOrder 1
@@ -1824,8 +1676,48 @@ pop temp 0
 push pointer 0
 call PenguinDinerGame.redrawAll 1
 pop temp 0
-push this 6
-pop local 0
+push constant 0
+not
+pop local 2
+goto IF_END5
+label IF_FALSE5
+push local 1
+call Customer.isMeal2Served 1
+not
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push local 1
+push constant 2
+call Customer.serveFood 2
+pop temp 0
+push this 0
+call Penguin.deliverOrder 1
+pop temp 0
+push pointer 0
+call PenguinDinerGame.redrawAll 1
+pop temp 0
+push constant 0
+not
+pop local 2
+label IF_FALSE6
+label IF_END5
+goto IF_END4
+label IF_FALSE4
+push local 1
+push constant 0
+call Customer.serveFood 2
+pop temp 0
+push this 0
+call Penguin.deliverOrder 1
+pop temp 0
+push pointer 0
+call PenguinDinerGame.redrawAll 1
+pop temp 0
+push constant 0
+not
+pop local 2
+label IF_END4
 label IF_FALSE3
 label IF_FALSE2
 label IF_FALSE1
@@ -1838,7 +1730,7 @@ label WHILE_END0
 label IF_FALSE0
 push constant 0
 return
-function PenguinDinerGame.handleCollect 8
+function PenguinDinerGame.handleCollect 6
 push argument 0
 pop pointer 0
 push constant 0
@@ -1854,200 +1746,93 @@ push this 2
 add
 pop pointer 1
 push that 0
-pop local 2
-push local 2
+pop local 1
+push local 1
 push constant 0
 eq
 not
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push local 2
+push local 1
 call Customer.isReadyToLeave 1
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
 push pointer 0
-push local 2
+push local 1
 call Customer.getX 1
-push local 2
+push local 1
 call Customer.getY 1
 call PenguinDinerGame.isNear 3
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
-push constant 0
-pop local 7
-push local 2
-call Customer.isPair 1
-not
+push local 1
+call Customer.collectPayment 1
+pop local 3
+push local 1
+call Customer.getIsPair 1
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
-push constant 0
-not
-pop local 7
+push this 8
+push local 3
+push constant 2
+call Math.multiply 2
+add
+pop this 8
+push constant 2
+pop local 5
 goto IF_END3
 label IF_FALSE3
-push local 2
-call Customer.getPair 1
-pop local 3
+push this 8
 push local 3
-push constant 0
-eq
-not
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
-push local 3
-call Customer.isReadyToLeave 1
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
-push constant 0
-not
-pop local 7
-label IF_FALSE5
-label IF_FALSE4
+add
+pop this 8
+push constant 1
+pop local 5
 label IF_END3
-push local 7
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
-push local 2
-call Customer.collectPayment 1
-pop local 5
-push this 8
+push this 7
 push local 5
 add
-pop this 8
-push this 7
-push constant 1
-add
 pop this 7
-push local 2
-call Customer.isPair 1
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
-push local 2
-call Customer.getPair 1
-pop local 3
-push local 3
 push constant 0
-eq
-not
-if-goto IF_TRUE8
-goto IF_FALSE8
-label IF_TRUE8
-push local 3
-call Customer.collectPayment 1
-pop local 5
-push this 8
-push local 5
-add
-pop this 8
-push this 7
-push constant 1
-add
-pop this 7
-push local 2
-push constant 0
-call Customer.setPair 2
-pop temp 0
-push local 3
-push constant 0
-call Customer.setPair 2
-pop temp 0
-push constant 0
-pop local 1
+pop local 4
 label WHILE_EXP1
-push local 1
-push this 6
-lt
-not
-if-goto WHILE_END1
-push local 1
-push this 2
-add
-pop pointer 1
-push that 0
-push local 3
-eq
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
-push local 3
-call Customer.erase 1
-pop temp 0
-push local 3
-call Customer.dispose 1
-pop temp 0
-push local 1
-push this 2
-add
-push constant 0
-pop temp 0
-pop pointer 1
-push temp 0
-pop that 0
-push this 5
-push constant 1
-sub
-pop this 5
-push this 6
-pop local 1
-label IF_FALSE9
-push local 1
-push constant 1
-add
-pop local 1
-goto WHILE_EXP1
-label WHILE_END1
-label IF_FALSE8
-label IF_FALSE7
-push constant 0
-pop local 6
-label WHILE_EXP2
-push local 6
+push local 4
 push this 4
 lt
 not
-if-goto WHILE_END2
-push local 6
+if-goto WHILE_END1
+push local 4
 push this 1
 add
 pop pointer 1
 push that 0
-pop local 4
-push local 4
-call Table.getCustomer 1
+pop local 2
 push local 2
+call Table.getCustomer 1
+push local 1
 eq
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
-push local 4
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 2
 call Table.erasePaymentIndicator 1
 pop temp 0
-push local 4
+push local 2
 call Table.removeCustomer 1
 pop temp 0
 push this 4
-pop local 6
-label IF_FALSE10
-push local 6
+pop local 4
+label IF_FALSE4
+push local 4
 push constant 1
 add
-pop local 6
-goto WHILE_EXP2
-label WHILE_END2
-push local 2
-call Customer.erase 1
-pop temp 0
-push local 2
-call Customer.dispose 1
-pop temp 0
+pop local 4
+goto WHILE_EXP1
+label WHILE_END1
 push local 0
 push this 2
 add
@@ -2060,6 +1845,12 @@ push this 5
 push constant 1
 sub
 pop this 5
+push local 1
+call Customer.erase 1
+pop temp 0
+push local 1
+call Customer.dispose 1
+pop temp 0
 push pointer 0
 call PenguinDinerGame.updateDisplay 1
 pop temp 0
@@ -2068,7 +1859,6 @@ call PenguinDinerGame.redrawAll 1
 pop temp 0
 push this 6
 pop local 0
-label IF_FALSE6
 label IF_FALSE2
 label IF_FALSE1
 label IF_FALSE0
@@ -2499,7 +2289,7 @@ if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
 push local 2
-call Customer.bothReadyToPay 1
+call Customer.isReadyToLeave 1
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
@@ -2695,90 +2485,18 @@ push local 3
 call Customer.getFoodType 1
 call Kitchen.cancelOrder 2
 pop temp 0
-label IF_FALSE12
 push local 3
-call Customer.isPair 1
+call Customer.getIsPair 1
 if-goto IF_TRUE13
 goto IF_FALSE13
 label IF_TRUE13
-push local 3
-call Customer.getPair 1
-pop local 4
-push local 4
-push constant 0
-eq
-not
-if-goto IF_TRUE14
-goto IF_FALSE14
-label IF_TRUE14
-push local 4
-call Customer.getState 1
-push constant 2
-eq
-if-goto IF_TRUE15
-goto IF_FALSE15
-label IF_TRUE15
 push this 3
-push local 4
-call Customer.getFoodType 1
+push local 3
+call Customer.getFoodType2 1
 call Kitchen.cancelOrder 2
 pop temp 0
-label IF_FALSE15
-push local 3
-push constant 0
-call Customer.setPair 2
-pop temp 0
-push local 4
-push constant 0
-call Customer.setPair 2
-pop temp 0
-push constant 0
-pop local 1
-label WHILE_EXP2
-push local 1
-push this 6
-lt
-not
-if-goto WHILE_END2
-push local 1
-push this 2
-add
-pop pointer 1
-push that 0
-push local 4
-eq
-if-goto IF_TRUE16
-goto IF_FALSE16
-label IF_TRUE16
-push local 1
-push this 2
-add
-push constant 0
-pop temp 0
-pop pointer 1
-push temp 0
-pop that 0
-push this 5
-push constant 1
-sub
-pop this 5
-push this 6
-pop local 1
-label IF_FALSE16
-push local 1
-push constant 1
-add
-pop local 1
-goto WHILE_EXP2
-label WHILE_END2
-push local 4
-call Customer.erase 1
-pop temp 0
-push local 4
-call Customer.dispose 1
-pop temp 0
-label IF_FALSE14
 label IF_FALSE13
+label IF_FALSE12
 push local 0
 push this 2
 add
@@ -2806,13 +2524,13 @@ pop temp 0
 push this 15
 push constant 1
 lt
-if-goto IF_TRUE17
-goto IF_FALSE17
-label IF_TRUE17
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
 push constant 0
 not
 pop this 11
-label IF_FALSE17
+label IF_FALSE14
 label IF_FALSE10
 label IF_END9
 label IF_FALSE8
@@ -2829,16 +2547,16 @@ push this 16
 push constant 1
 sub
 gt
-if-goto IF_TRUE18
-goto IF_FALSE18
-label IF_TRUE18
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
 push constant 0
 not
 pop this 20
 push constant 0
 not
 pop this 11
-label IF_FALSE18
+label IF_FALSE15
 push constant 0
 return
 function PenguinDinerGame.clearReadyMessage 0

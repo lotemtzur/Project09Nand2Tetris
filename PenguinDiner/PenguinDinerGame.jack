@@ -224,21 +224,14 @@ class PenguinDinerGame {
     
     /** Spawns new customer(s) - sometimes pairs */
     method void spawnCustomer() {
-        var int i, queuePos, queueY, checkPos, rand, slot1, slot2;
-        var Customer customer, customer2;
+        var int i, queuePos, queueY, checkPos, rand, slot1;
+        var Customer customer;
         var Array queuePositions;
-        var boolean isPair, foundSlot1, foundSlot2;
+        var boolean isPair, foundSlot1;
         
         // Decide if this is a pair - using level-specific threshold
         let rand = (customerTimer + penguin.getX() + penguin.getY()) - (((customerTimer + penguin.getX() + penguin.getY()) / GameConfig.getPairRandomPrime()) * GameConfig.getPairRandomPrime());
         let isPair = rand < pairThreshold;
-        
-        // Check if we have space for pair (need 2 slots) or solo (need 1 slot)
-        if (isPair) {
-            if (numCustomers > (maxCustomers - 2)) {
-                let isPair = false;  // Not enough space for pair
-            }
-        }
         
         // Only spawn if there's space
         if (numCustomers < maxCustomers) {
@@ -268,13 +261,12 @@ class PenguinDinerGame {
             // Find first free queue position
             let queuePos = 0;
             let foundSlot1 = false;
-            let foundSlot2 = false;
             
             while (queuePos < maxCustomers) {
                 if (queuePositions[queuePos] = 0) {
                     let queueY = GameConfig.getQueueStartY() + (queuePos * GameConfig.getQueueSpacing());
                     
-                    // Find empty customer slot for first customer
+                    // Find empty customer slot
                     let i = 0;
                     while ((i < maxCustomers) & (~foundSlot1)) {
                         if (customers[i] = null) {
@@ -285,37 +277,11 @@ class PenguinDinerGame {
                     }
                     
                     if (foundSlot1) {
-                        // Create first customer
-                        let customer = Customer.new(GameConfig.getQueueX(), queueY, 0);
+                        // Create customer (solo or pair)
+                        let customer = Customer.new(GameConfig.getQueueX(), queueY, 0, isPair);
                         do customer.setQueuePosition(queuePos);
                         let customers[slot1] = customer;
                         let numCustomers = numCustomers + 1;
-                        
-                        // If pair, create second customer right next to first
-                        if (isPair) {
-                            let i = 0;
-                            while ((i < maxCustomers) & (~foundSlot2)) {
-                                if (customers[i] = null) {
-                                    let slot2 = i;
-                                    let foundSlot2 = true;
-                                }
-                                let i = i + 1;
-                            }
-                            
-                            if (foundSlot2) {
-                                // Create partner 15 pixels to the right
-                                let customer2 = Customer.new(GameConfig.getQueueX() + 15, queueY, 0);
-                                do customer2.setQueuePosition(queuePos);
-                                let customers[slot2] = customer2;
-                                let numCustomers = numCustomers + 1;
-                                
-                                // Link them as a pair
-                                do customer.setPair(customer2);
-                                do customer.setIsPairLeader(true);
-                                do customer2.setPair(customer);
-                                do customer2.setIsPairLeader(false);
-                            }
-                        }
                         
                         do updateDisplay();
                         let queuePos = maxCustomers;  // exit
@@ -352,39 +318,36 @@ class PenguinDinerGame {
         return;
     }
     
-    /** Handle seating action - seats pairs together at same table */
+    /** Handle seating action - seats customers at table */
     method void handleSeat() {
-        var int i, dx, dy, dist, minDist, nearestCustomerIndex, sideRand;
-        var Customer customer, nearestCustomer, partner;
+        var int i, dx, dy, dist, minDist, nearestCustomerIndex;
+        var Customer customer, nearestCustomer;
         var Table table;
         var int tableId, nearDist;
-        var boolean foundCustomer, seatLeft;
+        var boolean foundCustomer;
         
         let minDist = 10000;  // Large number
         let nearestCustomerIndex = -1;
         let foundCustomer = false;
         let nearDist = GameConfig.getNearDistance();
         
-        // Find the NEAREST waiting customer within range (only pair leaders or solo)
+        // Find the NEAREST waiting customer within range
         let i = 0;
         while (i < maxCustomers) {
             let customer = customers[i];
             if (~(customer = null)) {
                 if (customer.getState() = 0) {
-                    // Only consider if solo OR pair leader (not pair follower)
-                    if ((~customer.isPair()) | customer.getIsPairLeader()) {
-                        let dx = penguin.getX() - customer.getX();
-                        let dy = penguin.getY() - customer.getY();
-                        if (dx < 0) { let dx = -dx; }
-                        if (dy < 0) { let dy = -dy; }
-                        
-                        if ((dx < nearDist) & (dy < nearDist)) {
-                            let dist = dx + dy;
-                            if (dist < minDist) {
-                                let minDist = dist;
-                                let nearestCustomerIndex = i;
-                                let foundCustomer = true;
-                            }
+                    let dx = penguin.getX() - customer.getX();
+                    let dy = penguin.getY() - customer.getY();
+                    if (dx < 0) { let dx = -dx; }
+                    if (dy < 0) { let dy = -dy; }
+                    
+                    if ((dx < nearDist) & (dy < nearDist)) {
+                        let dist = dx + dy;
+                        if (dist < minDist) {
+                            let minDist = dist;
+                            let nearestCustomerIndex = i;
+                            let foundCustomer = true;
                         }
                     }
                 }
@@ -392,7 +355,7 @@ class PenguinDinerGame {
             let i = i + 1;
         }
         
-        // If we found a nearby customer, seat them (and partner if pair)
+        // If we found a nearby customer, seat them
         if (foundCustomer) {
             let nearestCustomer = customers[nearestCustomerIndex];
             
@@ -403,37 +366,24 @@ class PenguinDinerGame {
                 if (~(table.isOccupied())) {
                     do table.seatCustomer(nearestCustomer);
                     
-                    // If this is a pair, check partner exists BEFORE seating
-                    if (nearestCustomer.isPair()) {
-                        let partner = nearestCustomer.getPair();
-                        
-                        // Only seat if partner still exists
-                        if (~(partner = null)) {
-                            // Leader on left
-                            do nearestCustomer.moveTo(table.getX() - 23, table.getY());
-                            do nearestCustomer.setSeatedOnLeft(true);
-                            do nearestCustomer.seat();
-                            
-                            // Partner on right
-                            do partner.moveTo(table.getX() + 23, table.getY());
-                            do partner.setSeatedOnLeft(false);
-                            do partner.seat();
-                        }
+                    // Position customer based on type
+                    if (nearestCustomer.getIsPair()) {
+                        // Pair sits at table center
+                        do nearestCustomer.moveTo(table.getX(), table.getY());
                     } else {
-                        // Solo customer - random 50/50 left or right using timer
-                        let sideRand = customerTimer - ((customerTimer / 2) * 2);
-                        let seatLeft = sideRand = 0;
-                        
-                        if (seatLeft) {
-                            do nearestCustomer.moveTo(table.getX() - 23, table.getY());
-                            do nearestCustomer.setSeatedOnLeft(true);
+                        // Solo sits on left or right chair (50/50 random using timer)
+                        if ((customerTimer - ((customerTimer / 2) * 2)) = 0) {
+                            // Even timer = left chair
+                            do nearestCustomer.setSitsOnLeft(true);
+                            do nearestCustomer.moveTo(table.getX() - 20, table.getY());
                         } else {
-                            do nearestCustomer.moveTo(table.getX() + 23, table.getY());
-                            do nearestCustomer.setSeatedOnLeft(false);
+                            // Odd timer = right chair
+                            do nearestCustomer.setSitsOnLeft(false);
+                            do nearestCustomer.moveTo(table.getX() + 20, table.getY());
                         }
-                        do nearestCustomer.seat();
                     }
                     
+                    do nearestCustomer.seat();
                     do updateQueue();
                     do redrawAll();
                     let tableId = numTables; // exit
@@ -448,7 +398,7 @@ class PenguinDinerGame {
     /** Handle take order action - takes orders from pairs (2 meals) or solo (1 meal) */
     method void handleTakeOrder() {
         var int i, foodType, foodType2;
-        var Customer customer, partner;
+        var Customer customer;
         
         let i = 0;
         while (i < maxCustomers) {
@@ -469,19 +419,15 @@ class PenguinDinerGame {
                         // Send order to kitchen
                         do kitchen.addOrder(foodType);
                         
-                        // If part of pair, order for partner too!
-                        if (customer.isPair()) {
-                            let partner = customer.getPair();
-                            if (~(partner = null)) {
-                                // Different food for partner using prime mod 11 and penguin Y
-                                let foodType2 = (customerTimer + penguin.getY() + i) - (((customerTimer + penguin.getY() + i) / 11) * 11);
-                                if (foodType2 > 2) {
-                                    let foodType2 = foodType2 - ((foodType2 / 3) * 3);  // Map to 0-2
-                                }
-                                do partner.setFoodType(foodType2);
-                                do partner.takeOrder();
-                                do kitchen.addOrder(foodType2);  // Will queue if kitchen full
+                        // If pair, order second meal too
+                        if (customer.getIsPair()) {
+                            // Different food for second meal using prime mod 11 and penguin Y
+                            let foodType2 = (customerTimer + penguin.getY() + i) - (((customerTimer + penguin.getY() + i) / 11) * 11);
+                            if (foodType2 > 2) {
+                                let foodType2 = foodType2 - ((foodType2 / 3) * 3);  // Map to 0-2
                             }
+                            do customer.setFoodType2(foodType2);
+                            do kitchen.addOrder(foodType2);  // Will queue if kitchen full
                         }
                         
                         let i = maxCustomers; // exit
@@ -547,18 +493,41 @@ class PenguinDinerGame {
     method void handleServe() {
         var int i;
         var Customer customer;
+        var boolean served;
         
         if (penguin.getHasOrder()) {
+            let served = false;
+            
             let i = 0;
-            while (i < maxCustomers) {
+            while ((i < maxCustomers) & (~served)) {
                 let customer = customers[i];
                 if (~(customer = null)) {
+                    // Check if customer is waiting for food (state 2)
                     if (customer.getState() = 2) {
                         if (isNear(customer.getX(), customer.getY())) {
-                            do customer.serveFood();
-                            do penguin.deliverOrder();
-                            do redrawAll();  // Redraw to show food!
-                            let i = maxCustomers; // exit
+                            // Serve food regardless of type
+                            if (customer.getIsPair()) {
+                                // Pair customer - serve to whichever meal slot is empty
+                                if (~customer.isMeal1Served()) {
+                                    do customer.serveFood(1);  // Serve meal 1
+                                    do penguin.deliverOrder();
+                                    do redrawAll();
+                                    let served = true;
+                                } else {
+                                    if (~customer.isMeal2Served()) {
+                                        do customer.serveFood(2);  // Serve meal 2
+                                        do penguin.deliverOrder();
+                                        do redrawAll();
+                                        let served = true;
+                                    }
+                                }
+                            } else {
+                                // Solo customer - just serve
+                                do customer.serveFood(0);  // 0 for solo (ignored)
+                                do penguin.deliverOrder();
+                                do redrawAll();
+                                let served = true;
+                            }
                         }
                     }
                 }
@@ -568,14 +537,12 @@ class PenguinDinerGame {
         return;
     }
     
-    /** Handle collect payment - collects from both customers if pair */
+    /** Handle collect payment - collects from customer */
     method void handleCollect() {
-        var int i, j;
-        var Customer customer, partner;
+        var int i;
+        var Customer customer;
         var Table table;
-        var int payment;
-        var int tableId;
-        var boolean canCollect;
+        var int payment, tableId, customersCount;
         
         let i = 0;
         while (i < maxCustomers) {
@@ -583,75 +550,42 @@ class PenguinDinerGame {
             if (~(customer = null)) {
                 if (customer.isReadyToLeave()) {
                     if (isNear(customer.getX(), customer.getY())) {
-                        // Check if we can collect (solo OR both in pair are ready)
-                        let canCollect = false;
-                        
-                        if (~customer.isPair()) {
-                            let canCollect = true;  // Solo customer - always OK
+                        // Collect payment - pairs pay for 2 meals
+                        let payment = customer.collectPayment();
+                        if (customer.getIsPair()) {
+                            // Pair pays double (2 meals)
+                            let score = score + (payment * 2);
+                            let customersCount = 2;
                         } else {
-                            // Pair - check if BOTH are ready
-                            let partner = customer.getPair();
-                            if (~(partner = null)) {
-                                if (partner.isReadyToLeave()) {
-                                    let canCollect = true;  // Both ready - OK to collect
-                                }
+                            // Solo pays normal
+                            let score = score + payment;
+                            let customersCount = 1;
+                        }
+                        let totalCustomersServed = totalCustomersServed + customersCount;
+                        
+                        // Find and clear table
+                        let tableId = 0;
+                        while (tableId < numTables) {
+                            let table = tables[tableId];
+                            if (table.getCustomer() = customer) {
+                                do table.erasePaymentIndicator();
+                                do table.removeCustomer();
+                                let tableId = numTables; // exit
                             }
+                            let tableId = tableId + 1;
                         }
                         
-                        // Only collect if allowed
-                        if (canCollect) {
-                            // Collect from this customer
-                            let payment = customer.collectPayment();
-                            let score = score + payment;
-                            let totalCustomersServed = totalCustomersServed + 1;
-                            
-                            // If part of pair, collect from partner too BEFORE disposing
-                            if (customer.isPair()) {
-                                let partner = customer.getPair();
-                                if (~(partner = null)) {
-                                    let payment = partner.collectPayment();
-                                    let score = score + payment;
-                                    let totalCustomersServed = totalCustomersServed + 1;
-                                    
-                                    // Clear pair links BEFORE disposing
-                                    do customer.setPair(null);
-                                    do partner.setPair(null);
-                                    
-                                    // Remove partner from customers array
-                                    let j = 0;
-                                    while (j < maxCustomers) {
-                                        if (customers[j] = partner) {
-                                            do partner.erase();
-                                            do partner.dispose();
-                                            let customers[j] = null;
-                                            let numCustomers = numCustomers - 1;
-                                            let j = maxCustomers; // exit
-                                        }
-                                        let j = j + 1;
-                                    }
-                                }
-                            }
-                            
-                            // Find and clear table (erase $ sign first)
-                            let tableId = 0;
-                            while (tableId < numTables) {
-                                let table = tables[tableId];
-                                if (table.getCustomer() = customer) {
-                                    do table.erasePaymentIndicator();  // Erase $ before removing customer
-                                    do table.removeCustomer();
-                                    let tableId = numTables; // exit
-                                }
-                                let tableId = tableId + 1;
-                            }
-                            
-                            do customer.erase();
-                            do customer.dispose();
-                            let customers[i] = null;
-                            let numCustomers = numCustomers - 1;
-                            do updateDisplay();
-                            do redrawAll();
-                            let i = maxCustomers; // exit
-                        }
+                        // Remove customer from array
+                        let customers[i] = null;
+                        let numCustomers = numCustomers - 1;
+                        
+                        // Erase and dispose customer
+                        do customer.erase();
+                        do customer.dispose();
+                        
+                        do updateDisplay();
+                        do redrawAll();
+                        let i = maxCustomers; // exit
                     }
                 }
             }
@@ -792,13 +726,13 @@ class PenguinDinerGame {
             let i = i + 1;
         }
         
-        // Layer 2.75: Draw payment indicators for pairs ($ above tables)
+        // Layer 2.75: Draw payment indicators ($ above tables)
         let i = 0;
         while (i < numTables) {
             let table = tables[i];
             let customer = table.getCustomer();
             if (~(customer = null)) {
-                if (customer.bothReadyToPay()) {
+                if (customer.isReadyToLeave()) {
                     do table.drawPaymentIndicator();
                 }
             }
@@ -872,67 +806,39 @@ class PenguinDinerGame {
                     } else {
                         // States 0,1,2,4 can leave when patience runs out
                         if ((customer.getState() < 3) | (customer.getState() = 4)) {
-                        // Lose a heart FIRST (before any disposal)
-                        let hearts = hearts - 1;
-                        
-                        // Clear table FIRST (before any disposal or erase)
-                        let tableId = 0;
-                        while (tableId < numTables) {
-                            let table = tables[tableId];
-                            if (table.getCustomer() = customer) {
-                                do table.removeCustomer();
-                                let tableId = numTables;
-                            }
-                            let tableId = tableId + 1;
-                        }
-                        
-                        // If customer ordered food (state 2), cancel their order in kitchen
-                        if (customer.getState() = 2) {
-                            do kitchen.cancelOrder(customer.getFoodType());
-                        }
-                        
-                        // If part of pair, remove BOTH together
-                        if (customer.isPair()) {
-                            let partner = customer.getPair();
-                            if (~(partner = null)) {
-                                // Cancel partner's order if they ordered
-                                if (partner.getState() = 2) {
-                                    do kitchen.cancelOrder(partner.getFoodType());
+                            // Lose a heart (1 heart even for pairs)
+                            let hearts = hearts - 1;
+                            
+                            // Clear table
+                            let tableId = 0;
+                            while (tableId < numTables) {
+                                let table = tables[tableId];
+                                if (table.getCustomer() = customer) {
+                                    do table.removeCustomer();
+                                    let tableId = numTables;
                                 }
-                                
-                                // Clear pair links FIRST
-                                do customer.setPair(null);
-                                do partner.setPair(null);
-                                
-                                // Find and remove partner from customers array
-                                let j = 0;
-                                while (j < maxCustomers) {
-                                    if (customers[j] = partner) {
-                                        // Clear partner from array BEFORE disposing
-                                        let customers[j] = null;
-                                        let numCustomers = numCustomers - 1;
-                                        let j = maxCustomers; // exit
-                                    }
-                                    let j = j + 1;
-                                }
-                                
-                                // Erase and dispose partner
-                                do partner.erase();
-                                do partner.dispose();
+                                let tableId = tableId + 1;
                             }
-                        }
-                        
-                        // Remove current customer from array
-                        let customers[i] = null;
-                        let numCustomers = numCustomers - 1;
-                        
-                        // Erase and dispose current customer
-                        do customer.erase();
-                        do customer.dispose();
-                        
-                        do updateDisplay();
-                        do redrawAll();
-                        
+                            
+                            // If customer ordered food (state 2), cancel their orders in kitchen
+                            if (customer.getState() = 2) {
+                                do kitchen.cancelOrder(customer.getFoodType());
+                                if (customer.getIsPair()) {
+                                    do kitchen.cancelOrder(customer.getFoodType2());
+                                }
+                            }
+                            
+                            // Remove current customer from array
+                            let customers[i] = null;
+                            let numCustomers = numCustomers - 1;
+                            
+                            // Erase and dispose current customer
+                            do customer.erase();
+                            do customer.dispose();
+                            
+                            do updateDisplay();
+                            do redrawAll();
+                            
                             // Check if game over (out of hearts)
                             if (hearts < 1) {
                                 let gameOver = true;

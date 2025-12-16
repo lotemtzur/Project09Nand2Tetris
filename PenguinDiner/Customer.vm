@@ -1,5 +1,5 @@
 function Customer.new 0
-push constant 10
+push constant 13
 call Memory.alloc 1
 pop pointer 0
 push argument 0
@@ -12,10 +12,15 @@ call GameConfig.getWaitingPatience 0
 pop this 3
 push argument 2
 pop this 4
+push argument 3
+pop this 6
 push constant 0
+pop this 11
+push constant 0
+pop this 12
+push constant 0
+not
 pop this 7
-push constant 0
-pop this 8
 push pointer 0
 call Customer.draw 1
 pop temp 0
@@ -32,133 +37,40 @@ return
 function Customer.draw 0
 push argument 0
 pop pointer 0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 0
-push this 1
-push constant 6
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-call Screen.setColor 1
-pop temp 0
-push this 0
-push this 1
-push constant 1
-add
-push constant 4
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 0
-push this 1
-push constant 5
-sub
-push constant 4
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-call Screen.setColor 1
-pop temp 0
-push this 0
-push this 1
-push constant 4
-sub
-push constant 2
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 0
-push constant 1
-sub
-push this 1
-push constant 5
-sub
-push this 0
-push constant 1
-sub
-push this 1
-push constant 4
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 1
-add
-push this 1
-push constant 5
-sub
-push this 0
-push constant 1
-add
-push this 1
-push constant 4
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 1
-sub
-push this 1
-push constant 3
-sub
-push this 0
-push constant 1
-add
-push this 1
-push constant 2
-sub
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 4
-sub
-push this 1
-push constant 6
-add
-push this 0
-push constant 2
-sub
-push this 1
-push constant 7
-add
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 2
-add
-push this 1
-push constant 6
-add
-push this 0
-push constant 4
-add
-push this 1
-push constant 7
-add
-call Screen.drawRectangle 4
-pop temp 0
-push this 2
-push constant 0
-eq
+push this 6
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
+push pointer 0
+call Customer.drawPairPenguins 1
+pop temp 0
+goto IF_END0
 label IF_FALSE0
+push pointer 0
+push this 0
+push this 1
+call Customer.drawSinglePenguin 3
+pop temp 0
+label IF_END0
 push this 2
 push constant 1
 eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
+push this 6
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push this 0
+push this 1
+push constant 8
+sub
+call Customer.drawMenu 3
+pop temp 0
+goto IF_END2
+label IF_FALSE2
 push pointer 0
 push this 0
 push constant 10
@@ -168,13 +80,27 @@ push constant 8
 sub
 call Customer.drawMenu 3
 pop temp 0
+label IF_END2
 label IF_FALSE1
 push this 2
 push constant 2
 eq
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 6
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push this 0
+push this 1
+push constant 8
+sub
+call Customer.drawFork 3
+pop temp 0
+goto IF_END4
+label IF_FALSE4
 push pointer 0
 push this 0
 push constant 10
@@ -184,7 +110,8 @@ push constant 8
 sub
 call Customer.drawFork 3
 pop temp 0
-label IF_FALSE2
+label IF_END4
+label IF_FALSE3
 push this 2
 push constant 1
 neg
@@ -197,14 +124,27 @@ push this 2
 push constant 4
 eq
 or
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push pointer 0
 call Customer.shouldShowClock 1
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push this 6
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push pointer 0
+push this 0
+push this 1
+push constant 15
+sub
+call Customer.drawClock 3
+pop temp 0
+goto IF_END7
+label IF_FALSE7
 push pointer 0
 push this 0
 push constant 10
@@ -214,8 +154,160 @@ push constant 8
 sub
 call Customer.drawClock 3
 pop temp 0
-label IF_FALSE4
-label IF_FALSE3
+label IF_END7
+label IF_FALSE6
+label IF_FALSE5
+push constant 0
+return
+function Customer.drawSinglePenguin 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 6
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 1
+add
+push constant 4
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 5
+sub
+push constant 4
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
+push constant 4
+sub
+push constant 2
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 5
+sub
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 4
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 5
+sub
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 4
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 3
+sub
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 2
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push argument 1
+push constant 4
+sub
+push argument 2
+push constant 6
+add
+push argument 1
+push constant 2
+sub
+push argument 2
+push constant 7
+add
+call Screen.drawRectangle 4
+pop temp 0
+push argument 1
+push constant 2
+add
+push argument 2
+push constant 6
+add
+push argument 1
+push constant 4
+add
+push argument 2
+push constant 7
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Customer.drawPairPenguins 1
+push argument 0
+pop pointer 0
+push this 2
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 10
+pop local 0
+goto IF_END0
+label IF_FALSE0
+push constant 20
+pop local 0
+label IF_END0
+push pointer 0
+push this 0
+push local 0
+sub
+push this 1
+call Customer.drawSinglePenguin 3
+pop temp 0
+push pointer 0
+push this 0
+push local 0
+add
+push this 1
+call Customer.drawSinglePenguin 3
+pop temp 0
 push constant 0
 return
 function Customer.erase 4
@@ -224,8 +316,26 @@ pop pointer 0
 push constant 0
 call Screen.setColor 1
 pop temp 0
+push this 6
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push this 0
-push constant 26
+push constant 45
+sub
+pop local 0
+push this 0
+push constant 45
+add
+pop local 1
+push this 1
+push constant 20
+sub
+pop local 2
+goto IF_END0
+label IF_FALSE0
+push this 0
+push constant 16
 sub
 pop local 0
 push this 0
@@ -236,6 +346,7 @@ push this 1
 push constant 15
 sub
 pop local 2
+label IF_END0
 push this 1
 push constant 18
 add
@@ -243,39 +354,39 @@ pop local 3
 push local 0
 push constant 0
 lt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 0
-pop local 0
-label IF_FALSE0
-push local 1
-push constant 511
-gt
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push constant 511
-pop local 1
-label IF_FALSE1
-push local 2
 push constant 0
-lt
+pop local 0
+label IF_FALSE1
+push local 1
+push constant 511
+gt
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
-push constant 0
-pop local 2
+push constant 511
+pop local 1
 label IF_FALSE2
-push local 3
-push constant 255
-gt
+push local 2
+push constant 0
+lt
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
+push constant 0
+pop local 2
+label IF_FALSE3
+push local 3
+push constant 255
+gt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push constant 255
 pop local 3
-label IF_FALSE3
+label IF_FALSE4
 push local 0
 push local 1
 lt
@@ -283,172 +394,44 @@ push local 2
 push local 3
 lt
 and
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push local 0
 push local 2
 push local 1
 push local 3
 call Screen.drawRectangle 4
 pop temp 0
-label IF_FALSE4
+label IF_FALSE5
 push constant 0
 return
-function Customer.update 2
+function Customer.update 0
 push argument 0
 pop pointer 0
+push this 3
 push constant 0
-pop local 1
-push this 2
-push constant 3
-eq
+gt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push this 3
-push constant 2
-lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push pointer 0
-call Customer.isPair 1
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-push pointer 0
-call Customer.getPair 1
-pop local 0
-push local 0
-push constant 0
-eq
-not
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push local 0
-call Customer.getState 1
-push constant 3
-eq
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
-push local 0
-call Customer.getPatience 1
-push constant 1
-gt
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
-push constant 0
-not
-pop local 1
-label IF_FALSE5
-label IF_FALSE4
-label IF_FALSE3
-label IF_FALSE2
-label IF_FALSE1
-label IF_FALSE0
-push this 2
-push constant 4
-eq
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
-push pointer 0
-call Customer.isPair 1
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
-push pointer 0
-call Customer.getPair 1
-pop local 0
-push local 0
-push constant 0
-eq
-not
-if-goto IF_TRUE8
-goto IF_FALSE8
-label IF_TRUE8
-push local 0
-call Customer.getState 1
-push constant 3
-eq
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
-push constant 0
-not
-pop local 1
-label IF_FALSE9
-label IF_FALSE8
-label IF_FALSE7
-label IF_FALSE6
-push local 1
-not
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
-push this 3
-push constant 0
-gt
-if-goto IF_TRUE11
-goto IF_FALSE11
-label IF_TRUE11
-push this 3
 push constant 1
 sub
 pop this 3
-label IF_FALSE11
-label IF_FALSE10
+label IF_FALSE0
 push this 2
 push constant 3
 eq
-if-goto IF_TRUE12
-goto IF_FALSE12
-label IF_TRUE12
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
 push this 3
 push constant 1
 lt
-if-goto IF_TRUE13
-goto IF_FALSE13
-label IF_TRUE13
-push pointer 0
-call Customer.isPair 1
-if-goto IF_TRUE14
-goto IF_FALSE14
-label IF_TRUE14
-push pointer 0
-call Customer.getPair 1
-pop local 0
-push local 0
-push constant 0
-eq
-not
-if-goto IF_TRUE15
-goto IF_FALSE15
-label IF_TRUE15
-push local 0
-call Customer.getState 1
-push constant 3
-eq
-if-goto IF_TRUE16
-goto IF_FALSE16
-label IF_TRUE16
-push local 0
-call Customer.getPatience 1
-push constant 1
-gt
-if-goto IF_TRUE17
-goto IF_FALSE17
-label IF_TRUE17
-push constant 0
-return
-label IF_FALSE17
-label IF_FALSE16
-label IF_FALSE15
-label IF_FALSE14
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
 push constant 4
 pop this 2
 call GameConfig.getPaymentPatience 0
@@ -459,45 +442,9 @@ pop temp 0
 push pointer 0
 call Customer.draw 1
 pop temp 0
-label IF_FALSE13
-label IF_FALSE12
-push constant 0
-return
-function Customer.bothReadyToPay 2
-push argument 0
-pop pointer 0
-push pointer 0
-call Customer.isPair 1
-not
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push pointer 0
-call Customer.isReadyToLeave 1
-return
-label IF_FALSE0
-push pointer 0
-call Customer.getPair 1
-pop local 0
-push local 0
-push constant 0
-eq
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push constant 0
-return
+label IF_FALSE2
 label IF_FALSE1
-push local 0
-call Customer.getState 1
-pop local 1
-push this 2
-push constant 4
-eq
-push local 1
-push constant 4
-eq
-and
+push constant 0
 return
 function Customer.seat 0
 push argument 0
@@ -545,6 +492,31 @@ eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
+push this 6
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push argument 1
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+not
+pop this 11
+goto IF_END2
+label IF_FALSE2
+push constant 0
+not
+pop this 12
+label IF_END2
+push this 11
+push this 12
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push constant 3
 pop this 2
 call GameConfig.getEatingPatience 0
@@ -555,6 +527,20 @@ pop temp 0
 push pointer 0
 call Customer.draw 1
 pop temp 0
+label IF_FALSE3
+goto IF_END1
+label IF_FALSE1
+push constant 3
+pop this 2
+call GameConfig.getEatingPatience 0
+pop this 3
+push pointer 0
+call Customer.erase 1
+pop temp 0
+push pointer 0
+call Customer.draw 1
+pop temp 0
+label IF_END1
 label IF_FALSE0
 push constant 0
 return
@@ -634,178 +620,182 @@ return
 function Customer.setFoodType 0
 push argument 0
 pop pointer 0
+push this 6
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push argument 1
-pop this 5
+pop this 9
+goto IF_END0
+label IF_FALSE0
+push argument 1
+pop this 8
+label IF_END0
+push constant 0
+return
+function Customer.setFoodType2 0
+push argument 0
+pop pointer 0
+push this 6
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 1
+pop this 10
+label IF_FALSE0
 push constant 0
 return
 function Customer.getFoodType 0
 push argument 0
 pop pointer 0
-push this 5
+push this 6
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 9
 return
-function Customer.setQueuePosition 0
+label IF_FALSE0
+push this 8
+return
+function Customer.getFoodType2 0
 push argument 0
 pop pointer 0
-push argument 1
-pop this 6
-push constant 0
+push this 6
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 10
 return
-function Customer.getQueuePosition 0
+label IF_FALSE0
+push constant 1
+neg
+return
+function Customer.getIsPair 0
 push argument 0
 pop pointer 0
 push this 6
 return
-function Customer.setPair 0
+function Customer.isMeal1Served 0
+push argument 0
+pop pointer 0
+push this 11
+return
+function Customer.isMeal2Served 0
+push argument 0
+pop pointer 0
+push this 12
+return
+function Customer.setSitsOnLeft 0
 push argument 0
 pop pointer 0
 push argument 1
 pop this 7
 push constant 0
 return
-function Customer.getPair 0
-push argument 0
-pop pointer 0
-push this 7
-return
-function Customer.isPair 0
-push argument 0
-pop pointer 0
-push this 7
-push constant 0
-eq
-not
-return
-function Customer.setIsPairLeader 0
+function Customer.setQueuePosition 0
 push argument 0
 pop pointer 0
 push argument 1
-pop this 8
+pop this 5
 push constant 0
 return
-function Customer.getIsPairLeader 0
+function Customer.getQueuePosition 0
 push argument 0
 pop pointer 0
-push this 8
-return
-function Customer.setSeatedOnLeft 0
-push argument 0
-pop pointer 0
-push argument 1
-pop this 9
-push constant 0
+push this 5
 return
 function Customer.drawFood 0
 push argument 0
 pop pointer 0
-push this 2
-push constant 3
-eq
+push this 6
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 9
+push this 2
+push constant 2
+eq
+push this 2
+push constant 3
+eq
+or
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
+push this 11
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
 push this 0
-push constant 15
-add
-push this 1
-push constant 6
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-call Screen.setColor 1
-pop temp 0
-push this 0
-push constant 15
-add
-push this 1
-push constant 5
-call Screen.drawCircle 3
-pop temp 0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push this 0
-push constant 13
-add
-push this 1
-push constant 1
+push constant 8
 sub
-push constant 2
-call Screen.drawCircle 3
-pop temp 0
-push this 0
-push constant 17
-add
 push this 1
-push constant 2
-call Screen.drawCircle 3
+call Customer.drawMealAtPosition 3
 pop temp 0
-push this 0
-push constant 7
-add
-push this 1
-push constant 2
-sub
+label IF_FALSE2
+push this 12
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
 push this 0
 push constant 8
 add
 push this 1
-push constant 2
-add
-call Screen.drawRectangle 4
+call Customer.drawMealAtPosition 3
 pop temp 0
-push this 0
-push constant 22
-add
-push this 1
-push constant 2
-sub
-push this 0
-push constant 23
-add
-push this 1
-push constant 2
-add
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 21
-add
-push this 1
-push constant 2
-sub
-push this 0
-push constant 25
-add
-push this 1
-push constant 1
-sub
-call Screen.drawRectangle 4
-pop temp 0
-goto IF_END1
+label IF_FALSE3
 label IF_FALSE1
+goto IF_END0
+label IF_FALSE0
+push this 2
+push constant 3
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 7
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push pointer 0
 push this 0
-push constant 15
+push constant 8
+add
+push this 1
+call Customer.drawMealAtPosition 3
+pop temp 0
+goto IF_END5
+label IF_FALSE5
+push pointer 0
+push this 0
+push constant 8
 sub
 push this 1
+call Customer.drawMealAtPosition 3
+pop temp 0
+label IF_END5
+label IF_FALSE4
+label IF_END0
+push constant 0
+return
+function Customer.drawMealAtPosition 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push argument 2
 push constant 6
 call Screen.drawCircle 3
 pop temp 0
 push constant 0
 call Screen.setColor 1
 pop temp 0
-push this 0
-push constant 15
-sub
-push this 1
+push argument 1
+push argument 2
 push constant 5
 call Screen.drawCircle 3
 pop temp 0
@@ -813,66 +803,64 @@ push constant 0
 not
 call Screen.setColor 1
 pop temp 0
-push this 0
-push constant 17
+push argument 1
+push constant 2
 sub
-push this 1
+push argument 2
 push constant 1
 sub
 push constant 2
 call Screen.drawCircle 3
 pop temp 0
-push this 0
-push constant 13
-sub
-push this 1
-push constant 2
-call Screen.drawCircle 3
-pop temp 0
-push this 0
-push constant 23
-sub
-push this 1
-push constant 2
-sub
-push this 0
-push constant 22
-sub
-push this 1
+push argument 1
 push constant 2
 add
-call Screen.drawRectangle 4
-pop temp 0
-push this 0
-push constant 25
-sub
-push this 1
+push argument 2
 push constant 2
-sub
-push this 0
-push constant 21
-sub
-push this 1
-push constant 1
-sub
-call Screen.drawRectangle 4
+call Screen.drawCircle 3
 pop temp 0
-push this 0
+push argument 1
 push constant 8
 sub
-push this 1
+push argument 2
 push constant 2
 sub
-push this 0
+push argument 1
 push constant 7
 sub
-push this 1
+push argument 2
 push constant 2
 add
 call Screen.drawRectangle 4
 pop temp 0
-label IF_END1
-label IF_FALSE0
+push argument 1
+push constant 7
+add
+push argument 2
+push constant 2
+sub
+push argument 1
+push constant 8
+add
+push argument 2
+push constant 2
+add
+call Screen.drawRectangle 4
+pop temp 0
+push argument 1
+push constant 6
+add
+push argument 2
+push constant 2
+sub
+push argument 1
+push constant 10
+add
+push argument 2
+push constant 1
+sub
+call Screen.drawRectangle 4
+pop temp 0
 push constant 0
 return
 function Customer.shouldShowClock 0

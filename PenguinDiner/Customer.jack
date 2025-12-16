@@ -1,24 +1,33 @@
 /** Implements a customer penguin */
 class Customer {
-    field int x, y;              // position on screen
+    field int x, y;              // position on screen (center position for pairs)
     field int state;             // 0=waiting, 1=seated, 2=ordered, 3=eating, 4=done
     field int patience;          // patience counter
     field int tableId;           // which table customer is at
-    field int foodType;          // 0=burger, 1=pizza, 2=fish
     field int queuePosition;     // position in queue (0, 1, 2...)
-    field Customer pair;         // partner customer if part of a pair (null if solo)
-    field boolean isPairLeader;  // true if this is the main customer in a pair
-    field boolean seatedOnLeft;  // true if seated on left side of table, false if right
+    field boolean isPair;        // true if this is a pair customer, false if solo
+    field boolean sitsOnLeft;    // for solo: true if sits on left chair, false if right
     
-    /** Constructs a new Customer at given position */
-    constructor Customer new(int Ax, int Ay, int Atable) {
+    // Solo customer fields
+    field int foodType;          // 0=burger, 1=pizza, 2=fish (for solo)
+    
+    // Pair customer fields
+    field int foodType1;         // food for left penguin
+    field int foodType2;         // food for right penguin
+    field boolean meal1Served;   // true if first meal delivered
+    field boolean meal2Served;   // true if second meal delivered
+    
+    /** Constructs a new solo Customer at given position */
+    constructor Customer new(int Ax, int Ay, int Atable, boolean isAPair) {
         let x = Ax;
         let y = Ay;
         let state = 0;
         let patience = GameConfig.getWaitingPatience();
         let tableId = Atable;
-        let pair = null;  // Initialize as solo customer
-        let isPairLeader = false;
+        let isPair = isAPair;
+        let meal1Served = false;
+        let meal2Served = false;
+        let sitsOnLeft = true;  // Default, will be set when seated
         do draw();
         return this;
     }
@@ -31,55 +40,95 @@ class Customer {
     
     /** Draws the customer on screen */
     method void draw() {
-        // Draw customer penguin body (smaller than player)
-        do Screen.setColor(true);
-        do Screen.drawCircle(x, y, 6);
-        
-        // Draw white belly
-        do Screen.setColor(false);
-        do Screen.drawCircle(x, y + 1, 4);
-        
-        // Draw black head
-        do Screen.setColor(true);
-        do Screen.drawCircle(x, y - 5, 4);
-        
-        // Draw white face
-        do Screen.setColor(false);
-        do Screen.drawCircle(x, y - 4, 2);
-        
-        // Draw eyes
-        do Screen.setColor(true);
-        do Screen.drawRectangle(x - 1, y - 5, x - 1, y - 4);
-        do Screen.drawRectangle(x + 1, y - 5, x + 1, y - 4);
-        
-        // Draw beak
-        do Screen.drawRectangle(x - 1, y - 3, x + 1, y - 2);
-        
-        // Draw feet
-        do Screen.drawRectangle(x - 4, y + 6, x - 2, y + 7);
-        do Screen.drawRectangle(x + 2, y + 6, x + 4, y + 7);
+        if (isPair) {
+            do drawPairPenguins();
+        } else {
+            do drawSinglePenguin(x, y);
+        }
         
         // Draw state-specific icons
-        if (state = 0) {
-            // Waiting in queue - no state icon, just clock
-        }
         if (state = 1) {
             // Seated, waiting to order - draw MENU icon
-            do drawMenu(x + 10, y - 8);
+            if (isPair) {
+                do drawMenu(x, y - 8);  // Center for pair
+            } else {
+                do drawMenu(x + 10, y - 8);
+            }
         }
         if (state = 2) {
             // Ordered, waiting for food - draw FORK icon
-            do drawFork(x + 10, y - 8);
+            if (isPair) {
+                do drawFork(x, y - 8);  // Center for pair
+            } else {
+                do drawFork(x + 10, y - 8);
+            }
         }
-        // State 3 (eating) - food is drawn separately by drawFood() method
-        // State 4 (done) - $ is drawn above table by Table class
         
         // Draw CLOCK icon only when patience is low (NOT for eating state 3)
         if (((state > -1) & (state < 3)) | (state = 4)) {
             if (shouldShowClock()) {
-                do drawClock(x - 10, y - 8);
+                if (isPair) {
+                    do drawClock(x, y - 15);  // Above pair
+                } else {
+                    do drawClock(x - 10, y - 8);
+                }
             }
         }
+        return;
+    }
+    
+    /** Draws a single penguin at specified position */
+    method void drawSinglePenguin(int px, int py) {
+        // Draw customer penguin body (smaller than player)
+        do Screen.setColor(true);
+        do Screen.drawCircle(px, py, 6);
+        
+        // Draw white belly
+        do Screen.setColor(false);
+        do Screen.drawCircle(px, py + 1, 4);
+        
+        // Draw black head
+        do Screen.setColor(true);
+        do Screen.drawCircle(px, py - 5, 4);
+        
+        // Draw white face
+        do Screen.setColor(false);
+        do Screen.drawCircle(px, py - 4, 2);
+        
+        // Draw eyes
+        do Screen.setColor(true);
+        do Screen.drawRectangle(px - 1, py - 5, px - 1, py - 4);
+        do Screen.drawRectangle(px + 1, py - 5, px + 1, py - 4);
+        
+        // Draw beak
+        do Screen.drawRectangle(px - 1, py - 3, px + 1, py - 2);
+        
+        // Draw feet
+        do Screen.drawRectangle(px - 4, py + 6, px - 2, py + 7);
+        do Screen.drawRectangle(px + 2, py + 6, px + 4, py + 7);
+        
+        return;
+    }
+    
+    /** Draws pair penguins (two penguins side by side) */
+    method void drawPairPenguins() {
+        var int spacing;
+        
+        // Spacing depends on state: closer in queue, further apart when seated
+        if (state = 0) {
+            // In queue - stand closer together
+            let spacing = 10;
+        } else {
+            // Seated at table - sit on chairs (further apart)
+            let spacing = 20;
+        }
+        
+        // Draw left penguin
+        do drawSinglePenguin(x - spacing, y);
+        
+        // Draw right penguin
+        do drawSinglePenguin(x + spacing, y);
+        
         return;
     }
     /** Erases the customer from screen */
@@ -88,10 +137,18 @@ class Customer {
         
         do Screen.setColor(false);
         
-        // Calculate erase bounds (extended to include food below table)
-        let x1 = x - 26;
-        let x2 = x + 26;
-        let y1 = y - 15;
+        // Calculate erase bounds (extended to include clock, food, and pairs)
+        if (isPair) {
+            // Wider bounds for pairs (includes both penguins + meals on sides)
+            let x1 = x - 45;
+            let x2 = x + 45;
+            let y1 = y - 20;  // Extended up for clock above pair
+        } else {
+            // Solo needs space for clock on left (x-10) and icons on right
+            let x1 = x - 16;  // Extended left for clock
+            let x2 = x + 26;
+            let y1 = y - 15;
+        }
         let y2 = y + 18;
         
         // Clamp to screen bounds (0-511, 0-255)
@@ -110,65 +167,14 @@ class Customer {
     
     /** Updates customer state */
     method void update() {
-        var Customer partner;
-        var boolean waitingForPartner;
-        
-        let waitingForPartner = false;
-        
-        // Check if we're waiting for partner to finish eating (state 3)
-        if (state = 3) {
-            if (patience < 2) {  // About to finish eating
-                if (isPair()) {
-                    let partner = getPair();
-                    if (~(partner = null)) {
-                        // Check if we should wait for partner
-                        if (partner.getState() = 3) {
-                            if (partner.getPatience() > 1) {
-                                let waitingForPartner = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Check if we're waiting for partner to transition to state 4 (payment)
-        if (state = 4) {
-            if (isPair()) {
-                let partner = getPair();
-                if (~(partner = null)) {
-                    // If partner still eating (state 3), freeze our payment patience
-                    if (partner.getState() = 3) {
-                        let waitingForPartner = true;
-                    }
-                }
-            }
-        }
-        
-        // Only decrement patience if NOT waiting for partner
-        if (~waitingForPartner) {
-            if (patience > 0) {
-                let patience = patience - 1;
-            }
+        // Decrement patience
+        if (patience > 0) {
+            let patience = patience - 1;
         }
         
         // Eating customers automatically finish when patience runs out
         if (state = 3) {
             if (patience < 1) {
-                // If part of pair, check partner's state before transitioning
-                if (isPair()) {
-                    let partner = getPair();
-                    if (~(partner = null)) {
-                        // Wait if partner is STILL eating (state 3) with MORE patience remaining
-                        if (partner.getState() = 3) {
-                            if (partner.getPatience() > 1) {
-                                return;  // Stay in eating state, wait for partner (patience frozen)
-                            }
-                        }
-                    }
-                }
-                
-                // Solo OR both in pair finished eating - transition to payment state
                 let state = 4;
                 let patience = GameConfig.getPaymentPatience();
                 do erase();
@@ -176,27 +182,6 @@ class Customer {
             }
         }
         return;
-    }
-    /** Check if both customers in pair are ready to pay */
-    method boolean bothReadyToPay() {
-        var Customer partner;
-        var int partnerState;
-        
-        if (~isPair()) {
-            return isReadyToLeave();  // Solo customer
-        }
-        
-        // Check if both in pair are in state 4
-        let partner = getPair();
-        if (partner = null) {
-            return false;  // Partner was removed or doesn't exist - NOT ready
-        }
-        
-        // Safely get partner state
-        let partnerState = partner.getState();
-        
-        // Both must be in state 4
-        return (state = 4) & (partnerState = 4);
     }
     
     /** Seat the customer */
@@ -219,13 +204,31 @@ class Customer {
         return;
     }
     
-    /** Serve food to customer */
-    method void serveFood() {
+    /** Serve food to customer (for solo) or to specific position for pair */
+    method void serveFood(int mealNumber) {
         if (state = 2) {
-            let state = 3;
-            let patience = GameConfig.getEatingPatience();
-            do erase();
-            do draw();  // Redraw to remove fork icon
+            if (isPair) {
+                // For pairs, mark which meal was served
+                if (mealNumber = 1) {
+                    let meal1Served = true;
+                } else {
+                    let meal2Served = true;
+                }
+                
+                // Only transition to eating when BOTH meals served
+                if (meal1Served & meal2Served) {
+                    let state = 3;
+                    let patience = GameConfig.getEatingPatience();
+                    do erase();
+                    do draw();
+                }
+            } else {
+                // Solo customer - immediate transition
+                let state = 3;
+                let patience = GameConfig.getEatingPatience();
+                do erase();
+                do draw();
+            }
         }
         return;
     }
@@ -281,15 +284,59 @@ class Customer {
         return patience < 1;
     }
     
-    /** Sets the food type customer ordered */
+    /** Sets the food type customer ordered (solo or pair meal 1) */
     method void setFoodType(int type) {
-        let foodType = type;
+        if (isPair) {
+            let foodType1 = type;
+        } else {
+            let foodType = type;
+        }
         return;
     }
     
-    /** Gets the food type */
+    /** Sets the second food type for pair */
+    method void setFoodType2(int type) {
+        if (isPair) {
+            let foodType2 = type;
+        }
+        return;
+    }
+    
+    /** Gets the food type (solo or pair meal 1) */
     method int getFoodType() {
+        if (isPair) {
+            return foodType1;
+        }
         return foodType;
+    }
+    
+    /** Gets the second food type for pair */
+    method int getFoodType2() {
+        if (isPair) {
+            return foodType2;
+        }
+        return -1;
+    }
+    
+    /** Check if customer is a pair */
+    method boolean getIsPair() {
+        return isPair;
+    }
+    
+    /** Check if meal 1 is served (for pairs) */
+    method boolean isMeal1Served() {
+        return meal1Served;
+    }
+    
+    /** Check if meal 2 is served (for pairs) */
+    method boolean isMeal2Served() {
+        return meal2Served;
+    }
+    
+    /** Set which side solo customer sits on */
+    method void setSitsOnLeft(boolean onLeft) {
+        let sitsOnLeft = onLeft;
+        return;
     }
     
     /** Sets queue position */
@@ -303,68 +350,46 @@ class Customer {
         return queuePosition;
     }
     
-    /** Sets this customer's pair partner */
-    method void setPair(Customer partner) {
-        let pair = partner;
-        return;
-    }
-    
-    /** Gets pair partner */
-    method Customer getPair() {
-        return pair;
-    }
-    
-    /** Check if customer is part of a pair */
-    method boolean isPair() {
-        return ~(pair = null);
-    }
-    
-    /** Sets if this customer is the pair leader */
-    method void setIsPairLeader(boolean leader) {
-        let isPairLeader = leader;
-        return;
-    }
-    
-    /** Check if this is the pair leader */
-    method boolean getIsPairLeader() {
-        return isPairLeader;
-    }
-    
-    /** Sets which side of table customer is seated on */
-    method void setSeatedOnLeft(boolean onLeft) {
-        let seatedOnLeft = onLeft;
-        return;
-    }
     
     /** Draws only the food (for eating state) - called after tables are drawn */
     method void drawFood() {
-        if (state = 3) {
-            do Screen.setColor(true);
-            
-            if (seatedOnLeft) {
-                // Seated on LEFT - food on RIGHT
-                do Screen.drawCircle(x + 15, y, 6);
-                do Screen.setColor(false);
-                do Screen.drawCircle(x + 15, y, 5);
-                do Screen.setColor(true);
-                do Screen.drawCircle(x + 13, y - 1, 2);
-                do Screen.drawCircle(x + 17, y, 2);
-                do Screen.drawRectangle(x + 7, y - 2, x + 8, y + 2);
-                do Screen.drawRectangle(x + 22, y - 2, x + 23, y + 2);
-                do Screen.drawRectangle(x + 21, y - 2, x + 25, y - 1);
-            } else {
-                // Seated on RIGHT - food on LEFT
-                do Screen.drawCircle(x - 15, y, 6);
-                do Screen.setColor(false);
-                do Screen.drawCircle(x - 15, y, 5);
-                do Screen.setColor(true);
-                do Screen.drawCircle(x - 17, y - 1, 2);
-                do Screen.drawCircle(x - 13, y, 2);
-                do Screen.drawRectangle(x - 23, y - 2, x - 22, y + 2);
-                do Screen.drawRectangle(x - 25, y - 2, x - 21, y - 1);
-                do Screen.drawRectangle(x - 8, y - 2, x - 7, y + 2);
+        if (isPair) {
+            // For pairs in state 2 or 3, draw served meals ON THE TABLE (center)
+            if ((state = 2) | (state = 3)) {
+                if (meal1Served) {
+                    do drawMealAtPosition(x - 8, y);  // Left meal on table
+                }
+                if (meal2Served) {
+                    do drawMealAtPosition(x + 8, y);  // Right meal on table
+                }
+            }
+        } else {
+            // Solo customer - only draw food when eating ON THE TABLE (opposite side)
+            if (state = 3) {
+                if (sitsOnLeft) {
+                    // Sits on left, food on right side of table
+                    do drawMealAtPosition(x + 8, y);
+                } else {
+                    // Sits on right, food on left side of table
+                    do drawMealAtPosition(x - 8, y);
+                }
             }
         }
+        return;
+    }
+    
+    /** Draws a meal at specified position */
+    method void drawMealAtPosition(int mealX, int mealY) {
+        do Screen.setColor(true);
+        do Screen.drawCircle(mealX, mealY, 6);
+        do Screen.setColor(false);
+        do Screen.drawCircle(mealX, mealY, 5);
+        do Screen.setColor(true);
+        do Screen.drawCircle(mealX - 2, mealY - 1, 2);
+        do Screen.drawCircle(mealX + 2, mealY, 2);
+        do Screen.drawRectangle(mealX - 8, mealY - 2, mealX - 7, mealY + 2);
+        do Screen.drawRectangle(mealX + 7, mealY - 2, mealX + 8, mealY + 2);
+        do Screen.drawRectangle(mealX + 6, mealY - 2, mealX + 10, mealY - 1);
         return;
     }
     

@@ -335,4 +335,20 @@ class Penguin {
     method int getRightHandFood() {
         return rightHandFood;
     }
+    
+    /** Get the food type that will be delivered next (right hand priority) */
+    method int getOrderType() {
+        // Deliver from right hand first
+        if (~(rightHandFood = -1)) {
+            return rightHandFood;
+        }
+        
+        // Then left hand
+        if (~(leftHandFood = -1)) {
+            return leftHandFood;
+        }
+        
+        // No food in hands
+        return -1;
+    }
 }
