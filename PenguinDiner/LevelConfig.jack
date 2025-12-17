@@ -13,13 +13,13 @@ class LevelConfig {
     
     /** Constructor - initializes all level configurations */
     constructor LevelConfig new() {
-        // Allocate arrays for 7 levels
-        let timeLimits = Array.new(7);
-        let goals = Array.new(7);
-        let hearts = Array.new(7);
-        let tables = Array.new(7);
-        let maxCustomers = Array.new(7);
-        let pairThresholds = Array.new(7);
+        // Allocate arrays for 14 levels
+        let timeLimits = Array.new(14);
+        let goals = Array.new(14);
+        let hearts = Array.new(14);
+        let tables = Array.new(14);
+        let maxCustomers = Array.new(14);
+        let pairThresholds = Array.new(14);
         
         // Level 1: 1 minute, 2 customers, 2 tables, 2 max customers, 0% pairs
         let timeLimits[0] = 1500;  // ~60 seconds
@@ -27,58 +27,111 @@ class LevelConfig {
         let hearts[0] = 3;
         let tables[0] = 2;
         let maxCustomers[0] = 2;
-        //let pairThresholds[0] = 0;  // 0% pairs (threshold = 0)
-        let pairThresholds[0] = 25;  // 100% pairs for testing
+        let pairThresholds[0] = 0;  // 0% pairs (threshold = 0)
 
-        // Level 2: 3 minutes, 6 customers, 3 tables, 5 max customers, 30% pairs
+        // Level 2: 3 minutes, 6 customers, 3 tables, 4 max customers, 25% pairs
         let timeLimits[1] = 4500;  // ~180 seconds (3 minutes)
         let goals[1] = 6;
         let hearts[1] = 3;
         let tables[1] = 3;
-        let maxCustomers[1] = 5;
-        //let pairThresholds[1] = 7;  // ~30% pairs (7/23)
-        let pairThresholds[1] = 25;  // 100% pairs for testing
+        let maxCustomers[1] = 4;
+        let pairThresholds[1] = 6;  // ~25% pairs (6/23)
         
-        // Level 3: 4 minutes, 13 customers, 3 tables, 6 max customers, 40% pairs
+        // Level 3: 4 minutes, 13 customers, 3 tables, 5 max customers, 40% pairs
         let timeLimits[2] = 6000;  // ~240 seconds (4 minutes)
         let goals[2] = 13;
         let hearts[2] = 3;
         let tables[2] = 3;
-        let maxCustomers[2] = 6;
-        //let pairThresholds[2] = 9;  // ~40% pairs (9/23)
-        let pairThresholds[2] = 25;  // 100% pairs for testing
+        let maxCustomers[2] = 5;
+        let pairThresholds[2] = 9;  // ~40% pairs (9/23)
         
-        // Level 4: 4 minutes, 16 customers, 4 tables, 7 max customers, 50% pairs
+        // Level 4: 4 minutes, 16 customers, 4 tables, 6 max customers, 50% pairs
         let timeLimits[3] = 6000;  // ~240 seconds (4 minutes)
         let goals[3] = 16;
         let hearts[3] = 3;
         let tables[3] = 4;
-        let maxCustomers[3] = 7;
+        let maxCustomers[3] = 6;
         let pairThresholds[3] = 11;  // ~50% pairs (11/23)
         
-        // Level 5: 4 minutes, 20 customers, 5 tables, 9 max customers, 50% pairs
+        // Level 5: 4 minutes, 20 customers, 5 tables, 8 max customers, 50% pairs
         let timeLimits[4] = 6000;  // ~240 seconds (4 minutes)
         let goals[4] = 20;
         let hearts[4] = 3;
         let tables[4] = 5;
-        let maxCustomers[4] = 9;
+        let maxCustomers[4] = 8;
         let pairThresholds[4] = 11;  // ~50% pairs (11/23)
         
-        // Level 6: 5 minutes, 28 customers, 6 tables, 11 max customers, 60% pairs
+        // Level 6: 5 minutes, 28 customers, 6 tables, 10 max customers, 60% pairs
         let timeLimits[5] = 7500;  // ~300 seconds (5 minutes)
         let goals[5] = 28;
         let hearts[5] = 3;
         let tables[5] = 6;
-        let maxCustomers[5] = 11;
+        let maxCustomers[5] = 10;
         let pairThresholds[5] = 14;  // ~60% pairs (14/23)
         
-        // Level 7: 6 minutes, 30 customers, 6 tables, 13 max customers, 70% pairs
+        // Level 7: 6 minutes, 30 customers, 6 tables, 12 max customers, 70% pairs
         let timeLimits[6] = 9000;  // ~360 seconds (6 minutes)
         let goals[6] = 30;
         let hearts[6] = 3;
         let tables[6] = 6;
-        let maxCustomers[6] = 13;
+        let maxCustomers[6] = 12;
         let pairThresholds[6] = 16;  // ~70% pairs (16/23)
+        
+        // Level 8: 5 minutes, 35 customers, 6 tables, 12 max customers, 75% pairs
+        let timeLimits[7] = 7500;  // ~300 seconds (5 minutes) - shorter time!
+        let goals[7] = 35;
+        let hearts[7] = 3;
+        let tables[7] = 6;
+        let maxCustomers[7] = 12;
+        let pairThresholds[7] = 17;  // ~75% pairs (17/23)
+        
+        // Level 9: 5 minutes, 40 customers, 6 tables, 12 max customers, 80% pairs
+        let timeLimits[8] = 7500;  // ~300 seconds (5 minutes)
+        let goals[8] = 40;
+        let hearts[8] = 3;
+        let tables[8] = 6;
+        let maxCustomers[8] = 12;
+        let pairThresholds[8] = 18;  // ~80% pairs (18/23)
+        
+        // Level 10: 4.5 minutes, 45 customers, 6 tables, 12 max customers, 85% pairs
+        let timeLimits[9] = 6750;  // ~270 seconds (4.5 minutes)
+        let goals[9] = 45;
+        let hearts[9] = 3;
+        let tables[9] = 6;
+        let maxCustomers[9] = 12;
+        let pairThresholds[9] = 19;  // ~85% pairs (19/23)
+        
+        // Level 11: 4.5 minutes, 50 customers, 6 tables, 12 max customers, 85% pairs
+        let timeLimits[10] = 6750;  // ~270 seconds (4.5 minutes)
+        let goals[10] = 50;
+        let hearts[10] = 3;
+        let tables[10] = 6;
+        let maxCustomers[10] = 12;
+        let pairThresholds[10] = 19;  // ~85% pairs (19/23)
+        
+        // Level 12: 4 minutes, 55 customers, 6 tables, 12 max customers, 90% pairs
+        let timeLimits[11] = 6000;  // ~240 seconds (4 minutes)
+        let goals[11] = 55;
+        let hearts[11] = 3;
+        let tables[11] = 6;
+        let maxCustomers[11] = 12;
+        let pairThresholds[11] = 21;  // ~90% pairs (21/23)
+        
+        // Level 13: 4 minutes, 60 customers, 6 tables, 12 max customers, 90% pairs
+        let timeLimits[12] = 6000;  // ~240 seconds (4 minutes)
+        let goals[12] = 60;
+        let hearts[12] = 3;
+        let tables[12] = 6;
+        let maxCustomers[12] = 12;
+        let pairThresholds[12] = 21;  // ~90% pairs (21/23)
+        
+        // Level 14: 4 minutes, 65 customers, 6 tables, 12 max customers, 95% pairs (FINAL!)
+        let timeLimits[13] = 6000;  // ~240 seconds (4 minutes)
+        let goals[13] = 65;
+        let hearts[13] = 3;
+        let tables[13] = 6;
+        let maxCustomers[13] = 12;
+        let pairThresholds[13] = 22;  // ~95% pairs (22/23)
         
         return this;
     }

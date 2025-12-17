@@ -16,8 +16,8 @@ class Main {
         let totalMoney = 0;
         let gameComplete = false;
         
-        // Game loop: play through levels 1-7
-        while ((currentLevel < 8) & (~gameComplete)) {
+        // Game loop: play through levels 1-14
+        while ((currentLevel < 15) & (~gameComplete)) {
             // Show level start screen
             do Main.showLevelStart(currentLevel, levelConfig);
             
@@ -73,7 +73,7 @@ class Main {
                 let shop = Shop.newWithUpgrades(totalMoney, shop.getSpeedUpgrades(), shop.getCookingUpgrades());
                 
                 // Show shop (unless it's the last level)
-                if (currentLevel < 7) {
+                if (currentLevel < 14) {
                     do shop.run();
                     let totalMoney = shop.getMoney();
                 }
@@ -115,7 +115,7 @@ class Main {
         }
         
         // Show final screen
-        if (currentLevel > 7) {
+        if (currentLevel > 14) {
             // All levels completed!
             do Main.showGameComplete();
         } else {

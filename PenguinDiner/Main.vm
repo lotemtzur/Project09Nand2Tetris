@@ -12,7 +12,7 @@ push constant 0
 pop local 6
 label WHILE_EXP0
 push local 3
-push constant 8
+push constant 15
 lt
 push local 6
 not
@@ -136,7 +136,7 @@ call Shop.getCookingUpgrades 1
 call Shop.newWithUpgrades 3
 pop local 2
 push local 3
-push constant 7
+push constant 14
 lt
 if-goto IF_TRUE2
 goto IF_FALSE2
@@ -229,7 +229,7 @@ label IF_END0
 goto WHILE_EXP0
 label WHILE_END0
 push local 3
-push constant 7
+push constant 14
 gt
 if-goto IF_TRUE4
 goto IF_FALSE4

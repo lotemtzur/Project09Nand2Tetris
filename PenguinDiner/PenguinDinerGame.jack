@@ -224,7 +224,7 @@ class PenguinDinerGame {
     
     /** Spawns new customer(s) - sometimes pairs */
     method void spawnCustomer() {
-        var int i, queuePos, queueY, checkPos, rand, slot1;
+        var int i, queuePos, queueY, checkPos, rand, slot1, queueCount;
         var Customer customer;
         var Array queuePositions;
         var boolean isPair, foundSlot1;
@@ -233,8 +233,21 @@ class PenguinDinerGame {
         let rand = (customerTimer + penguin.getX() + penguin.getY()) - (((customerTimer + penguin.getX() + penguin.getY()) / GameConfig.getPairRandomPrime()) * GameConfig.getPairRandomPrime());
         let isPair = rand < pairThreshold;
         
-        // Only spawn if there's space
-        if (numCustomers < maxCustomers) {
+        // Count customers currently in queue (state 0)
+        let queueCount = 0;
+        let i = 0;
+        while (i < maxCustomers) {
+            let customer = customers[i];
+            if (~(customer = null)) {
+                if (customer.getState() = 0) {
+                    let queueCount = queueCount + 1;
+                }
+            }
+            let i = i + 1;
+        }
+        
+        // Only spawn if there's space AND queue has less than 6 customers
+        if ((numCustomers < maxCustomers) & (queueCount < 6)) {
             // Create array to track which queue positions are taken
             let queuePositions = Array.new(maxCustomers);
             let i = 0;
