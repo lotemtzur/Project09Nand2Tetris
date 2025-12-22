@@ -367,12 +367,9 @@ class PenguinDinerGame {
         let dx = penguin.getX() - targetX;
         let dy = penguin.getY() - targetY;
         
-        if (dx < 0) {
-            let dx = -dx;
-        }
-        if (dy < 0) {
-            let dy = -dy;
-        }
+        // Use Math.abs() for absolute value
+        let dx = Math.abs(dx);
+        let dy = Math.abs(dy);
         
         return (dx < nearDist) & (dy < nearDist);
     }

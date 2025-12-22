@@ -1244,25 +1244,11 @@ push argument 2
 sub
 pop local 1
 push local 0
-push constant 0
-lt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push local 0
-neg
+call Math.abs 1
 pop local 0
-label IF_FALSE0
 push local 1
-push constant 0
-lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push local 1
-neg
+call Math.abs 1
 pop local 1
-label IF_FALSE1
 push local 0
 push local 2
 lt

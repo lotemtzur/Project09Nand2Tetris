@@ -237,12 +237,11 @@ class Customer {
     method int collectPayment() {
         var int tip;
         let tip = patience / GameConfig.getTipDivider();
-        if (tip < GameConfig.getMinTip()) {
-            let tip = GameConfig.getMinTip();
-        }
-        if (tip > GameConfig.getMaxTip()) {
-            let tip = GameConfig.getMaxTip();
-        }
+        
+        // Use Math.max and Math.min to clamp tip
+        let tip = Math.max(tip, GameConfig.getMinTip());
+        let tip = Math.min(tip, GameConfig.getMaxTip());
+        
         return tip;
     }
     

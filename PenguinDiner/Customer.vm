@@ -553,22 +553,12 @@ call Math.divide 2
 pop local 0
 push local 0
 call GameConfig.getMinTip 0
-lt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-call GameConfig.getMinTip 0
+call Math.max 2
 pop local 0
-label IF_FALSE0
 push local 0
 call GameConfig.getMaxTip 0
-gt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-call GameConfig.getMaxTip 0
+call Math.min 2
 pop local 0
-label IF_FALSE1
 push local 0
 return
 function Customer.getX 0
