@@ -1,5 +1,14 @@
 /** Initializes and starts the Penguin Diner game */
 class Main {
+    /** Helper function to safely print an integer (creates and disposes string) */
+    function void printIntSafe(int value) {
+        var String str;
+        let str = String.new(10);
+        do str.setInt(value);
+        do Output.printString(str);
+        do str.dispose();
+        return;
+    }
     function void main() {
         var PenguinDinerGame game;
         var LevelConfig levelConfig;
@@ -16,8 +25,8 @@ class Main {
         let totalMoney = 0;
         let gameComplete = false;
         
-        // Game loop: play through levels 1-14
-        while ((currentLevel < 15) & (~gameComplete)) {
+        // Game loop: play through configured max level
+        while ((currentLevel < (GameConfig.getMaxLevel() + 1)) & (~gameComplete)) {
             // Show level start screen
             do Main.showLevelStart(currentLevel, levelConfig);
             
@@ -69,11 +78,14 @@ class Main {
                 }
                 
                 // Update shop with new total money (preserve upgrades)
-                do shop.dispose();  // Dispose old shop first
-                let shop = Shop.newWithUpgrades(totalMoney, shop.getSpeedUpgrades(), shop.getCookingUpgrades());
+                // Save upgrades before disposing
+                let key = shop.getSpeedUpgrades();  // Reuse key var temporarily
+                let levelMoney = shop.getCookingUpgrades();  // Reuse levelMoney var temporarily
+                do shop.dispose();
+                let shop = Shop.newWithUpgrades(totalMoney, key, levelMoney);
                 
                 // Show shop (unless it's the last level)
-                if (currentLevel < 14) {
+                if (currentLevel < GameConfig.getMaxLevel()) {
                     do shop.run();
                     let totalMoney = shop.getMoney();
                 }
@@ -102,8 +114,11 @@ class Main {
                 // Show level failed screen and ask to retry
                 if (Main.showLevelFailed(currentLevel)) {
                     // User chose to retry - update shop and allow shopping (preserve upgrades)
-                    do shop.dispose();  // Dispose old shop first
-                    let shop = Shop.newWithUpgrades(totalMoney, shop.getSpeedUpgrades(), shop.getCookingUpgrades());
+                    // Save upgrades before disposing
+                    let key = shop.getSpeedUpgrades();  // Reuse key var
+                    let levelMoney = shop.getCookingUpgrades();  // Reuse levelMoney var
+                    do shop.dispose();
+                    let shop = Shop.newWithUpgrades(totalMoney, key, levelMoney);
                     do shop.run();
                     let totalMoney = shop.getMoney();
                 } else {
@@ -115,7 +130,7 @@ class Main {
         }
         
         // Show final screen
-        if (currentLevel > 14) {
+        if (currentLevel > GameConfig.getMaxLevel()) {
             // All levels completed!
             do Main.showGameComplete();
         } else {
@@ -139,16 +154,16 @@ class Main {
         
         do Output.moveCursor(8, 20);
         do Output.printString("LEVEL ");
-        do Output.printInt(level);
+        do Main.printIntSafe(level);
         do Output.printString(" COMPLETE!");
         
         do Output.moveCursor(11, 18);
         do Output.printString("Money earned: $");
-        do Output.printInt(earnedMoney);
+        do Main.printIntSafe(earnedMoney);
         
         do Output.moveCursor(13, 18);
         do Output.printString("Total money: $");
-        do Output.printInt(totalMoney);
+        do Main.printIntSafe(totalMoney);
         
         do Output.moveCursor(17, 15);
         do Output.printString("Press ENTER to continue");
@@ -165,13 +180,13 @@ class Main {
         // Display level number
         do Output.moveCursor(8, 25);
         do Output.printString("LEVEL ");
-        do Output.printInt(level);
+        do Main.printIntSafe(level);
         
         // Display level goal
         let goal = config.getGoal(level);
         do Output.moveCursor(10, 20);
         do Output.printString("GOAL: Serve ");
-        do Output.printInt(goal);
+        do Main.printIntSafe(goal);
         do Output.printString(" customers");
         
         // Display time limit
@@ -196,7 +211,7 @@ class Main {
         // Display hearts
         do Output.moveCursor(12, 24);
         do Output.printString("Hearts: ");
-        do Output.printInt(config.getHearts(level));
+        do Main.printIntSafe(config.getHearts(level));
         
         // Instructions
         do Output.moveCursor(15, 18);
@@ -209,18 +224,32 @@ class Main {
     
     /** Shows the game complete screen (all levels finished) */
     function void showGameComplete() {
+        var int maxLevel;
+        
+        let maxLevel = GameConfig.getMaxLevel();
+        
         do Screen.clearScreen();
         
-        do Output.moveCursor(10, 18);
+        do Output.moveCursor(8, 18);
         do Output.printString("CONGRATULATIONS!");
         
-        do Output.moveCursor(12, 15);
-        do Output.printString("You completed all levels!");
+        do Output.moveCursor(10, 12);
+        do Output.printString("You've finished the game!");
         
-        do Output.moveCursor(14, 18);
-        do Output.printString("GAME COMPLETE!");
+        // Show beta message if not all 14 levels were played
+        if (maxLevel < 14) {
+            do Output.moveCursor(13, 6);
+            do Output.printString("Want more levels (beta version)?");
+            
+            do Output.moveCursor(15, 5);
+            do Output.printString("Change GameConfig.getMaxLevel()");
+            do Output.moveCursor(16, 8);
+            do Output.printString("from ");
+            do Main.printIntSafe(maxLevel);
+            do Output.printString(" to max 14 and play again!");
+        }
         
-        do Output.moveCursor(17, 16);
+        do Output.moveCursor(20, 16);
         do Output.printString("Press any key to exit");
         
         return;
@@ -234,7 +263,7 @@ class Main {
         
         do Output.moveCursor(8, 20);
         do Output.printString("LEVEL ");
-        do Output.printInt(level);
+        do Main.printIntSafe(level);
         do Output.printString(" FAILED");
         
         do Output.moveCursor(10, 16);

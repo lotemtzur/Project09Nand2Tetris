@@ -21,7 +21,7 @@ function FoodItem.setCookingUpgrades 1
 push argument 0
 pop pointer 0
 push argument 1
-push constant 3
+push constant 8
 call Math.multiply 2
 pop local 0
 push this 3

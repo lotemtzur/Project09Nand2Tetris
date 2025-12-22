@@ -1,3 +1,6 @@
+function GameConfig.getMaxLevel 0
+push constant 4
+return
 function GameConfig.getGameLoopDelay 0
 push constant 40
 return

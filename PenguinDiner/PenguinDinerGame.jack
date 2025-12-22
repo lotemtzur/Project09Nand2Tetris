@@ -155,21 +155,43 @@ class PenguinDinerGame {
     
     /** Draws the UI elements */
     method void drawUI() {
+        var String str;
+        
         do Output.moveCursor(0, 0);
         do Output.printString("Lv");
-        do Output.printInt(level);
+        let str = String.new(10);
+        do str.setInt(level);
+        do Output.printString(str);
+        do str.dispose();
+        
         do Output.moveCursor(0, 7);
         do Output.printString("Goal:");
-        do Output.printInt(levelGoal);
+        let str = String.new(10);
+        do str.setInt(levelGoal);
+        do Output.printString(str);
+        do str.dispose();
+        
         do Output.moveCursor(0, 16);
         do Output.printString("Served:");
-        do Output.printInt(totalCustomersServed);
+        let str = String.new(10);
+        do str.setInt(totalCustomersServed);
+        do Output.printString(str);
+        do str.dispose();
+        
         do Output.moveCursor(0, 27);
         do Output.printString("$");
-        do Output.printInt(score);
+        let str = String.new(10);
+        do str.setInt(score);
+        do Output.printString(str);
+        do str.dispose();
+        
         do Output.moveCursor(0, 36);
         do Output.printString("Hearts:");
-        do Output.printInt(hearts);
+        let str = String.new(10);
+        do str.setInt(hearts);
+        do Output.printString(str);
+        do str.dispose();
+        
         do Output.moveCursor(0, 47);
         do Output.printString("Time:");
         do drawTime();
@@ -188,26 +210,56 @@ class PenguinDinerGame {
     /** Draws the time remaining in seconds */
     method void drawTime() {
         var int seconds;
+        var String timeStr;
         let seconds = timeRemaining / 25;  // Convert cycles to seconds (40ms * 25 = 1 second)
-        do Output.printInt(seconds);
+        
+        // Create string, print it, then dispose it
+        let timeStr = String.new(10);
+        do timeStr.setInt(seconds);
+        do Output.printString(timeStr);
+        do timeStr.dispose();
+        
         do Output.printString("s   ");
         return;
     }
     
     /** Updates the display */
     method void updateDisplay() {
+        var String str;
+        
+        // Level goal
         do Output.moveCursor(0, 12);
-        do Output.printInt(levelGoal);
+        let str = String.new(10);
+        do str.setInt(levelGoal);
+        do Output.printString(str);
+        do str.dispose();
         do Output.printString(" ");
+        
+        // Total served
         do Output.moveCursor(0, 23);
-        do Output.printInt(totalCustomersServed);
+        let str = String.new(10);
+        do str.setInt(totalCustomersServed);
+        do Output.printString(str);
+        do str.dispose();
         do Output.printString(" ");
+        
+        // Score
         do Output.moveCursor(0, 28);
-        do Output.printInt(score);
+        let str = String.new(10);
+        do str.setInt(score);
+        do Output.printString(str);
+        do str.dispose();
         do Output.printString("  ");
+        
+        // Hearts
         do Output.moveCursor(0, 43);
-        do Output.printInt(hearts);
+        let str = String.new(10);
+        do str.setInt(hearts);
+        do Output.printString(str);
+        do str.dispose();
         do Output.printString(" ");
+        
+        // Time
         do Output.moveCursor(0, 52);
         do drawTime();
         return;
@@ -785,6 +837,12 @@ class PenguinDinerGame {
             } else {
                 // Time's up!
                 let gameOver = true;
+            }
+            
+            // Update time display only once per second (every 25 cycles)
+            if ((timeRemaining - ((timeRemaining / 25) * 25)) = 0) {
+                do Output.moveCursor(0, 52);
+                do drawTime();
             }
             
             // Update customer timer

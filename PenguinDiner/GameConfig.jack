@@ -4,6 +4,13 @@
  */
 class GameConfig {
     
+    // ===== GAME LEVEL SETTINGS =====
+    
+    /** Maximum level to play (change to 14 for all levels, or keep at 4 for main game) */
+    function int getMaxLevel() {
+        return 4;  // Default: 4 levels (change to 14 to play all beta levels!)
+    }
+    
     // ===== GAME SPEED SETTINGS =====
     
     /** Game loop delay in milliseconds (lower = faster) */

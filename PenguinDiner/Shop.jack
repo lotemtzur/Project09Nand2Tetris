@@ -86,6 +86,16 @@ class Shop {
         return extraHeartBought;
     }
     
+    /** Helper method to safely print an integer (creates and disposes string) */
+    method void printIntSafe(int value) {
+        var String str;
+        let str = String.new(10);
+        do str.setInt(value);
+        do Output.printString(str);
+        do str.dispose();
+        return;
+    }
+    
     /** Draws the shop screen */
     method void draw() {
         do Screen.clearScreen();
@@ -97,7 +107,7 @@ class Shop {
         // Money display
         do Output.moveCursor(4, 22);
         do Output.printString("Money: $");
-        do Output.printInt(totalMoney);
+        do printIntSafe(totalMoney);
         
         // Instructions
         do Output.moveCursor(6, 15);
@@ -105,7 +115,7 @@ class Shop {
         
         // Items (with dynamic prices)
         do drawItem(0, 8, "Speed Upgrade (+0.5 pixel)", getSpeedPrice());
-        do drawItem(1, 11, "Faster Cooking (-0.1 sec)", getCookingPrice());
+        do drawItem(1, 11, "Faster Cooking (-0.3 sec)", getCookingPrice());
         do drawItem(2, 14, "Extra Heart (next level)", getHeartPrice());
         
         // Exit option
@@ -120,12 +130,37 @@ class Shop {
     
     /** Draws a shop item */
     method void drawItem(int itemNum, int row, String name, int price) {
+        var int currentTime, cycles;
+        
         do Output.moveCursor(row, 10);
         do Output.printString(name);
         do name.dispose();  // Free the string memory
+        
+        // For cooking upgrade, show current cooking time
+        if (itemNum = 1) {
+            // Calculate current cooking time after upgrades
+            // Base time is 250 cycles (10 seconds), each upgrade reduces by 8 cycles (0.32 sec)
+            let cycles = 250 - (cookingUpgrades * 8);
+            if (cycles < 1) {
+                let cycles = 1;
+            }
+            // Show time with one decimal place
+            // Calculate: seconds.tenths (e.g., 9.7s)
+            let currentTime = cycles / 25;  // Integer seconds
+            let cycles = cycles - (currentTime * 25);  // Remaining cycles
+            let cycles = (cycles * 10) / 25;  // Convert to tenths
+            
+            do Output.moveCursor(row, 37);
+            do Output.printString("(");
+            do printIntSafe(currentTime);
+            do Output.printString(".");
+            do printIntSafe(cycles);
+            do Output.printString("s)");
+        }
+        
         do Output.moveCursor(row, 45);
         do Output.printString("$");
-        do Output.printInt(price);
+        do printIntSafe(price);
         return;
     }
     

@@ -444,7 +444,7 @@ call Memory.deAlloc 1
 pop temp 0
 push constant 0
 return
-function PenguinDinerGame.drawUI 0
+function PenguinDinerGame.drawUI 1
 push argument 0
 pop pointer 0
 push constant 0
@@ -459,8 +459,18 @@ push constant 118
 call String.appendChar 2
 call Output.printString 1
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 9
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 0
 push constant 7
@@ -480,8 +490,18 @@ push constant 58
 call String.appendChar 2
 call Output.printString 1
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 16
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 0
 push constant 16
@@ -505,8 +525,18 @@ push constant 58
 call String.appendChar 2
 call Output.printString 1
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 7
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 0
 push constant 27
@@ -518,8 +548,18 @@ push constant 36
 call String.appendChar 2
 call Output.printString 1
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 8
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 0
 push constant 36
@@ -543,8 +583,18 @@ push constant 58
 call String.appendChar 2
 call Output.printString 1
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 15
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 0
 push constant 47
@@ -757,15 +807,25 @@ call Output.printString 1
 pop temp 0
 push constant 0
 return
-function PenguinDinerGame.drawTime 1
+function PenguinDinerGame.drawTime 2
 push argument 0
 pop pointer 0
 push this 18
 push constant 25
 call Math.divide 2
 pop local 0
+push constant 10
+call String.new 1
+pop local 1
+push local 1
 push local 0
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 1
+call Output.printString 1
+pop temp 0
+push local 1
+call String.dispose 1
 pop temp 0
 push constant 4
 call String.new 1
@@ -781,15 +841,25 @@ call Output.printString 1
 pop temp 0
 push constant 0
 return
-function PenguinDinerGame.updateDisplay 0
+function PenguinDinerGame.updateDisplay 1
 push argument 0
 pop pointer 0
 push constant 0
 push constant 12
 call Output.moveCursor 2
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 16
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 1
 call String.new 1
@@ -801,8 +871,18 @@ push constant 0
 push constant 23
 call Output.moveCursor 2
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 7
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 1
 call String.new 1
@@ -814,8 +894,18 @@ push constant 0
 push constant 28
 call Output.moveCursor 2
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 8
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 2
 call String.new 1
@@ -829,8 +919,18 @@ push constant 0
 push constant 43
 call Output.moveCursor 2
 pop temp 0
+push constant 10
+call String.new 1
+pop local 0
+push local 0
 push this 15
-call Output.printInt 1
+call String.setInt 2
+pop temp 0
+push local 0
+call Output.printString 1
+pop temp 0
+push local 0
+call String.dispose 1
 pop temp 0
 push constant 1
 call String.new 1
@@ -2399,6 +2499,26 @@ push constant 0
 not
 pop this 11
 label IF_END3
+push this 18
+push this 18
+push constant 25
+call Math.divide 2
+push constant 25
+call Math.multiply 2
+sub
+push constant 0
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push constant 0
+push constant 52
+call Output.moveCursor 2
+pop temp 0
+push pointer 0
+call PenguinDinerGame.drawTime 1
+pop temp 0
+label IF_FALSE4
 push this 10
 push constant 1
 add
@@ -2406,32 +2526,32 @@ pop this 10
 push this 10
 call GameConfig.getCustomerSpawnInterval 0
 gt
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push pointer 0
 call PenguinDinerGame.spawnCustomer 1
 pop temp 0
 push constant 0
 pop this 10
-label IF_FALSE4
+label IF_FALSE5
 push this 13
 push constant 0
 eq
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
 push pointer 0
 call PenguinDinerGame.handleSmartAction 1
 pop temp 0
 push constant 5
 pop this 13
-label IF_FALSE5
+label IF_FALSE6
 label IF_FALSE2
 push this 12
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
 push constant 0
 pop local 0
 label WHILE_EXP0
@@ -2450,26 +2570,26 @@ push local 3
 push constant 0
 eq
 not
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
 push local 3
 call Customer.update 1
 pop temp 0
 push local 3
 call Customer.leftAngry 1
-if-goto IF_TRUE8
-goto IF_FALSE8
-label IF_TRUE8
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
 push local 3
 call Customer.getState 1
 push constant 3
 eq
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
-goto IF_END9
-label IF_FALSE9
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+goto IF_END10
+label IF_FALSE10
 push local 3
 call Customer.getState 1
 push constant 3
@@ -2479,9 +2599,9 @@ call Customer.getState 1
 push constant 4
 eq
 or
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
 push this 15
 push constant 1
 sub
@@ -2504,15 +2624,15 @@ push local 5
 call Table.getCustomer 1
 push local 3
 eq
-if-goto IF_TRUE11
-goto IF_FALSE11
-label IF_TRUE11
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
 push local 5
 call Table.removeCustomer 1
 pop temp 0
 push this 4
 pop local 2
-label IF_FALSE11
+label IF_FALSE12
 push local 2
 push constant 1
 add
@@ -2523,9 +2643,9 @@ push local 3
 call Customer.getState 1
 push constant 2
 eq
-if-goto IF_TRUE12
-goto IF_FALSE12
-label IF_TRUE12
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
 push this 3
 push local 3
 call Customer.getFoodType 1
@@ -2533,16 +2653,16 @@ call Kitchen.cancelOrder 2
 pop temp 0
 push local 3
 call Customer.getIsPair 1
-if-goto IF_TRUE13
-goto IF_FALSE13
-label IF_TRUE13
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
 push this 3
 push local 3
 call Customer.getFoodType2 1
 call Kitchen.cancelOrder 2
 pop temp 0
+label IF_FALSE14
 label IF_FALSE13
-label IF_FALSE12
 push local 0
 push this 2
 add
@@ -2570,39 +2690,39 @@ pop temp 0
 push this 15
 push constant 1
 lt
-if-goto IF_TRUE14
-goto IF_FALSE14
-label IF_TRUE14
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
 push constant 0
 not
 pop this 11
-label IF_FALSE14
-label IF_FALSE10
-label IF_END9
+label IF_FALSE15
+label IF_FALSE11
+label IF_END10
+label IF_FALSE9
 label IF_FALSE8
-label IF_FALSE7
 push local 0
 push constant 1
 add
 pop local 0
 goto WHILE_EXP0
 label WHILE_END0
-label IF_FALSE6
+label IF_FALSE7
 push this 7
 push this 16
 push constant 1
 sub
 gt
-if-goto IF_TRUE15
-goto IF_FALSE15
-label IF_TRUE15
+if-goto IF_TRUE16
+goto IF_FALSE16
+label IF_TRUE16
 push constant 0
 not
 pop this 20
 push constant 0
 not
 pop this 11
-label IF_FALSE15
+label IF_FALSE16
 push constant 0
 return
 function PenguinDinerGame.clearReadyMessage 0
